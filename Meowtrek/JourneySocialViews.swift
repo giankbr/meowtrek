@@ -134,6 +134,7 @@ struct SocialView: View {
     @Environment(AppState.self) private var state
     @State private var adding = false
     @State private var code = ""
+    @State private var challenging: Friend?
 
     var body: some View {
         let me = state.myCard
@@ -169,6 +170,7 @@ struct SocialView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .card()
 
+                DuelsSection()
                 Text("Leaderboard · 7 days").font(.game(20, .black))
                 if state.friends.isEmpty {
                     Text("No friends yet. Share your card to start a pack!")
@@ -189,6 +191,7 @@ struct SocialView: View {
         .foregroundStyle(Color.ink)
         .background(Color.cream)
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(item: $challenging) { ChallengeSheet(friend: $0) }
         .alert("Add friend", isPresented: $adding) {
             TextField("Paste their card link", text: $code)
             Button("Paste from clipboard") {
@@ -216,7 +219,7 @@ struct SocialView: View {
             CatView(outfit: outfit, size: 44, animated: false)
                 .frame(width: 50, height: 54)
             VStack(alignment: .leading, spacing: 2) {
-                Text(isMe ? "\(f.name) (you)" : f.name).font(.game(16, .black))
+                Text(isMe ? "\(f.name) (you)" : f.title.map { "\(f.name) \(L($0))" } ?? f.name).font(.game(16, .black)).lineLimit(1)
                 HStack(spacing: 4) {
                     Image(systemName: "flame.fill").foregroundStyle(Color.pumpkin)
                     Text("\(f.streak)")
@@ -226,6 +229,9 @@ struct SocialView: View {
             }
             Spacer()
             Text(shortSteps(f.week)).font(.game(18, .black))
+            if !isMe {
+                RoundIconButton(symbol: "flag.2.crossed.fill", tint: .tomato, size: 34) { challenging = f }
+            }
         }
         .card(padding: 10, color: isMe ? .grassLight : .paper)
     }

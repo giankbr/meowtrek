@@ -1004,5 +1004,204 @@
    "coins": 400,
    "gems": 4
   }
+ ],
+ "expeditions": [
+  {
+   "id": "pine_forest",
+   "name": "Pine Forest",
+   "icon": "tree.fill",
+   "tint": "3E8E2F",
+   "steps": 3000,
+   "coins": 60,
+   "gems": 0,
+   "items": [
+    "mushroom",
+    "tulip",
+    "basket"
+   ],
+   "postcard": "Found a ring of mushrooms between the pines."
+  },
+  {
+   "id": "swan_lake",
+   "name": "Swan Lake",
+   "icon": "bird.fill",
+   "tint": "3D9BD6",
+   "steps": 5000,
+   "coins": 90,
+   "gems": 0,
+   "items": [
+    "swim_ring",
+    "dive_mask",
+    "sun_hat"
+   ],
+   "postcard": "Watched the swans glide across the lake at sunset."
+  },
+  {
+   "id": "old_mill",
+   "name": "Old Mill",
+   "icon": "wind",
+   "tint": "9A6545",
+   "steps": 8000,
+   "coins": 140,
+   "gems": 1,
+   "items": [
+    "lantern",
+    "boots",
+    "scarf"
+   ],
+   "postcard": "Chased flour dust around the creaky old mill."
+  },
+  {
+   "id": "star_hill",
+   "name": "Star Hill",
+   "icon": "moon.stars.fill",
+   "tint": "5E4F9A",
+   "steps": 12000,
+   "coins": 220,
+   "gems": 1,
+   "items": [
+    "bell",
+    "beads",
+    "ballet"
+   ],
+   "postcard": "Counted shooting stars from the top of the hill."
+  },
+  {
+   "id": "misty_peak",
+   "name": "Misty Peak",
+   "icon": "mountain.2.fill",
+   "tint": "8B7BC8",
+   "steps": 20000,
+   "coins": 400,
+   "gems": 3,
+   "items": [
+    "goggles",
+    "backpack",
+    "fur_lilac"
+   ],
+   "postcard": "Climbed into the clouds and came home with cold paws."
+  }
+ ],
+ "sets": [
+  {
+   "id": "witchy",
+   "name": "Witchy",
+   "title": "the Witchy",
+   "icon": "wand.and.stars",
+   "tint": "8B7BC8",
+   "items": [
+    "witch_hat",
+    "witch_cloak",
+    "wand",
+    "lantern"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "scholar",
+   "name": "Scholar",
+   "title": "the Scholar",
+   "icon": "graduationcap.fill",
+   "tint": "4F93B8",
+   "items": [
+    "grad_cap",
+    "glasses",
+    "backpack",
+    "medal"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "beach",
+   "name": "Beach Day",
+   "title": "the Sunny",
+   "icon": "sun.max.fill",
+   "tint": "F6C945",
+   "items": [
+    "sun_hat",
+    "shades",
+    "swim_ring",
+    "flipflops"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "sporty",
+   "name": "Sporty",
+   "title": "the Sporty",
+   "icon": "figure.run",
+   "tint": "E5707A",
+   "items": [
+    "cap",
+    "goggles",
+    "sneakers",
+    "backpack"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "cozy",
+   "name": "Cozy",
+   "title": "the Cozy",
+   "icon": "cup.and.saucer.fill",
+   "tint": "9A6545",
+   "items": [
+    "scarf",
+    "socks",
+    "mittens",
+    "bear_suit"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "spooky",
+   "name": "Gourd Night",
+   "title": "the Spooky",
+   "icon": "moon.stars.fill",
+   "tint": "F2A65A",
+   "items": [
+    "pumpkin_head",
+    "candy_bag",
+    "bat_wings",
+    "ghost_sheet"
+   ],
+   "coins": 200,
+   "gems": 3
+  },
+  {
+   "id": "frosty",
+   "name": "Frost Fair",
+   "title": "the Frosty",
+   "icon": "snowflake",
+   "tint": "8CC4DE",
+   "items": [
+    "snowman_hat",
+    "mittens",
+    "skates",
+    "scarf"
+   ],
+   "coins": 200,
+   "gems": 3
+  },
+  {
+   "id": "blooming",
+   "name": "Bloom",
+   "title": "the Blooming",
+   "icon": "leaf.fill",
+   "tint": "7FA86B",
+   "items": [
+    "flower_crown",
+    "bouquet",
+    "butterfly",
+    "tulip"
+   ],
+   "coins": 200,
+   "gems": 3
+  }
  ]
 }

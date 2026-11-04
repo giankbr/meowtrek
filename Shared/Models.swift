@@ -34,7 +34,7 @@ enum Suit: String, Codable, Hashable { case frog, bear, cloak }
 
 enum Currency: String, Codable {
     case coin, gem
-    var icon: String { self == .coin ? "🪙" : "💎" }
+    var art: String { self == .coin ? "coin" : "gem" }
 }
 
 struct Item: Codable, Identifiable, Hashable {
@@ -120,6 +120,49 @@ struct Achievement: Codable, Identifiable {
     let gems: Int
 }
 
+struct ExpeditionDef: Codable, Identifiable {
+    let id: String
+    let name: String
+    let icon: String
+    let tint: String
+    let steps: Int
+    let coins: Int
+    let gems: Int
+    let items: [String]
+    let postcard: String
+}
+
+struct ItemSet: Codable, Identifiable {
+    let id: String
+    let name: String
+    let title: String
+    let icon: String
+    let tint: String
+    let items: [String]
+    let coins: Int
+    let gems: Int
+}
+
+struct Expedition: Codable, Equatable {
+    let id: String
+    let start: Date
+    let baseline: Int
+}
+
+struct Postcard: Codable, Hashable, Identifiable {
+    let id: String
+    let date: Date
+}
+
+struct Duel: Codable, Identifiable, Hashable {
+    let id: String
+    let friendID: String
+    var friendName: String
+    let start: String
+    let end: String
+    var claimed = false
+}
+
 struct Look: Codable, Identifiable, Hashable {
     var id = UUID()
     var name: String
@@ -135,6 +178,8 @@ struct Friend: Codable, Identifiable, Hashable {
     var today: Int
     var streak: Int
     var updated: Date
+    var days: [String: Int]? = nil
+    var title: String? = nil
 }
 
 struct GameContent: Codable {
@@ -144,6 +189,8 @@ struct GameContent: Codable {
     let quests: [QuestTemplate]
     let landmarks: [Landmark]
     let achievements: [Achievement]
+    let expeditions: [ExpeditionDef]
+    let sets: [ItemSet]
 
     static let shared: GameContent = {
         guard let url = Bundle.main.url(forResource: "content", withExtension: "json"),
@@ -154,7 +201,7 @@ struct GameContent: Codable {
     /// Display strings in content.json are English keys; translate them once at load.
     private static func localized(_ data: Data) -> Data {
         guard var root = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return data }
-        let fields: Set<String> = ["name", "title", "detail", "token"]
+        let fields: Set<String> = ["name", "title", "detail", "token", "postcard"]
         for (section, value) in root {
             guard let list = value as? [[String: Any]] else { continue }
             root[section] = list.map { entry in

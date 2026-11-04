@@ -83,7 +83,7 @@ struct MeowtrekWidgetView: View {
                 HStack(alignment: .top) {
                     petButton(size: 58)
                     Spacer()
-                    Text("🔥\(s.streak)").font(.caption.weight(.bold))
+                    Label("\(s.streak)", systemImage: "flame.fill").font(.caption.weight(.bold)).foregroundStyle(Color.pumpkin)
                 }
                 Spacer(minLength: 0)
                 Text(s.stepsToday.formatted()).font(.system(size: 24, weight: .bold, design: .rounded))

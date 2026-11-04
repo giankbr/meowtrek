@@ -5,6 +5,7 @@ struct ShopView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var filter: Slot?
     @State private var buying: Item?
+    @State private var trying: Item?
     @State private var hideOwned = false
     @State private var showPaywall = false
     private let pushed: Bool
@@ -96,7 +97,7 @@ struct ShopView: View {
                             if state.owned.contains(item.id) {
                                 withAnimation { state.toggle(item) }
                             } else {
-                                buying = item
+                                trying = item
                             }
                         }
                     }
@@ -113,6 +114,7 @@ struct ShopView: View {
         .background(Color.cream)
         .toolbar(pushed ? .visible : .hidden, for: .navigationBar)
         .buyDialog($buying)
+        .sheet(item: $trying) { TryOnSheet(item: $0) }
         .sheet(isPresented: $showPaywall) { PaywallView() }
         .task { if !state.store.loaded { await state.store.load() } }
     }

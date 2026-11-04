@@ -324,7 +324,7 @@ struct StatsView: View {
 
     private func dayDetail(_ d: Date) -> some View {
         let s = state.steps.steps(on: d)
-        let status = state.hitGoal(d) ? (s >= state.goal ? "✅ Goal" : "🧊 Frozen") : "\(Int(Double(s) / Double(state.goal) * 100))%"
+        let pct = Int(Double(s) / Double(max(1, state.goal)) * 100)
         return HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(d.formatted(.dateTime.weekday(.wide).day().month())).font(.subheadline.weight(.bold))
@@ -332,7 +332,16 @@ struct StatsView: View {
                     .font(.caption).foregroundStyle(Color.inkSoft)
             }
             Spacer()
-            Text(status).font(.caption.weight(.bold))
+            Group {
+                if state.hitGoal(d) && s >= state.goal {
+                    Label("Goal", systemImage: "checkmark.circle.fill").foregroundStyle(Color.grassDark)
+                } else if state.hitGoal(d) {
+                    Label("Frozen", systemImage: "snowflake").foregroundStyle(Color.skyDark)
+                } else {
+                    Text("\(pct)%").foregroundStyle(Color.inkSoft)
+                }
+            }
+            .font(.game(13, .bold))
         }
         .padding(10)
         .background(Color.cream, in: RoundedRectangle(cornerRadius: 12))

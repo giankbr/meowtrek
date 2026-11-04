@@ -4,7 +4,7 @@ struct ClosetView: View {
     @Environment(AppState.self) private var state
     @Environment(\.dismiss) private var dismiss
     @State private var slot: Slot = .hat
-    @State private var buying: Item?
+    @State private var trying: Item?
     @State private var showLooks = false
     @State private var hop = 0
     @State private var showShare = false
@@ -21,7 +21,10 @@ struct ClosetView: View {
         .foregroundStyle(Color.ink)
         .background(Color.cream)
         .toolbar(.hidden, for: .navigationBar)
-        .buyDialog($buying)
+        .overlay(alignment: .bottom) {
+            if let item = trying { TryOnBar(item: item) { trying = nil }.transition(.move(edge: .bottom).combined(with: .opacity)) }
+        }
+        .onChange(of: slot) { withAnimation(.snappy) { trying = nil } }
         .sheet(isPresented: $showLooks) { LooksView().presentationDetents([.medium, .large]) }
         .sheet(isPresented: $showShare) { ShareCardsView(kind: .outfit) }
         .sensoryFeedback(.selection, trigger: state.equipped)
@@ -57,7 +60,7 @@ struct ClosetView: View {
                 VStack(spacing: 8) { ForEach(right) { slotButton($0) } }
             }
             .padding(.horizontal, 14)
-            CatView(outfit: state.outfit, size: 176, mood: .happy, hop: hop)
+            CatView(outfit: previewOutfit, size: 176, mood: .happy, hop: hop)
                 .offset(y: 4)
                 .onTapGesture { hop += 1 }
         }
@@ -85,6 +88,12 @@ struct ClosetView: View {
         .buttonStyle(SquishStyle())
     }
 
+    private var previewOutfit: [Slot: Item] {
+        var o = state.outfit
+        if let t = trying { o[t.slot] = t }
+        return o
+    }
+
     private var picker: some View {
         let items = Catalog.items(for: slot)
             .filter { $0.forSale || state.owned.contains($0.id) || state.activeEvent?.event.id == $0.event }
@@ -92,25 +101,141 @@ struct ClosetView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(slot.title).font(.game(22, .black))
-                    Text(state.outfit[slot]?.name ?? "nothing on").font(.game(13, .bold)).foregroundStyle(Color.inkSoft)
+                    Text(trying.map { loc("Trying on \($0.name)") } ?? state.outfit[slot]?.name ?? loc("nothing on"))
+                        .font(.game(13, .bold)).foregroundStyle(trying == nil ? Color.inkSoft : Color.sunDark).lineLimit(1)
                     Spacer()
                     Tag(text: loc("\(items.filter { state.owned.contains($0.id) }.count) yours"), color: .grass)
                 }
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 14) {
+                    if slot != .fur { noneCell }
                     ForEach(items) { item in
                         ItemCell(item: item) {
                             if state.owned.contains(item.id) {
+                                trying = nil
                                 withAnimation(.spring) { state.toggle(item) }
+                            } else if item.event != nil {
+                                state.show(loc("Earn it during the \(state.content.events.first { $0.id == item.event }?.name ?? "") event."))
                             } else {
-                                buying = item
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) { trying = trying == item ? nil : item }
+                                hop += 1
                             }
                         }
+                        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .stroke(trying == item ? Color.sun : .clear, lineWidth: 3))
                     }
                 }
             }
             .padding(16)
-            .padding(.bottom, 20)
+            .padding(.bottom, trying == nil ? 20 : 110)
         }
+    }
+
+    private var noneCell: some View {
+        let on = state.outfit[slot] == nil && trying == nil
+        return Button {
+            trying = nil
+            withAnimation(.spring) { state.unequip(slot) }
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: "circle.slash")
+                    .font(.system(size: 30, weight: .medium))
+                    .foregroundStyle(on ? Color.grassDark : Color.inkSoft.opacity(0.6))
+                    .frame(maxWidth: .infinity).frame(height: 74)
+                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(on ? Color.grassLight : Color.cream))
+                Text("None").font(.game(13, .bold)).foregroundStyle(Color.ink)
+                Text(on ? loc("Wearing") : loc("Take off")).font(.game(12, .semibold))
+                    .foregroundStyle(on ? Color.grassDark : Color.inkSoft)
+            }
+            .padding(8)
+            .card(padding: 0, radius: 18)
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(on ? Color.grass : .clear, lineWidth: 2))
+        }
+        .buttonStyle(SquishStyle())
+    }
+}
+
+/// Bottom bar while an unowned item is previewed on the cat.
+struct TryOnBar: View {
+    @Environment(AppState.self) private var state
+    let item: Item
+    let close: () -> Void
+
+    var body: some View {
+        let have = state.balance(item.currency)
+        let afford = have >= item.price
+        HStack(spacing: 12) {
+            ItemArt(item: item, size: 44)
+                .frame(width: 54, height: 54)
+                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.cream))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.name).font(.game(16, .bold)).lineLimit(1)
+                HStack(spacing: 4) {
+                    ArtView(id: item.currency.art, size: 14, line: 1.2)
+                    Text(afford ? "\(item.price)" : loc("Need \(item.price - have) more")).font(.game(12, .semibold))
+                        .foregroundStyle(afford ? Color.ink : Color.tomato)
+                }
+            }
+            Spacer(minLength: 4)
+            RoundIconButton(symbol: "xmark", size: 36) { withAnimation(.snappy) { close() } }
+            Button {
+                state.buy(item)
+                withAnimation(.snappy) { close() }
+            } label: { Text("Buy").frame(minWidth: 56) }
+            .buttonStyle(.chunky(.grass, text: .white, radius: 16, padH: 14, padV: 10))
+            .disabled(!afford)
+        }
+        .foregroundStyle(Color.ink)
+        .padding(12)
+        .background(RoundedRectangle(cornerRadius: 22, style: .continuous).fill(Color.paper))
+        .shadow(color: .black.opacity(0.14), radius: 18, y: 6)
+        .padding(.horizontal, 12)
+        .padding(.bottom, 88)
+    }
+}
+
+/// Shop preview: the cat wearing an item before buying it.
+struct TryOnSheet: View {
+    @Environment(AppState.self) private var state
+    @Environment(\.dismiss) private var dismiss
+    let item: Item
+    @State private var hop = 0
+
+    var body: some View {
+        var outfit = state.outfit
+        outfit[item.slot] = item
+        let have = state.balance(item.currency)
+        return VStack(spacing: 16) {
+            ZStack {
+                LinearGradient(colors: [Color(hex: 0xD8F1FF), Color(hex: 0xF3FBE8)], startPoint: .top, endPoint: .bottom)
+                Ellipse().fill(Color.grassLight).frame(width: 200, height: 40).offset(y: 112)
+                CatView(outfit: outfit, size: 170, mood: .happy, hop: hop)
+            }
+            .frame(height: 290)
+            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .onTapGesture { hop += 1 }
+            VStack(spacing: 4) {
+                Text(item.name).font(.game(22, .bold))
+                HStack(spacing: 4) {
+                    ArtView(id: item.currency.art, size: 18, line: 1.4)
+                    Text("\(item.price)").font(.game(16, .bold))
+                    Text(loc("· you have \(have.formatted())")).font(.game(13, .medium)).foregroundStyle(Color.inkSoft)
+                }
+            }
+            if state.owned.contains(item.id) {
+                Button { state.toggle(item); dismiss() } label: { Text(state.equipped[item.slot] == item.id ? "Take off" : "Wear").frame(maxWidth: .infinity) }
+                    .buttonStyle(.chunky(.grass, text: .white, radius: 18, padV: 14))
+            } else {
+                Button { state.buy(item); dismiss() } label: {
+                    Text(have >= item.price ? loc("Buy for \(item.price)") : loc("Need \(item.price - have) more")).frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.chunky(.grass, text: .white, radius: 18, padV: 14))
+                .disabled(have < item.price)
+            }
+        }
+        .foregroundStyle(Color.ink)
+        .padding(20)
+        .presentationDetents([.height(480)])
+        .presentationBackground(Color.cream)
     }
 }
 
@@ -131,6 +256,9 @@ struct LooksView: View {
                             .buttonStyle(.chunky(.paper))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("Sets").font(.game(20, .black)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 4)
+                    SetsSection()
+                    Text("Saved looks").font(.game(20, .black)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 4)
                     if state.looks.isEmpty {
                         Text("No looks yet. Dress up, then save it here.")
                             .font(.game(14, .bold)).foregroundStyle(Color.inkSoft).padding(.top, 20)

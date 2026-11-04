@@ -43,7 +43,7 @@ final class AppState {
     @ObservationIgnored let treks = TrekStore()
     @ObservationIgnored let meals = MealStore()
     @ObservationIgnored let content = GameContent.shared
-    @ObservationIgnored private let cal = Calendar.current
+    @ObservationIgnored let cal = Calendar.current
     static let demo = ProcessInfo.processInfo.arguments.contains("-demo")
 
     var coins = 0
@@ -79,6 +79,12 @@ final class AppState {
     var aiEngine = "auto"
     var waterDay = ""
     var water = 0
+    var expedition: Expedition?
+    var postcards: [Postcard] = []
+    var loginDay = 0
+    var loginLast = ""
+    var duels: [Duel] = []
+    var title: String?
     let waterGoal = 8
 
     var toast: Toast?
@@ -351,6 +357,11 @@ final class AppState {
         save()
     }
 
+    func unequip(_ slot: Slot) {
+        equipped[slot] = slot == .fur ? "fur_ginger" : nil
+        save()
+    }
+
     func undress() {
         equipped = [.fur: equipped[.fur] ?? "fur_ginger"]
         save()
@@ -550,6 +561,7 @@ final class AppState {
         if let a = activeEvent { n += a.event.milestones.filter { canClaim(a, $0) }.count }
         n += content.landmarks.filter { isReached($0) && !isClaimed($0) }.count
         n += content.achievements.filter { isUnlocked($0) && !isClaimed($0) }.count
+        n += gameInboxCount
         return n
     }
 
@@ -570,8 +582,12 @@ final class AppState {
     // MARK: Friends
 
     var myCard: Friend {
-        Friend(id: profileID, name: petName, fur: equipped[.fur] ?? "fur_ginger", hat: equipped[.hat],
-               week: weekSteps, today: today, streak: streak, updated: .now)
+        let days = Dictionary(uniqueKeysWithValues: (0..<14).map { i -> (String, Int) in
+            let d = cal.date(byAdding: .day, value: -i, to: startOfToday)!
+            return (key(d), steps.steps(on: d))
+        })
+        return Friend(id: profileID, name: petName, fur: equipped[.fur] ?? "fur_ginger", hat: equipped[.hat],
+                      week: weekSteps, today: today, streak: streak, updated: .now, days: days, title: titleText)
     }
 
     var inviteURL: URL {
@@ -586,7 +602,9 @@ final class AppState {
     @discardableResult
     func addFriend(from text: String) -> Bool {
         var code = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let r = code.range(of: "d=") { code = String(code[r.upperBound...]) }
+        let query = URLComponents(string: code)?.queryItems ?? []
+        if let d = query.first(where: { $0.name == "d" })?.value { code = d }
+        else if let r = code.range(of: "d=") { code = String(code[r.upperBound...].prefix { $0 != "&" }) }
         code = code.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
         code += String(repeating: "=", count: (4 - code.count % 4) % 4)
         guard let data = Data(base64Encoded: code),
@@ -601,6 +619,7 @@ final class AppState {
             show(loc("\(f.name) joined your pack"), art: f.fur)
             celebrate(.confetti)
         }
+        if let duel = query.first(where: { $0.name == "duel" })?.value { acceptDuel(duel, from: f) }
         save()
         return true
     }
@@ -666,6 +685,12 @@ final class AppState {
         var chatCount: Int?
         var waterDay: String?
         var water: Int?
+        var expedition: Expedition?
+        var postcards: [Postcard]?
+        var loginDay: Int?
+        var loginLast: String?
+        var duels: [Duel]?
+        var title: String?
     }
 
     private static let storeKey = "meowtrek.v2"
@@ -682,7 +707,7 @@ final class AppState {
             firstDay: demo ? Calendar.current.date(byAdding: .day, value: -19, to: .now)! : .now, fullnessAt: .now,
             looks: [], friends: [], onboarded: demo, remindersOn: false, useMiles: false,
             creditedTx: nil, freezeWeek: nil, aiQuestsDay: nil, chatDay: nil, aiEngine: nil, aiQuests: nil, chatCount: nil,
-            waterDay: nil, water: nil)
+            waterDay: nil, water: nil, expedition: nil, postcards: nil, loginDay: nil, loginLast: nil, duels: nil, title: nil)
     }
 
     private static func loadSnapshot() -> Snapshot? {
@@ -704,6 +729,8 @@ final class AppState {
         aiQuestsDay = s.aiQuestsDay ?? ""; aiQuests = s.aiQuests ?? []
         chatDay = s.chatDay ?? ""; chatCount = s.chatCount ?? 0; aiEngine = s.aiEngine ?? "auto"
         waterDay = s.waterDay ?? ""; water = s.water ?? 0
+        expedition = s.expedition; postcards = s.postcards ?? []; loginDay = s.loginDay ?? 0
+        loginLast = s.loginLast ?? ""; duels = s.duels ?? []; title = s.title
     }
 
     func backupData() -> Data { (try? JSONEncoder().encode(snapshot())) ?? Data() }
@@ -726,7 +753,8 @@ final class AppState {
             inventory: inventory, storedFullness: storedFullness, firstDay: firstDay, fullnessAt: fullnessAt,
             looks: looks, friends: friends, onboarded: onboarded, remindersOn: remindersOn, useMiles: useMiles,
             creditedTx: Array(creditedTx), freezeWeek: freezeWeek, aiQuestsDay: aiQuestsDay, chatDay: chatDay,
-            aiEngine: aiEngine, aiQuests: aiQuests, chatCount: chatCount, waterDay: waterDay, water: water)
+            aiEngine: aiEngine, aiQuests: aiQuests, chatCount: chatCount, waterDay: waterDay, water: water,
+            expedition: expedition, postcards: postcards, loginDay: loginDay, loginLast: loginLast, duels: duels, title: title)
     }
 
     func save() {

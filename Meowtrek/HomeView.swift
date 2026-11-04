@@ -44,7 +44,10 @@ struct HomeView: View {
                         .disabled(personalizing)
                     }
                     .padding(.top, 4)
-                    if let a = state.activeEvent { eventCard(a).appearIn(0) }
+                    DailyRewardCard().appearIn(0)
+                    ExpeditionCard().appearIn(0)
+                    TrailPassCard().appearIn(1)
+                    if let a = state.activeEvent { eventCard(a).appearIn(1) }
                     chestCard.appearIn(1)
                     waterCard.appearIn(2)
                     Button { showMeal = true } label: {
@@ -435,7 +438,7 @@ private struct PetScene: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    Text(state.petName).font(.game(17, .bold)).lineLimit(1)
+                    Text(state.titleText.map { "\(state.petName) \(L($0))" } ?? state.petName).font(.game(17, .bold)).lineLimit(1)
                     Text("Lv \(state.level)").font(.game(11, .bold))
                         .padding(.horizontal, 7).padding(.vertical, 2)
                         .background(Capsule().fill(Color.sun))
@@ -619,6 +622,21 @@ struct InboxView: View {
                     }
                     ForEach(state.quests.filter { state.isDone($0) && !state.isClaimed($0) }) { q in
                         row(symbol: q.t.icon, tint: q.t.tint, q.t.title, loc("Daily quest"), loc("+\(q.t.reward)")) { state.claim(q) }
+                    }
+                    if !state.loginClaimedToday {
+                        row(art: AppState.dailyRewards[state.loginNextDay - 1].art, loc("Daily rewards"), loc("Day \(state.loginNextDay) of 7"), loc("Claim")) { state.claimLogin() }
+                    }
+                    if state.expeditionDone, let def = state.expeditionDef {
+                        row(symbol: def.icon, tint: def.tint, loc("Expedition"), def.name, loc("Open")) { state.finishExpedition() }
+                    }
+                    if state.passClaimable > 0 {
+                        row(symbol: "flag.fill", tint: "8B7BC8", loc("Trail Pass"), loc("\(state.passClaimable) rewards ready"), loc("Claim all")) { state.claimAllPass() }
+                    }
+                    ForEach(state.content.sets.filter { state.setComplete($0) && !state.setClaimed($0) }) { s in
+                        row(symbol: s.icon, tint: s.tint, s.name, loc("Set complete"), loc("Claim")) { state.claimSet(s) }
+                    }
+                    ForEach(state.duels.filter { state.duelReady($0) && !$0.claimed }) { d in
+                        row(symbol: "flag.2.crossed.fill", tint: "E5707A", loc("Duel with \(d.friendName)"), loc("Results are in"), loc("Claim")) { state.claimDuel(d) }
                     }
                     if state.chestReady {
                         row(art: "chest", loc("Daily chest"), loc("All quests done"), loc("+30 +1 gem")) { state.openChest() }

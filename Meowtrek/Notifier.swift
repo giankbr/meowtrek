@@ -17,7 +17,7 @@ enum Notifier {
             dc.hour = s.reminderHour
             guard let fire = cal.date(from: dc), fire > now else { continue }
             let content = UNMutableNotificationContent()
-            content.title = loc("\(s.petName) wants a walk 🐾")
+            content.title = loc("\(s.petName) wants a walk")
             content.body = offset == 0
                 ? loc("\(s.remaining.formatted()) steps to go today. The light won't wait.")
                 : s.streak > 0 ? loc("Your streak is \(s.streak) days. Let's keep it going!") : loc("A short walk makes a happy cat.")

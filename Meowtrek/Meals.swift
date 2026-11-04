@@ -168,7 +168,7 @@ struct MealView: View {
                                         Text(m.date.formatted(.dateTime.weekday().hour().minute())).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
                                     }
                                     Spacer()
-                                    Text("\(m.balance)♥").font(.game(13, .bold)).foregroundStyle(Color.tomato)
+                                    Label("\(m.balance)", systemImage: "heart.fill").font(.game(13, .bold)).foregroundStyle(Color.tomato)
                                 }
                             }
                         }
