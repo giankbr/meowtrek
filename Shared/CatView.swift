@@ -105,7 +105,7 @@ private struct IllustratedCat: View {
         let head = a.headWidth * 200
         ZStack {
             if let bag = outfit[.bag], Self.backBags.contains(bag.id) {
-                ArtView(id: bag.id, size: head * 1.5).position(pt(a.back))
+                ArtView(id: bag.id, size: head * 1.15).position(pt(a.back))
             }
             Image(uiImage: base).resizable().interpolation(.high).frame(width: 200, height: 250)
             if let shoes = outfit[.shoes] {
@@ -119,7 +119,7 @@ private struct IllustratedCat: View {
             if let eyes = outfit[.eyes] { ArtView(id: eyes.id, size: head * 0.82).position(pt(a.eyesCenter)) }
             if let hat = outfit[.hat] {
                 ArtView(id: hat.id, size: head * 0.78)
-                    .position(x: a.headTop.x * 200, y: a.headTop.y * 250 + head * 0.12)
+                    .position(x: a.headTop.x * 200, y: a.headTop.y * 250 - head * 0.05)
             }
             if let hand = outfit[.hand] { ArtView(id: hand.id, size: head * 0.5).position(pt(a.leftPaw)) }
         }

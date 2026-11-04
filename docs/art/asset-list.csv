@@ -1,0 +1,95 @@
+file (PNG name),type,size px,description,priority
+cat_fur_ginger.png,cat,768x960,"Base cat, fur colour #F2A65A (Ginger). Template pose.",P1
+cat_fur_ginger_frog_suit.png,cat,768x960,Ginger cat wearing Frog Suit. Same pose; face visible.,P1
+cat_fur_ginger_bear_suit.png,cat,768x960,Ginger cat wearing Bear Suit. Same pose; face visible.,P1
+cat_fur_ginger_witch_cloak.png,cat,768x960,Ginger cat wearing Witch Cloak. Same pose; face visible.,P1
+cat_fur_ginger_ghost_sheet.png,cat,768x960,Ginger cat wearing Ghost Sheet. Same pose; face visible.,P1
+cat_fur_snow.png,cat,768x960,"Base cat, fur colour #EFE8DE (Snow). Template pose.",P1
+cat_fur_snow_frog_suit.png,cat,768x960,Snow cat wearing Frog Suit. Same pose; face visible.,P2
+cat_fur_snow_bear_suit.png,cat,768x960,Snow cat wearing Bear Suit. Same pose; face visible.,P2
+cat_fur_snow_witch_cloak.png,cat,768x960,Snow cat wearing Witch Cloak. Same pose; face visible.,P2
+cat_fur_snow_ghost_sheet.png,cat,768x960,Snow cat wearing Ghost Sheet. Same pose; face visible.,P2
+cat_fur_smoke.png,cat,768x960,"Base cat, fur colour #A5A2AA (Smoky). Template pose.",P1
+cat_fur_smoke_frog_suit.png,cat,768x960,Smoky cat wearing Frog Suit. Same pose; face visible.,P2
+cat_fur_smoke_bear_suit.png,cat,768x960,Smoky cat wearing Bear Suit. Same pose; face visible.,P2
+cat_fur_smoke_witch_cloak.png,cat,768x960,Smoky cat wearing Witch Cloak. Same pose; face visible.,P2
+cat_fur_smoke_ghost_sheet.png,cat,768x960,Smoky cat wearing Ghost Sheet. Same pose; face visible.,P2
+cat_fur_cocoa.png,cat,768x960,"Base cat, fur colour #9A6B4F (Cocoa). Template pose.",P1
+cat_fur_cocoa_frog_suit.png,cat,768x960,Cocoa cat wearing Frog Suit. Same pose; face visible.,P2
+cat_fur_cocoa_bear_suit.png,cat,768x960,Cocoa cat wearing Bear Suit. Same pose; face visible.,P2
+cat_fur_cocoa_witch_cloak.png,cat,768x960,Cocoa cat wearing Witch Cloak. Same pose; face visible.,P2
+cat_fur_cocoa_ghost_sheet.png,cat,768x960,Cocoa cat wearing Ghost Sheet. Same pose; face visible.,P2
+cat_fur_peach.png,cat,768x960,"Base cat, fur colour #F6C7A6 (Peach). Template pose.",P1
+cat_fur_peach_frog_suit.png,cat,768x960,Peach cat wearing Frog Suit. Same pose; face visible.,P2
+cat_fur_peach_bear_suit.png,cat,768x960,Peach cat wearing Bear Suit. Same pose; face visible.,P2
+cat_fur_peach_witch_cloak.png,cat,768x960,Peach cat wearing Witch Cloak. Same pose; face visible.,P2
+cat_fur_peach_ghost_sheet.png,cat,768x960,Peach cat wearing Ghost Sheet. Same pose; face visible.,P2
+cat_fur_lilac.png,cat,768x960,"Base cat, fur colour #C9B6E4 (Lilac). Template pose.",P1
+cat_fur_lilac_frog_suit.png,cat,768x960,Lilac cat wearing Frog Suit. Same pose; face visible.,P2
+cat_fur_lilac_bear_suit.png,cat,768x960,Lilac cat wearing Bear Suit. Same pose; face visible.,P2
+cat_fur_lilac_witch_cloak.png,cat,768x960,Lilac cat wearing Witch Cloak. Same pose; face visible.,P2
+cat_fur_lilac_ghost_sheet.png,cat,768x960,Lilac cat wearing Ghost Sheet. Same pose; face visible.,P2
+witch_hat.png,hat,512x512,"Witch Hat. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim.",P1
+top_hat.png,hat,512x512,"Top Hat. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim.",P1
+crown.png,hat,512x512,"Crown. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim.",P1
+bow.png,hat,512x512,"Ribbon Bow. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim.",P1
+grad_cap.png,hat,512x512,"Grad Cap. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim.",P1
+sun_hat.png,hat,512x512,"Sun Hat. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim.",P1
+cap.png,hat,512x512,"Cap. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim.",P1
+mushroom.png,hat,512x512,"Mushroom Cap. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim.",P1
+pumpkin_head.png,hat,512x512,"Pumpkin Head. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim. Event item: gourd.",P2
+snowman_hat.png,hat,512x512,"Snow Beanie. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim. Event item: frost.",P2
+flower_crown.png,hat,512x512,"Flower Crown. Worn on head, front view. Bottom edge = where it sits on the head, ~70% of width at the brim. Event item: bloom.",P2
+glasses.png,eyes,512x512,"Round Glasses. Front view, horizontal. Lens centres at 28% and 72% of width, 50% height.",P1
+shades.png,eyes,512x512,"Shades. Front view, horizontal. Lens centres at 28% and 72% of width, 50% height.",P1
+goggles.png,eyes,512x512,"Goggles. Front view, horizontal. Lens centres at 28% and 72% of width, 50% height.",P1
+dive_mask.png,eyes,512x512,"Diving Mask. Front view, horizontal. Lens centres at 28% and 72% of width, 50% height.",P1
+scarf.png,neck,512x512,"Scarf. Collar across the middle, front view.",P1
+bell.png,neck,512x512,"Bell. Collar across the middle, front view.",P1
+beads.png,neck,512x512,"Beads. Collar across the middle, front view.",P1
+medal.png,neck,512x512,"Medal. Collar across the middle, front view.",P1
+swim_ring.png,neck,512x512,"Swim Ring. Collar across the middle, front view. Event item: sunny.",P2
+frog_suit.png,body,512x512,Frog Suit. Wardrobe thumbnail only: the outfit on its own (kigurumi/cloak/sheet).,P1
+bear_suit.png,body,512x512,Bear Suit. Wardrobe thumbnail only: the outfit on its own (kigurumi/cloak/sheet).,P1
+witch_cloak.png,body,512x512,Witch Cloak. Wardrobe thumbnail only: the outfit on its own (kigurumi/cloak/sheet).,P1
+ghost_sheet.png,body,512x512,Ghost Sheet. Wardrobe thumbnail only: the outfit on its own (kigurumi/cloak/sheet).,P1
+wand.png,hand,512x512,Wand. Object held upright; grip point at the centre of the canvas.,P1
+lantern.png,hand,512x512,Lantern. Object held upright; grip point at the centre of the canvas.,P1
+lollipop.png,hand,512x512,Lollipop. Object held upright; grip point at the centre of the canvas.,P1
+balloon.png,hand,512x512,Balloon. Object held upright; grip point at the centre of the canvas.,P1
+tulip.png,hand,512x512,Tulip. Object held upright; grip point at the centre of the canvas.,P1
+candy_bag.png,hand,512x512,Candy Bag. Object held upright; grip point at the centre of the canvas. Event item: gourd.,P2
+mittens.png,hand,512x512,Mittens. Object held upright; grip point at the centre of the canvas. Event item: frost.,P2
+bouquet.png,hand,512x512,Bouquet. Object held upright; grip point at the centre of the canvas. Event item: bloom.,P2
+backpack.png,bag,512x512,"Backpack. Front view, centred. (bat_wings/butterfly: spread wings, drawn as if behind the cat.)",P1
+purse.png,bag,512x512,"Coin Purse. Front view, centred. (bat_wings/butterfly: spread wings, drawn as if behind the cat.)",P1
+basket.png,bag,512x512,"Picnic Basket. Front view, centred. (bat_wings/butterfly: spread wings, drawn as if behind the cat.)",P1
+bat_wings.png,bag,512x512,"Bat Wings. Front view, centred. (bat_wings/butterfly: spread wings, drawn as if behind the cat.) Event item: gourd.",P2
+butterfly.png,bag,512x512,"Butterfly. Front view, centred. (bat_wings/butterfly: spread wings, drawn as if behind the cat.) Event item: bloom.",P2
+sneakers.png,shoes,512x512,"Sneakers. ONE shoe, side view, toe pointing RIGHT. The app mirrors it for the other foot.",P1
+boots.png,shoes,512x512,"Boots. ONE shoe, side view, toe pointing RIGHT. The app mirrors it for the other foot.",P1
+ballet.png,shoes,512x512,"Ballet Shoes. ONE shoe, side view, toe pointing RIGHT. The app mirrors it for the other foot.",P1
+socks.png,shoes,512x512,"Socks. ONE shoe, side view, toe pointing RIGHT. The app mirrors it for the other foot.",P1
+skates.png,shoes,512x512,"Ice Skates. ONE shoe, side view, toe pointing RIGHT. The app mirrors it for the other foot. Event item: frost.",P2
+flipflops.png,shoes,512x512,"Flip-flops. ONE shoe, side view, toe pointing RIGHT. The app mirrors it for the other foot. Event item: sunny.",P2
+milk.png,treat,512x512,Milk (shop treat).,P1
+fish.png,treat,512x512,Fish Snack (shop treat).,P1
+sushi.png,treat,512x512,Sushi (shop treat).,P1
+cake.png,treat,512x512,Party Cake (shop treat).,P1
+streak_freeze.png,treat,512x512,Streak Freeze (shop treat).,P1
+coin.png,currency,512x512,Gold coin with a paw print.,P1
+gem.png,currency,512x512,Blue diamond gem.,P1
+chest.png,ui,512x512,Wooden treasure chest (daily chest).,P1
+water.png,ui,512x512,Glass of water.,P1
+token_candy.png,event token,512x512,Wrapped candy (Halloween event).,P2
+token_snow.png,event token,512x512,Snowflake (winter event).,P2
+token_petal.png,event token,512x512,Pink sakura petal (spring event).,P2
+token_shell.png,event token,512x512,Sea shell (summer event).,P2
+deco_tree.png,scene,512x512,Round leafy park tree.,P2
+deco_pine.png,scene,512x512,Pine tree.,P2
+deco_bush.png,scene,512x512,Flower bush.,P2
+deco_snowman.png,scene,512x512,Snowman.,P2
+deco_sunflower.png,scene,512x512,Sunflower.,P2
+deco_lamp.png,scene,512x512,"Park street lamp, warm light.",P2
+deco_bat.png,scene,512x512,Small cute bat.,P2
+deco_cloud.png,scene,512x512,Fluffy cloud.,P2
