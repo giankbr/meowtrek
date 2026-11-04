@@ -171,5 +171,6 @@ struct LooksView: View {
                 Button("Cancel", role: .cancel) { name = "" }
             }
         }
+        .presentationBackground(Color.cream)
     }
 }

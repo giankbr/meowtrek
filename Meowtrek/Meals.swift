@@ -191,6 +191,7 @@ struct MealView: View {
             .fullScreenCover(isPresented: $camera) { CameraPicker { analyze($0) }.ignoresSafeArea() }
             .sheet(isPresented: $showPaywall) { PaywallView() }
         }
+        .presentationBackground(Color.cream)
     }
 
     private func analyze(_ img: UIImage) {

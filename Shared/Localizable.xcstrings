@@ -896,6 +896,16 @@
         }
       }
     },
+    "Background": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latar"
+          }
+        }
+      }
+    },
     "Backpack": {
       "localizations": {
         "id": {
@@ -1782,6 +1792,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mahkota Bunga"
+          }
+        }
+      }
+    },
+    "Format": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format"
           }
         }
       }
@@ -3109,6 +3129,16 @@
         }
       }
     },
+    "Post": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Post"
+          }
+        }
+      }
+    },
     "Privacy": {
       "localizations": {
         "id": {
@@ -3629,12 +3659,32 @@
         }
       }
     },
+    "Show name": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilkan nama"
+          }
+        }
+      }
+    },
     "Show owned": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Tampilkan yang dimiliki"
+          }
+        }
+      }
+    },
+    "Show stats": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilkan statistik"
           }
         }
       }
@@ -3889,12 +3939,42 @@
         }
       }
     },
+    "Sticker": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stiker"
+          }
+        }
+      }
+    },
+    "Sticker puts your cat on top of your own Instagram photo or video.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stiker menaruh kucingmu di atas foto atau video Instagram-mu sendiri."
+          }
+        }
+      }
+    },
     "Stone Bridge": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Jembatan Batu"
+          }
+        }
+      }
+    },
+    "Story": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Story"
           }
         }
       }
@@ -4255,6 +4335,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Naik %lld%% dari minggu lalu"
+          }
+        }
+      }
+    },
+    "Use a photo": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pakai foto"
           }
         }
       }
@@ -4798,6 +4888,9 @@
           }
         }
       }
+    },
+    "meowtrek": {
+      "shouldTranslate": false
     },
     "next stop: %@": {
       "localizations": {

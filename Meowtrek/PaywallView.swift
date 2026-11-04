@@ -106,6 +106,7 @@ struct PaywallView: View {
         }
         .task { if !store.loaded { await store.load() } }
         .onAppear { Telemetry.track("paywall_shown") }
+        .presentationBackground(Color.cream)
     }
 
     private var trialText: String? {

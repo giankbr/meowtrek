@@ -8,7 +8,7 @@ struct HomeView: View {
     @State private var showFeed = false
     @State private var showEvent = false
     @State private var showCoach = false
-    @State private var showShare = false
+    @State private var showShare = ProcessInfo.processInfo.arguments.contains("-share")
     @State private var showPaywall = false
     @State private var personalizing = false
     @State private var showTrek = false
@@ -578,6 +578,7 @@ struct FeedSheet: View {
         .foregroundStyle(Color.ink)
         .padding(20)
         .background(Color.cream)
+        .presentationBackground(Color.cream)
     }
 }
 
@@ -614,13 +615,15 @@ struct InboxView: View {
                             Text("All caught up!").font(.game(20, .black))
                             Text("Walk more to earn rewards.").font(.game(14, .bold)).foregroundStyle(Color.inkSoft)
                         }
+                        .frame(maxWidth: .infinity)
                         .padding(.top, 40)
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .padding(16)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream)
+            .background(Color.cream.ignoresSafeArea())
             .navigationTitle("Rewards")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -629,6 +632,7 @@ struct InboxView: View {
                 }
             }
         }
+        .presentationBackground(Color.cream)
     }
 
     private func reward(_ m: Milestone) -> String {
@@ -691,6 +695,7 @@ struct EventView: View {
                 ContentUnavailableView("No event right now", systemImage: "calendar")
             }
         }
+        .presentationBackground(Color.cream)
     }
 
     private func milestoneRow(_ a: ActiveEvent, _ m: Milestone, tokens: Int) -> some View {
@@ -845,6 +850,7 @@ struct SettingsView: View {
             state.save()
             Notifier.reschedule(state)
         }
+        .presentationBackground(Color.cream)
     }
 }
 

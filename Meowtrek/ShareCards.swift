@@ -1,3 +1,4 @@
+import PhotosUI
 import SwiftUI
 import UIKit
 
@@ -49,88 +50,140 @@ struct ShareData {
     }
 }
 
+enum ShareFormat: String, CaseIterable, Identifiable {
+    case story, post
+    var id: String { rawValue }
+    var title: String { self == .story ? loc("Story") : loc("Post") }
+    var size: CGSize { self == .story ? CGSize(width: 360, height: 640) : CGSize(width: 360, height: 360) }
+}
+
+enum ShareTheme: String, CaseIterable, Identifiable {
+    case auto, peach, meadow, lavender, sky, night, photo
+    var id: String { rawValue }
+    var dark: Bool { self == .night || self == .photo }
+
+    func colors(_ kind: ShareKind) -> [Color] {
+        switch self {
+        case .auto:
+            switch kind {
+            case .today: [Color(hex: 0xFCE3C4), Color(hex: 0xDDEBCF)]
+            case .streak: [Color(hex: 0xFFD6B0), Color(hex: 0xF7B5A0)]
+            case .outfit: [Color(hex: 0xE9E1FA), Color(hex: 0xFCE3EC)]
+            case .journey: [Color(hex: 0xD6ECF7), Color(hex: 0xDDEBCF)]
+            case .trek: [Color(hex: 0xFFE3D3), Color(hex: 0xD6ECF7)]
+            }
+        case .peach: [Color(hex: 0xFFE0C7), Color(hex: 0xF9B9A5)]
+        case .meadow: [Color(hex: 0xE4F1D3), Color(hex: 0xB8D79E)]
+        case .lavender: [Color(hex: 0xEDE5FB), Color(hex: 0xC9B8EE)]
+        case .sky: [Color(hex: 0xDDF0FA), Color(hex: 0xA9D4EC)]
+        case .night, .photo: [Color(hex: 0x2E2447), Color(hex: 0x4A3F8C)]
+        }
+    }
+}
+
+struct ShareStyle {
+    var format: ShareFormat = .story
+    var theme: ShareTheme = .auto
+    var photo: UIImage?
+    var showStats = true
+    var showName = true
+}
+
 struct ShareCard: View {
     let kind: ShareKind
     let data: ShareData
+    var style = ShareStyle()
 
-    private var colors: [Color] {
-        switch kind {
-        case .today: [Color(hex: 0xFCE3C4), Color(hex: 0xDDEBCF)]
-        case .streak: [Color(hex: 0xFFD6B0), Color(hex: 0xF7B5A0)]
-        case .outfit: [Color(hex: 0xE9E1FA), Color(hex: 0xFCE3EC)]
-        case .journey: [Color(hex: 0xD6ECF7), Color(hex: 0xDDEBCF)]
-        case .trek: [Color(hex: 0xFFE3D3), Color(hex: 0xD6ECF7)]
-        }
-    }
+    private var compact: Bool { style.format == .post }
+    private var k: CGFloat { compact ? 0.72 : 1 }
+    private var fg: Color { style.theme.dark ? .white : .ink }
+    private var sub: Color { fg.opacity(style.theme.dark ? 0.75 : 0.6) }
 
     var body: some View {
+        let size = style.format.size
         ZStack {
-            LinearGradient(colors: colors, startPoint: .top, endPoint: .bottom)
-            Circle().fill(.white.opacity(0.35)).frame(width: 300).offset(x: -120, y: -230)
-            Circle().fill(.white.opacity(0.25)).frame(width: 220).offset(x: 140, y: 250)
-
-            VStack(spacing: 14) {
-                (Text("Meow").foregroundStyle(Color.ink) + Text("trek").foregroundStyle(Color.grassDark))
-                    .font(.system(size: 26, weight: .bold, design: .rounded))
-                    .padding(.top, 34)
+            background(size)
+            VStack(spacing: compact ? 8 : 14) {
+                (Text("Meow").foregroundStyle(fg) + Text("trek").foregroundStyle(style.theme.dark ? Color.grassLight : Color.grassDark))
+                    .font(.system(size: 26 * k, weight: .bold, design: .rounded))
+                    .padding(.top, compact ? 16 : 34)
                 Spacer(minLength: 0)
-                headline
+                if style.showStats { headline }
                 if kind == .trek, let t = data.trek {
                     RouteShape(points: t.route)
                         .stroke(t.kind.tint, style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round))
-                        .padding(22)
-                        .frame(height: 220)
+                        .padding(22 * k)
+                        .frame(height: 220 * k)
                         .background(RoundedRectangle(cornerRadius: 26, style: .continuous).fill(.white.opacity(0.75)))
                         .overlay(alignment: .bottomTrailing) {
-                            CatView(outfit: data.outfit, size: 70, mood: .happy, animated: false).offset(x: 10, y: 20)
+                            CatView(outfit: data.outfit, size: 70 * k, mood: .happy, animated: false).offset(x: 10, y: 20)
                         }
+                } else {
+                    CatView(outfit: data.outfit, size: (kind == .outfit ? 210 : 170) * (compact ? 0.66 : 1),
+                            mood: kind == .streak ? .happy : data.mood, animated: false)
+                        .background(Ellipse().fill(.black.opacity(0.07)).frame(width: 150 * k, height: 22 * k)
+                            .offset(y: (kind == .outfit ? 125 : 100) * (compact ? 0.66 : 1)))
                 }
-                if kind != .trek {
-                CatView(outfit: data.outfit, size: kind == .outfit ? 210 : 170, mood: kind == .streak ? .happy : data.mood, animated: false)
-                    .background(Ellipse().fill(.black.opacity(0.07)).frame(width: 150, height: 22).offset(y: kind == .outfit ? 125 : 100))
-                }
-                detail
+                if style.showStats && !compact { detail }
                 Spacer(minLength: 0)
-                Text("walking with \(data.petName) · day \(data.days)")
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Color.ink.opacity(0.55))
-                    .padding(.bottom, 30)
+                Text(style.showName ? loc("walking with \(data.petName) · day \(data.days)") : "meowtrek")
+                    .font(.system(size: 14 * max(k, 0.85), weight: .semibold, design: .rounded))
+                    .foregroundStyle(sub)
+                    .padding(.bottom, compact ? 14 : 30)
             }
-            .padding(.horizontal, 28)
+            .padding(.horizontal, 28 * k)
         }
-        .frame(width: 360, height: 640)
-        .foregroundStyle(Color.ink)
+        .frame(width: size.width, height: size.height)
+        .clipped()
+        .foregroundStyle(fg)
+    }
+
+    @ViewBuilder private func background(_ size: CGSize) -> some View {
+        if style.theme == .photo, let photo = style.photo {
+            Image(uiImage: photo).resizable().scaledToFill().frame(width: size.width, height: size.height).clipped()
+            LinearGradient(colors: [.black.opacity(0.35), .black.opacity(0.05), .black.opacity(0.55)], startPoint: .top, endPoint: .bottom)
+        } else {
+            LinearGradient(colors: style.theme.colors(kind), startPoint: .top, endPoint: .bottom)
+            Circle().fill(.white.opacity(style.theme.dark ? 0.06 : 0.35)).frame(width: 300).offset(x: -120, y: -size.height * 0.36)
+            Circle().fill(.white.opacity(style.theme.dark ? 0.05 : 0.25)).frame(width: 220).offset(x: 140, y: size.height * 0.39)
+            if style.theme == .night {
+                ForEach(0..<10, id: \.self) { i in
+                    Circle().fill(.white.opacity(0.7)).frame(width: CGFloat(2 + i % 3))
+                        .offset(x: CGFloat((i * 67) % 300) - 150, y: CGFloat((i * 53) % Int(size.height * 0.4)) - size.height * 0.45)
+                }
+            }
+        }
     }
 
     @ViewBuilder private var headline: some View {
         switch kind {
         case .today:
             VStack(spacing: 2) {
-                Text(data.steps.formatted()).font(.system(size: 64, weight: .bold, design: .rounded))
+                Text(data.steps.formatted()).font(.system(size: 64 * k, weight: .bold, design: .rounded))
                 Text(data.steps >= data.goal ? "steps · goal smashed!" : "steps today")
-                    .font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
+                    .font(.system(size: 18 * k, weight: .semibold, design: .rounded)).foregroundStyle(sub)
             }
         case .streak:
             VStack(spacing: 2) {
-                Image(systemName: "flame.fill").font(.system(size: 44)).foregroundStyle(Color.tomato)
-                Text("\(data.streak) day\(data.streak == 1 ? "" : "s")").font(.system(size: 56, weight: .bold, design: .rounded))
-                Text("walking streak").font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
+                Image(systemName: "flame.fill").font(.system(size: 44 * k)).foregroundStyle(Color.tomato)
+                Text("\(data.streak) day\(data.streak == 1 ? "" : "s")").font(.system(size: 56 * k, weight: .bold, design: .rounded))
+                Text("walking streak").font(.system(size: 18 * k, weight: .semibold, design: .rounded)).foregroundStyle(sub)
             }
         case .outfit:
             VStack(spacing: 2) {
-                Text("\(data.petName)'s look").font(.system(size: 34, weight: .bold, design: .rounded))
-                Text("of the day").font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
+                Text("\(data.petName)'s look").font(.system(size: 34 * k, weight: .bold, design: .rounded))
+                Text("of the day").font(.system(size: 18 * k, weight: .semibold, design: .rounded)).foregroundStyle(sub)
             }
         case .trek:
             VStack(spacing: 2) {
-                Text(data.trekDistance).font(.system(size: 54, weight: .bold, design: .rounded))
+                Text(data.trekDistance).font(.system(size: 54 * k, weight: .bold, design: .rounded))
                 Text(data.trek.map { "\($0.kind.title.lowercased()) · \(durationText($0.moving))" } ?? "")
-                    .font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
+                    .font(.system(size: 18 * k, weight: .semibold, design: .rounded)).foregroundStyle(sub)
             }
         case .journey:
             VStack(spacing: 2) {
-                Text(data.journey.formatted()).font(.system(size: 52, weight: .bold, design: .rounded))
-                Text("steps walked together").font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
+                Text(data.journey.formatted()).font(.system(size: 52 * k, weight: .bold, design: .rounded))
+                Text("steps walked together").font(.system(size: 18 * k, weight: .semibold, design: .rounded)).foregroundStyle(sub)
             }
         }
     }
@@ -147,13 +200,13 @@ struct ShareCard: View {
                 }
                 .frame(height: 14)
                 Text("\(data.km) · goal \(data.goal.formatted())")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
+                    .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(sub)
             }
             .padding(.horizontal, 20)
         case .streak:
             Text("\(data.petName) hasn't missed a walk. Neither have I.")
                 .font(.system(size: 16, weight: .semibold, design: .rounded)).multilineTextAlignment(.center)
-                .foregroundStyle(Color.ink.opacity(0.65))
+                .foregroundStyle(sub)
         case .outfit:
             HStack(spacing: 8) {
                 ForEach(Slot.allCases.compactMap { data.outfit[$0] }.filter { $0.slot != .fur }.prefix(4), id: \.id) { item in
@@ -165,40 +218,89 @@ struct ShareCard: View {
         case .trek:
             if let t = data.trek {
                 HStack(spacing: 22) {
-                    VStack { Text(paceText(t.pace)).font(.system(size: 22, weight: .bold, design: .rounded)); Text("avg pace").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.55)) }
-                    VStack { Text("\(Int(t.climb))m").font(.system(size: 22, weight: .bold, design: .rounded)); Text("climb").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.55)) }
-                    VStack { Text("\(t.kcal)").font(.system(size: 22, weight: .bold, design: .rounded)); Text("kcal").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.55)) }
+                    stat(paceText(t.pace), "avg pace")
+                    stat("\(Int(t.climb))m", "climb")
+                    stat("\(t.kcal)", "kcal")
                 }
             }
         case .journey:
             VStack(spacing: 4) {
                 Text("Level \(data.level)").font(.system(size: 20, weight: .bold, design: .rounded))
                 if let next = data.nextStop {
-                    Text("next stop: \(next)").font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
+                    Text("next stop: \(next)").font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(sub)
                 }
             }
         }
+    }
+
+    private func stat(_ v: String, _ l: LocalizedStringKey) -> some View {
+        VStack {
+            Text(v).font(.system(size: 22, weight: .bold, design: .rounded))
+            Text(l).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(sub)
+        }
+    }
+}
+
+/// Transparent cut-out for Instagram's sticker layer: the cat and the headline on a white rounded card.
+struct ShareSticker: View {
+    let kind: ShareKind
+    let data: ShareData
+
+    var body: some View {
+        VStack(spacing: 6) {
+            CatView(outfit: data.outfit, size: 130, mood: .happy, animated: false)
+            Group {
+                switch kind {
+                case .today: Text(loc("\(data.steps.formatted()) steps"))
+                case .streak: Text(loc("\(data.streak) day streak"))
+                case .outfit: Text(loc("\(data.petName)'s look"))
+                case .journey: Text(loc("\(data.journey.formatted()) steps"))
+                case .trek: Text(data.trekDistance)
+                }
+            }
+            .font(.system(size: 24, weight: .bold, design: .rounded))
+            Text("meowtrek").font(.system(size: 13, weight: .semibold, design: .rounded)).foregroundStyle(Color.inkSoft)
+        }
+        .foregroundStyle(Color.ink)
+        .padding(.horizontal, 26).padding(.vertical, 18)
+        .background(RoundedRectangle(cornerRadius: 30, style: .continuous).fill(Color.white))
+        .padding(8)
     }
 }
 
 enum ShareOut {
     @MainActor
-    static func render(_ kind: ShareKind, _ data: ShareData) -> UIImage? {
-        let r = ImageRenderer(content: ShareCard(kind: kind, data: data))
+    static func render(_ kind: ShareKind, _ data: ShareData, _ style: ShareStyle) -> UIImage? {
+        let r = ImageRenderer(content: ShareCard(kind: kind, data: data, style: style))
         r.scale = 3
         return r.uiImage
     }
 
-    /// Opens Instagram's story composer with the card as background. Needs a Meta (Facebook) App ID.
     @MainActor
-    static func instagramStory(_ image: UIImage) -> Bool {
+    static func sticker(_ kind: ShareKind, _ data: ShareData) -> UIImage? {
+        let r = ImageRenderer(content: ShareSticker(kind: kind, data: data))
+        r.scale = 3
+        r.isOpaque = false
+        return r.uiImage
+    }
+
+    /// Opens Instagram's story composer. Needs a Meta (Facebook) App ID; returns false so the caller can fall back.
+    @MainActor
+    static func instagram(background: UIImage? = nil, sticker: UIImage? = nil, top: String = "#FCE3C4", bottom: String = "#DDEBCF") -> Bool {
         let appID = AppConfig.facebookAppID
         guard !appID.isEmpty,
               let url = URL(string: "instagram-stories://share?source_application=\(appID)"),
-              UIApplication.shared.canOpenURL(url),
-              let png = image.pngData() else { return false }
-        UIPasteboard.general.setItems([["com.instagram.sharedSticker.backgroundImage": png]],
-                                      options: [.expirationDate: Date().addingTimeInterval(300)])
+              UIApplication.shared.canOpenURL(url) else { return false }
+        var item: [String: Any] = [:]
+        if let png = background?.pngData() { item["com.instagram.sharedSticker.backgroundImage"] = png }
+        if let png = sticker?.pngData() {
+            item["com.instagram.sharedSticker.stickerImage"] = png
+            if background == nil {
+                item["com.instagram.sharedSticker.backgroundTopColor"] = top
+                item["com.instagram.sharedSticker.backgroundBottomColor"] = bottom
+            }
+        }
+        UIPasteboard.general.setItems([item], options: [.expirationDate: Date().addingTimeInterval(300)])
         UIApplication.shared.open(url)
         return true
     }
@@ -209,68 +311,86 @@ struct ShareCardsView: View {
     @Environment(\.dismiss) private var dismiss
     @State var kind: ShareKind = .today
     var trek: Trek? = nil
+    @State private var style = ShareStyle()
+    @State private var pick: PhotosPickerItem?
     @State private var image: UIImage?
     @State private var saved = false
+
+    private let swatches: [ShareTheme] = [.auto, .peach, .meadow, .lavender, .sky, .night]
 
     var body: some View {
         let data = ShareData(state, trek: trek)
         let kinds = ShareKind.allCases.filter { $0 != .trek || trek != nil }
+        let size = style.format.size
+        let scale = min(250 / size.width, 400 / size.height)
         NavigationStack {
-            VStack(spacing: 16) {
-                TabView(selection: $kind) {
-                    ForEach(kinds) { k in
-                        ShareCard(kind: k, data: data)
-                            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-                            .scaleEffect(0.78)
-                            .shadow(color: .black.opacity(0.12), radius: 16, y: 8)
-                            .tag(k)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(height: 520)
-
-                HStack(spacing: 6) {
-                    ForEach(kinds) { k in
-                        Button(k.title) { withAnimation(.snappy) { kind = k } }
-                            .buttonStyle(.chunky(kind == k ? .grass : .paper, text: kind == k ? .white : .ink, radius: 20, padH: 12, padV: 7))
-                    }
-                }
-
-                VStack(spacing: 10) {
-                    Button {
-                        guard let img = ShareOut.render(kind, data) else { return }
-                        Telemetry.track("share_story")
-                        if !ShareOut.instagramStory(img) { image = img }
-                    } label: {
-                        Label("Share to Instagram Story", systemImage: "camera.circle.fill").frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.chunky(Color(hex: 0xD9488F), text: .white, radius: 18, padV: 13))
-
-                    HStack(spacing: 10) {
-                        if let img = ShareOut.render(kind, data) {
-                            ShareLink(item: Image(uiImage: img), preview: SharePreview("Meowtrek", image: Image(uiImage: img))) {
-                                Label("More apps", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(.chunky(.paper, radius: 18, padV: 12))
-                            Button {
-                                UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
-                                Telemetry.track("share_saved")
-                                saved = true
-                                state.show(loc("Saved to Photos"), art: "deco_cloud")
-                            } label: {
-                                Label(saved ? "Saved" : "Save", systemImage: saved ? "checkmark" : "arrow.down.to.line")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(.chunky(.paper, radius: 18, padV: 12))
+            ScrollView {
+                VStack(spacing: 16) {
+                    TabView(selection: $kind) {
+                        ForEach(kinds) { k in
+                            ShareCard(kind: k, data: data, style: style)
+                                .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                                .scaleEffect(scale)
+                                .frame(width: size.width * scale, height: size.height * scale)
+                                .shadow(color: .black.opacity(0.12), radius: 14, y: 6)
+                                .tag(k)
                         }
                     }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    .frame(height: 420)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(kinds) { k in
+                                Button(k.title) { withAnimation(.snappy) { kind = k } }
+                                    .buttonStyle(.chunky(kind == k ? .grass : .paper, text: kind == k ? .white : .ink, radius: 20, padH: 12, padV: 7))
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+
+                    options
+
+                    VStack(spacing: 10) {
+                        HStack(spacing: 10) {
+                            Button { shareInstagram(data, sticker: false) } label: {
+                                Label("Story", systemImage: "camera.circle.fill").frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.chunky(Color(hex: 0xD9488F), text: .white, radius: 18, padV: 13))
+                            Button { shareInstagram(data, sticker: true) } label: {
+                                Label("Sticker", systemImage: "face.smiling").frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.chunky(Color(hex: 0x8B4FD9), text: .white, radius: 18, padV: 13))
+                        }
+                        Text("Sticker puts your cat on top of your own Instagram photo or video.")
+                            .font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+
+                        HStack(spacing: 10) {
+                            if let img = ShareOut.render(kind, data, style) {
+                                ShareLink(item: Image(uiImage: img), preview: SharePreview("Meowtrek", image: Image(uiImage: img))) {
+                                    Label("More apps", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.chunky(.paper, radius: 18, padV: 12))
+                                Button {
+                                    UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
+                                    Telemetry.track("share_saved")
+                                    saved = true
+                                    state.show(loc("Saved to Photos"), art: "deco_cloud")
+                                } label: {
+                                    Label(saved ? "Saved" : "Save", systemImage: saved ? "checkmark" : "arrow.down.to.line")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.chunky(.paper, radius: 18, padV: 12))
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
-                Spacer(minLength: 0)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity)
             }
-            .padding(.top, 8)
             .foregroundStyle(Color.ink)
-            .background(Color.cream)
+            .background(Color.cream.ignoresSafeArea())
             .navigationTitle("Share")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { Button("Done") { dismiss() } }
@@ -278,7 +398,74 @@ struct ShareCardsView: View {
                 ActivitySheet(items: [item.image]).presentationDetents([.medium, .large])
             }
             .onChange(of: kind) { saved = false }
+            .onChange(of: pick) {
+                Task {
+                    if let d = try? await pick?.loadTransferable(type: Data.self), let img = UIImage(data: d) {
+                        style.photo = img.resized(maxSide: 1600)
+                        withAnimation(.snappy) { style.theme = .photo }
+                    }
+                }
+            }
         }
+        .presentationBackground(Color.cream)
+    }
+
+    private var options: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Text("Format").font(.game(13, .semibold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8).frame(width: 84, alignment: .leading)
+                ForEach(ShareFormat.allCases) { f in
+                    Button(f.title) { withAnimation(.snappy) { style.format = f } }
+                        .buttonStyle(.chunky(style.format == f ? .grass : .paper, text: style.format == f ? .white : .ink, radius: 16, padH: 14, padV: 6))
+                }
+                Spacer(minLength: 0)
+            }
+            HStack(spacing: 6) {
+                Text("Background").font(.game(13, .semibold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8).frame(width: 84, alignment: .leading)
+                ForEach(swatches) { t in
+                    Button { withAnimation(.snappy) { style.theme = t } } label: {
+                        Circle().fill(LinearGradient(colors: t.colors(kind), startPoint: .top, endPoint: .bottom))
+                            .frame(width: 24, height: 24)
+                            .overlay(Circle().stroke(style.theme == t ? Color.grassDark : Color.black.opacity(0.08), lineWidth: style.theme == t ? 2.5 : 1).padding(-2))
+                    }
+                    .buttonStyle(SquishStyle())
+                    .accessibilityLabel(t.rawValue)
+                }
+                PhotosPicker(selection: $pick, matching: .images) {
+                    Image(systemName: "photo").font(.system(size: 12, weight: .bold))
+                        .frame(width: 24, height: 24)
+                        .background(Circle().fill(Color.paper))
+                        .overlay(Circle().stroke(style.theme == .photo ? Color.grassDark : Color.black.opacity(0.08), lineWidth: style.theme == .photo ? 2.5 : 1).padding(-2))
+                }
+                .accessibilityLabel(Text("Use a photo"))
+            }
+            Toggle("Show stats", isOn: $style.showStats.animation(.snappy))
+            Toggle("Show name", isOn: $style.showName.animation(.snappy))
+        }
+        .font(.game(14, .semibold))
+        .tint(.grass)
+        .card(padding: 14)
+        .padding(.horizontal, 20)
+    }
+
+    private func shareInstagram(_ data: ShareData, sticker: Bool) {
+        Telemetry.track(sticker ? "share_sticker" : "share_story")
+        if sticker {
+            guard let img = ShareOut.sticker(kind, data) else { return }
+            let c = style.theme.colors(kind).map { hex($0) }
+            if !ShareOut.instagram(sticker: img, top: c[0], bottom: c[1]) { image = img }
+        } else {
+            var story = style
+            story.format = .story
+            guard let img = ShareOut.render(kind, data, story) else { return }
+            if !ShareOut.instagram(background: img) { image = img }
+        }
+    }
+
+    private func hex(_ c: Color) -> String {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(c).getRed(&r, green: &g, blue: &b, alpha: &a)
+        return String(format: "#%02X%02X%02X", Int(r * 255), Int(g * 255), Int(b * 255))
     }
 }
 

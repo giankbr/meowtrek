@@ -460,6 +460,7 @@ struct TrekSummaryView: View {
             .toolbar { Button("Done") { dismiss() } }
             .sheet(isPresented: $share) { ShareCardsView(kind: .trek, trek: trek) }
         }
+        .presentationBackground(Color.cream)
     }
 
     private func metric(_ v: String, _ l: String) -> some View {

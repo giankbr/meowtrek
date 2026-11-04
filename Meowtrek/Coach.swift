@@ -297,6 +297,7 @@ struct CoachView: View {
             }
             .sheet(isPresented: $showPaywall) { PaywallView() }
         }
+        .presentationBackground(Color.cream)
     }
 
     private var engineLabel: String {
