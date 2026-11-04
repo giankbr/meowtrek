@@ -1596,6 +1596,16 @@
         }
       }
     },
+    "Coach · offline mode": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coach · mode offline"
+          }
+        }
+      }
+    },
     "Cocoa": {
       "localizations": {
         "id": {

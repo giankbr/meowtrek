@@ -431,20 +431,28 @@ private struct PetScene: View {
             ArtView(id: decor[1 % decor.count], size: 54, line: 3).modifier(Drift(x: -150, y: 150, pace: pace, speed: 34))
             ArtView(id: decor[2 % decor.count], size: 42, line: 3).modifier(Drift(x: 160, y: 85, pace: pace, speed: 26))
 
-            Ellipse().fill(Color.ink.opacity(0.18)).frame(width: 110, height: 18).offset(y: 168)
-            Button {
-                hop += 1
-                hearts += 1
-            } label: {
-                CatView(outfit: state.outfit, size: 150, mood: pace > 0 ? .happy : CatMood(state.mood), hop: hop, pace: pace)
+            TrailWalk(pace: pace) { d in
+                ZStack {
+                    ZStack {
+                        Ellipse().fill(Color.ink.opacity(0.18)).frame(width: 110, height: 18).offset(y: 168)
+                        Button {
+                            hop += 1
+                            hearts += 1
+                        } label: {
+                            CatView(outfit: state.outfit, size: 150, mood: pace > 0 ? .happy : CatMood(state.mood), hop: hop, pace: pace)
+                        }
+                        .buttonStyle(.plain)
+                        .offset(y: 86)
+                        .sensoryFeedback(.impact(weight: .light), trigger: hop)
+                    }
+                    .scaleEffect(1 - 0.38 * d, anchor: UnitPoint(x: 0.5, y: 0.5 + 177 / 340))
+                    .offset(y: -78 * d)
+
+                    HeartBurst(trigger: hearts).offset(y: 10 - 70 * d)
+
+                    SpeechBubble(text: movingLine ?? state.bubble).offset(y: -22 - 48 * d)
+                }
             }
-            .buttonStyle(.plain)
-            .offset(y: 86)
-            .sensoryFeedback(.impact(weight: .light), trigger: hop)
-
-            HeartBurst(trigger: hearts).offset(y: 10)
-
-            SpeechBubble(text: movingLine ?? state.bubble).offset(y: -22)
 
             topBar.frame(maxHeight: .infinity, alignment: .top)
 
@@ -1052,6 +1060,23 @@ private struct Drift: ViewModifier {
             }
         } else {
             content.offset(x: x, y: y)
+        }
+    }
+}
+
+/// While moving, the cat trots up the path and back; d is 0 at the front of the scene and 1 at the far end.
+private struct TrailWalk<C: View>: View {
+    let pace: Double
+    @ViewBuilder let content: (CGFloat) -> C
+
+    var body: some View {
+        if pace > 0 {
+            TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
+                let t = ctx.date.timeIntervalSinceReferenceDate * (pace > 1.5 ? 0.55 : 0.32)
+                content(CGFloat((1 - cos(t)) / 2) * 0.85)
+            }
+        } else {
+            content(0)
         }
     }
 }

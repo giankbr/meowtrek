@@ -56,17 +56,11 @@ enum Coach {
 
     @MainActor
     static func engine(_ state: AppState) -> CoachEngine? {
+        var chain: [CoachEngine] = []
         let cloud = CloudCoach(state: state)
-        switch state.aiEngine {
-        case "device":
-            if #available(iOS 26.0, *), OnDeviceCoach.isAvailable { return OnDeviceCoach() }
-            return nil
-        case "cloud":
-            return cloudAvailable ? cloud : nil
-        default:
-            if #available(iOS 26.0, *), OnDeviceCoach.isAvailable { return OnDeviceCoach() }
-            return cloudAvailable ? cloud : nil
-        }
+        if state.aiEngine != "cloud", #available(iOS 26.0, *), OnDeviceCoach.isAvailable { chain.append(OnDeviceCoach()) }
+        if state.aiEngine != "device", cloudAvailable { chain.append(cloud) }
+        return FallbackCoach(chain: chain)
     }
 
     @MainActor
@@ -301,8 +295,11 @@ struct CoachView: View {
     }
 
     private var engineLabel: String {
-        guard let engine = Coach.engine(state) else { return loc("AI isn't set up on this device") }
-        return engine is CloudCoach ? loc("AI coach · cloud") : loc("AI coach · on this iPhone")
+        switch (Coach.engine(state) as? FallbackCoach)?.chain.first {
+        case is CloudCoach: return loc("AI coach · cloud")
+        case nil: return loc("Coach · offline mode")
+        default: return loc("AI coach · on this iPhone")
+        }
     }
 
     private var inputBar: some View {
@@ -466,5 +463,76 @@ private struct TipLabelStyle: LabelStyle {
             configuration.icon.foregroundStyle(Color.grass).font(.system(size: 12))
             configuration.title
         }
+    }
+}
+
+// MARK: - Fallback
+
+/// Tries each engine in order; the simulator and devices without Apple Intelligence land on the offline coach.
+struct FallbackCoach: CoachEngine {
+    let chain: [CoachEngine]
+
+    private func attempt<T>(_ run: (CoachEngine) async throws -> T, offline: () throws -> T) async throws -> T {
+        for e in chain {
+            do { return try await run(e) } catch CoachError.limit { throw CoachError.limit } catch { continue }
+        }
+        return try offline()
+    }
+
+    func chat(_ m: [ChatMessage], _ c: CoachContext) async throws -> String {
+        try await attempt({ try await $0.chat(m, c) }, offline: { OfflineCoach.chat(m.last?.content ?? "", c) })
+    }
+
+    func insight(_ c: CoachContext, days: [Int]) async throws -> CoachInsight {
+        try await attempt({ try await $0.insight(c, days: days) }, offline: { OfflineCoach.insight(c, days: days) })
+    }
+
+    func quests(_ c: CoachContext) async throws -> [QuestTemplate] {
+        try await attempt({ try await $0.quests(c) }, offline: { throw CoachError.unavailable })
+    }
+}
+
+enum OfflineCoach {
+    private static func id(_ c: CoachContext) -> Bool { c.locale.hasPrefix("id") }
+
+    static func chat(_ text: String, _ c: CoachContext) -> String {
+        let t = text.lowercased(), idn = id(c)
+        let left = max(0, c.goal - c.todaySteps)
+        let avg = c.weekSteps.reduce(0, +) / max(1, c.weekSteps.count)
+        let best = c.weekSteps.max() ?? 0
+        if t.contains("week") || t.contains("minggu") {
+            return idn
+                ? "Minggu ini rata-rata kita \(avg.formatted()) langkah sehari, paling jauh \(best.formatted()). \(avg >= c.goal ? "Keren, di atas target!" : "Sedikit lagi ke target \(c.goal.formatted()). Jalan sore bareng, yuk?") Meow."
+                : "This week we averaged \(avg.formatted()) steps a day, best day \(best.formatted()). \(avg >= c.goal ? "That's above goal, proud of you!" : "A little short of \(c.goal.formatted()). Evening stroll together?") Meow."
+        }
+        if t.contains("tip") || t.contains("saran") || t.contains("how") || t.contains("gimana") {
+            return idn
+                ? "Coba jalan 10 menit habis makan, naik tangga, atau telepon sambil jalan. Langkah kecil, kumpul jadi banyak!"
+                : "Try a 10 minute walk after meals, take the stairs, or pace during calls. Little steps add up!"
+        }
+        if left == 0 {
+            return idn ? "Target hari ini sudah tercapai! \(c.streak) hari beruntun. Aku bangga, purr." : "Goal done today! \(c.streak) days in a row. I'm so proud, purr."
+        }
+        return idn
+            ? "Hari ini \(c.todaySteps.formatted()) langkah, kurang \(left.formatted()) lagi. Sekitar \(max(1, left / 100)) menit jalan santai. Ayo!"
+            : "We're at \(c.todaySteps.formatted()) steps, \(left.formatted()) to go. About \(max(1, left / 100)) minutes of easy walking. Let's go!"
+    }
+
+    static func insight(_ c: CoachContext, days: [Int]) -> CoachInsight {
+        let idn = id(c)
+        let week = Array(days.suffix(7)), prev = Array(days.dropLast(7).suffix(7))
+        let avg = week.reduce(0, +) / max(1, week.count), pAvg = prev.reduce(0, +) / max(1, prev.count)
+        let hit = week.filter { $0 >= c.goal }.count
+        let up = avg >= pAvg
+        let goal = min(30000, max(2000, (avg + (hit >= 5 ? 1000 : 0)) / 500 * 500))
+        return CoachInsight(
+            headline: idn ? (up ? "Langkahmu naik minggu ini" : "Minggu yang lebih santai") : (up ? "You stepped it up this week" : "A gentler week"),
+            summary: idn
+                ? "Rata-rata \(avg.formatted()) langkah sehari (minggu lalu \(pAvg.formatted())). Target tercapai \(hit) dari 7 hari."
+                : "You averaged \(avg.formatted()) steps a day (last week \(pAvg.formatted())). Goal hit on \(hit) of 7 days.",
+            tips: idn
+                ? ["Jalan 10 menit setelah makan siang", "Pilih tangga daripada lift", "Ajak teman jalan sore"]
+                : ["Walk 10 minutes after lunch", "Take the stairs over the lift", "Invite a friend for an evening walk"],
+            suggestedGoal: goal)
     }
 }
