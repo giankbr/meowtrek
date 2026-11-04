@@ -314,7 +314,14 @@ private struct PetScene: View {
     private enum Phase { case morning, day, sunset, night }
 
     private var phase: Phase {
-        switch state.hour {
+        switch UserDefaults.standard.string(forKey: "phase") {
+        case "morning": return .morning
+        case "day": return .day
+        case "sunset": return .sunset
+        case "night": return .night
+        default: break
+        }
+        return switch state.hour {
         case 5..<10: .morning
         case 10..<16: .day
         case 16..<20: .sunset
@@ -806,7 +813,7 @@ struct SettingsView: View {
                     LabeledContent("Together since", value: state.firstDay.formatted(date: .abbreviated, time: .omitted))
                 }
                 Section("Daily goal") {
-                    Stepper("\(state.goal.formatted()) steps", value: $s.goal, in: 2000...30000, step: 500)
+                    GoalEditor()
                 }
                 Section {
                     Toggle("Walk reminders", isOn: Binding(get: { state.remindersOn }, set: { on in
@@ -898,5 +905,56 @@ private struct SceneButton: View {
             }
         }
         .buttonStyle(SquishStyle())
+    }
+}
+
+struct GoalEditor: View {
+    @Environment(AppState.self) private var state
+
+    private var suggested: Int {
+        let cal = Calendar.current
+        let week = (1...7).map { state.steps.steps(on: cal.date(byAdding: .day, value: -$0, to: .now)!) }
+        let avg = week.reduce(0, +) / 7
+        return min(30000, max(1000, Int((Double(avg) * 1.05 / 250).rounded()) * 250))
+    }
+
+    var body: some View {
+        @Bindable var s = state
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(state.goal.formatted()).font(.game(28, .bold)).contentTransition(.numericText(value: Double(state.goal)))
+                Text("steps a day").font(.game(14, .medium)).foregroundStyle(Color.inkSoft)
+                Spacer()
+                HStack(spacing: 6) {
+                    RoundIconButton(symbol: "minus", size: 34) { set(state.goal - 250) }.disabled(state.goal <= 1000)
+                    RoundIconButton(symbol: "plus", size: 34) { set(state.goal + 250) }.disabled(state.goal >= 30000)
+                }
+            }
+            Slider(value: Binding(get: { Double(state.goal) }, set: { set(Int(($0 / 250).rounded()) * 250) }),
+                   in: 1000...30000)
+                .tint(.grass)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    chip(loc("Suggested \(suggested.formatted())"), suggested)
+                    ForEach([5000, 7500, 10000], id: \.self) { g in chip(g.formatted(), g) }
+                }
+                .padding(.vertical, 2)
+            }
+            Text("Suggested is your last 7-day average plus a little stretch.")
+                .font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+        }
+        .padding(.vertical, 4)
+        .sensoryFeedback(.selection, trigger: state.goal)
+    }
+
+    private func chip(_ title: String, _ g: Int) -> some View {
+        Button(title) { set(g) }
+            .buttonStyle(.chunky(state.goal == g ? .grass : .paper, text: state.goal == g ? .white : .ink, radius: 14, padH: 10, padV: 6))
+            .font(.game(12, .bold))
+            .lineLimit(1)
+    }
+
+    private func set(_ g: Int) {
+        withAnimation(.snappy) { state.goal = min(30000, max(1000, g)) }
     }
 }

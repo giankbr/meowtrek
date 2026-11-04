@@ -29,20 +29,19 @@ struct ClosetView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 10) {
-            Button { dismiss() } label: { Image(systemName: "chevron.left").font(.game(16, .black)) }
-                .buttonStyle(.chunky(.paper, radius: 20, padH: 11, padV: 8))
+        HStack(spacing: 8) {
+            RoundIconButton(symbol: "chevron.left", size: 38) { dismiss() }
             VStack(alignment: .leading, spacing: -2) {
-                Text("Closet").font(.game(28, .black))
-                Text("Tap to wear").font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                Text("Closet").font(.game(26, .black)).lineLimit(1)
+                Text("Tap to wear").font(.game(12, .bold)).foregroundStyle(Color.inkSoft).lineLimit(1)
             }
-            Spacer()
-            Button { showShare = true } label: { Image(systemName: "square.and.arrow.up") }
-                .buttonStyle(.chunky(.paper, padH: 10, padV: 7))
-            Button { showLooks = true } label: { Label("Looks", systemImage: "sparkles") }
-                .buttonStyle(.chunky(.bubble, padH: 10, padV: 7))
-            NavigationLink { ShopView(filter: slot) } label: { Label("Shop", systemImage: "bag.fill") }
-                .buttonStyle(.chunky(.sun, padH: 10, padV: 7))
+            .layoutPriority(-1)
+            Spacer(minLength: 4)
+            RoundIconButton(symbol: "square.and.arrow.up", size: 38) { showShare = true }
+            Button { showLooks = true } label: { Label("Looks", systemImage: "sparkles").lineLimit(1).fixedSize() }
+                .buttonStyle(.chunky(.bubble, padH: 10, padV: 8))
+            NavigationLink { ShopView(filter: slot) } label: { Label("Shop", systemImage: "bag.fill").lineLimit(1).fixedSize() }
+                .buttonStyle(.chunky(.sun, padH: 10, padV: 8))
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)

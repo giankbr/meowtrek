@@ -4039,6 +4039,26 @@
         }
       }
     },
+    "Suggested %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saran %@"
+          }
+        }
+      }
+    },
+    "Suggested is your last 7-day average plus a little stretch.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saran = rata-rata 7 hari terakhirmu plus sedikit tantangan."
+          }
+        }
+      }
+    },
     "Sun Hat": {
       "localizations": {
         "id": {
