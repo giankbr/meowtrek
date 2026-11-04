@@ -12,6 +12,7 @@ struct PaywallView: View {
         ("wand.and.stars", .bubble, loc("AI daily quests"), loc("Quests tuned to your own rhythm")),
         ("bitcoinsign.circle.fill", .pumpkin, loc("1.5× coins"), loc("Every claimed step pays more")),
         ("snowflake", .sky, loc("Free weekly streak freeze"), loc("One freeze every Monday")),
+        ("icloud.fill", .skyDark, loc("Daily iCloud backup"), loc("Restore your cat on any iPhone")),
         ("crown.fill", .tomato, loc("Plus badge"), loc("Show it on your friend card")),
     ]
 

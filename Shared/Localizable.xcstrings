@@ -1416,6 +1416,16 @@
         }
       }
     },
+    "Daily iCloud backup": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup iCloud harian"
+          }
+        }
+      }
+    },
     "Daily quest": {
       "localizations": {
         "id": {
@@ -3275,6 +3285,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pulihkan dari iCloud?"
+          }
+        }
+      }
+    },
+    "Restore your cat on any iPhone": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulihkan kucingmu di iPhone mana pun"
           }
         }
       }
