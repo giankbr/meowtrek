@@ -1,0 +1,919 @@
+{
+ "items": [
+  {
+   "id": "fur_ginger",
+   "name": "Ginger",
+   "slot": "fur",
+   "emoji": "",
+   "price": 0,
+   "currency": "coin",
+   "color": "F2A65A"
+  },
+  {
+   "id": "fur_snow",
+   "name": "Snow",
+   "slot": "fur",
+   "emoji": "",
+   "price": 200,
+   "currency": "coin",
+   "color": "EFE8DE"
+  },
+  {
+   "id": "fur_smoke",
+   "name": "Smoky",
+   "slot": "fur",
+   "emoji": "",
+   "price": 250,
+   "currency": "coin",
+   "color": "A5A2AA"
+  },
+  {
+   "id": "fur_cocoa",
+   "name": "Cocoa",
+   "slot": "fur",
+   "emoji": "",
+   "price": 250,
+   "currency": "coin",
+   "color": "9A6B4F"
+  },
+  {
+   "id": "fur_peach",
+   "name": "Peach",
+   "slot": "fur",
+   "emoji": "",
+   "price": 300,
+   "currency": "coin",
+   "color": "F6C7A6"
+  },
+  {
+   "id": "fur_lilac",
+   "name": "Lilac",
+   "slot": "fur",
+   "emoji": "",
+   "price": 3,
+   "currency": "gem",
+   "color": "C9B6E4"
+  },
+  {
+   "id": "witch_hat",
+   "name": "Witch Hat",
+   "slot": "hat",
+   "emoji": "",
+   "price": 350,
+   "currency": "coin"
+  },
+  {
+   "id": "top_hat",
+   "name": "Top Hat",
+   "slot": "hat",
+   "emoji": "🎩",
+   "price": 300,
+   "currency": "coin"
+  },
+  {
+   "id": "crown",
+   "name": "Crown",
+   "slot": "hat",
+   "emoji": "👑",
+   "price": 6,
+   "currency": "gem"
+  },
+  {
+   "id": "bow",
+   "name": "Ribbon Bow",
+   "slot": "hat",
+   "emoji": "🎀",
+   "price": 120,
+   "currency": "coin"
+  },
+  {
+   "id": "grad_cap",
+   "name": "Grad Cap",
+   "slot": "hat",
+   "emoji": "🎓",
+   "price": 250,
+   "currency": "coin"
+  },
+  {
+   "id": "sun_hat",
+   "name": "Sun Hat",
+   "slot": "hat",
+   "emoji": "👒",
+   "price": 220,
+   "currency": "coin"
+  },
+  {
+   "id": "cap",
+   "name": "Cap",
+   "slot": "hat",
+   "emoji": "🧢",
+   "price": 150,
+   "currency": "coin"
+  },
+  {
+   "id": "mushroom",
+   "name": "Mushroom Cap",
+   "slot": "hat",
+   "emoji": "🍄",
+   "price": 280,
+   "currency": "coin"
+  },
+  {
+   "id": "pumpkin_head",
+   "name": "Pumpkin Head",
+   "slot": "hat",
+   "emoji": "🎃",
+   "price": 0,
+   "currency": "coin",
+   "event": "gourd"
+  },
+  {
+   "id": "snowman_hat",
+   "name": "Snowman",
+   "slot": "hat",
+   "emoji": "⛄",
+   "price": 0,
+   "currency": "coin",
+   "event": "frost"
+  },
+  {
+   "id": "flower_crown",
+   "name": "Flower Crown",
+   "slot": "hat",
+   "emoji": "🌸",
+   "price": 0,
+   "currency": "coin",
+   "event": "bloom"
+  },
+  {
+   "id": "glasses",
+   "name": "Round Glasses",
+   "slot": "eyes",
+   "emoji": "👓",
+   "price": 180,
+   "currency": "coin"
+  },
+  {
+   "id": "shades",
+   "name": "Shades",
+   "slot": "eyes",
+   "emoji": "🕶️",
+   "price": 220,
+   "currency": "coin"
+  },
+  {
+   "id": "goggles",
+   "name": "Goggles",
+   "slot": "eyes",
+   "emoji": "🥽",
+   "price": 260,
+   "currency": "coin"
+  },
+  {
+   "id": "dive_mask",
+   "name": "Diving Mask",
+   "slot": "eyes",
+   "emoji": "🤿",
+   "price": 300,
+   "currency": "coin"
+  },
+  {
+   "id": "scarf",
+   "name": "Scarf",
+   "slot": "neck",
+   "emoji": "🧣",
+   "price": 150,
+   "currency": "coin"
+  },
+  {
+   "id": "bell",
+   "name": "Bell",
+   "slot": "neck",
+   "emoji": "🔔",
+   "price": 120,
+   "currency": "coin"
+  },
+  {
+   "id": "beads",
+   "name": "Beads",
+   "slot": "neck",
+   "emoji": "📿",
+   "price": 200,
+   "currency": "coin"
+  },
+  {
+   "id": "medal",
+   "name": "Medal",
+   "slot": "neck",
+   "emoji": "🏅",
+   "price": 4,
+   "currency": "gem"
+  },
+  {
+   "id": "swim_ring",
+   "name": "Swim Ring",
+   "slot": "neck",
+   "emoji": "🛟",
+   "price": 0,
+   "currency": "coin",
+   "event": "sunny"
+  },
+  {
+   "id": "frog_suit",
+   "name": "Frog Suit",
+   "slot": "body",
+   "emoji": "🐸",
+   "price": 600,
+   "currency": "coin",
+   "color": "8CC56B",
+   "suit": "frog"
+  },
+  {
+   "id": "bear_suit",
+   "name": "Bear Suit",
+   "slot": "body",
+   "emoji": "🐻",
+   "price": 600,
+   "currency": "coin",
+   "color": "A77B5A",
+   "suit": "bear"
+  },
+  {
+   "id": "witch_cloak",
+   "name": "Witch Cloak",
+   "slot": "body",
+   "emoji": "🧥",
+   "price": 450,
+   "currency": "coin",
+   "color": "3E3266",
+   "suit": "cloak"
+  },
+  {
+   "id": "ghost_sheet",
+   "name": "Ghost Sheet",
+   "slot": "body",
+   "emoji": "👻",
+   "price": 300,
+   "currency": "coin",
+   "color": "F4F2F7",
+   "suit": "cloak"
+  },
+  {
+   "id": "wand",
+   "name": "Wand",
+   "slot": "hand",
+   "emoji": "🪄",
+   "price": 300,
+   "currency": "coin"
+  },
+  {
+   "id": "lantern",
+   "name": "Lantern",
+   "slot": "hand",
+   "emoji": "🏮",
+   "price": 250,
+   "currency": "coin"
+  },
+  {
+   "id": "lollipop",
+   "name": "Lollipop",
+   "slot": "hand",
+   "emoji": "🍭",
+   "price": 120,
+   "currency": "coin"
+  },
+  {
+   "id": "balloon",
+   "name": "Balloon",
+   "slot": "hand",
+   "emoji": "🎈",
+   "price": 150,
+   "currency": "coin"
+  },
+  {
+   "id": "tulip",
+   "name": "Tulip",
+   "slot": "hand",
+   "emoji": "🌷",
+   "price": 100,
+   "currency": "coin"
+  },
+  {
+   "id": "candy_bag",
+   "name": "Candy Bag",
+   "slot": "hand",
+   "emoji": "🍬",
+   "price": 0,
+   "currency": "coin",
+   "event": "gourd"
+  },
+  {
+   "id": "mittens",
+   "name": "Mittens",
+   "slot": "hand",
+   "emoji": "🧤",
+   "price": 0,
+   "currency": "coin",
+   "event": "frost"
+  },
+  {
+   "id": "bouquet",
+   "name": "Bouquet",
+   "slot": "hand",
+   "emoji": "💐",
+   "price": 0,
+   "currency": "coin",
+   "event": "bloom"
+  },
+  {
+   "id": "backpack",
+   "name": "Backpack",
+   "slot": "bag",
+   "emoji": "🎒",
+   "price": 300,
+   "currency": "coin"
+  },
+  {
+   "id": "purse",
+   "name": "Coin Purse",
+   "slot": "bag",
+   "emoji": "👛",
+   "price": 180,
+   "currency": "coin"
+  },
+  {
+   "id": "basket",
+   "name": "Picnic Basket",
+   "slot": "bag",
+   "emoji": "🧺",
+   "price": 250,
+   "currency": "coin"
+  },
+  {
+   "id": "bat_wings",
+   "name": "Bat Wings",
+   "slot": "bag",
+   "emoji": "🦇",
+   "price": 0,
+   "currency": "coin",
+   "event": "gourd"
+  },
+  {
+   "id": "butterfly",
+   "name": "Butterfly",
+   "slot": "bag",
+   "emoji": "🦋",
+   "price": 0,
+   "currency": "coin",
+   "event": "bloom"
+  },
+  {
+   "id": "sneakers",
+   "name": "Sneakers",
+   "slot": "shoes",
+   "emoji": "👟",
+   "price": 200,
+   "currency": "coin"
+  },
+  {
+   "id": "boots",
+   "name": "Boots",
+   "slot": "shoes",
+   "emoji": "🥾",
+   "price": 250,
+   "currency": "coin"
+  },
+  {
+   "id": "ballet",
+   "name": "Ballet Shoes",
+   "slot": "shoes",
+   "emoji": "🩰",
+   "price": 300,
+   "currency": "coin"
+  },
+  {
+   "id": "socks",
+   "name": "Socks",
+   "slot": "shoes",
+   "emoji": "🧦",
+   "price": 90,
+   "currency": "coin"
+  },
+  {
+   "id": "skates",
+   "name": "Ice Skates",
+   "slot": "shoes",
+   "emoji": "⛸️",
+   "price": 0,
+   "currency": "coin",
+   "event": "frost"
+  },
+  {
+   "id": "flipflops",
+   "name": "Flip-flops",
+   "slot": "shoes",
+   "emoji": "🩴",
+   "price": 0,
+   "currency": "coin",
+   "event": "sunny"
+  }
+ ],
+ "consumables": [
+  {
+   "id": "milk",
+   "name": "Milk",
+   "emoji": "🥛",
+   "price": 20,
+   "currency": "coin",
+   "food": 15
+  },
+  {
+   "id": "fish",
+   "name": "Fish Snack",
+   "emoji": "🐟",
+   "price": 40,
+   "currency": "coin",
+   "food": 30
+  },
+  {
+   "id": "sushi",
+   "name": "Sushi",
+   "emoji": "🍣",
+   "price": 90,
+   "currency": "coin",
+   "food": 60
+  },
+  {
+   "id": "cake",
+   "name": "Party Cake",
+   "emoji": "🎂",
+   "price": 2,
+   "currency": "gem",
+   "food": 100
+  },
+  {
+   "id": "streak_freeze",
+   "name": "Streak Freeze",
+   "emoji": "🧊",
+   "price": 2,
+   "currency": "gem",
+   "food": 0
+  }
+ ],
+ "events": [
+  {
+   "id": "gourd",
+   "name": "Gourd Night",
+   "icon": "🎃",
+   "token": "candy",
+   "tokenIcon": "🍬",
+   "stepsPerToken": 300,
+   "start": "10-15",
+   "end": "11-10",
+   "decor": [
+    "🎃",
+    "🦇",
+    "🕯️"
+   ],
+   "milestones": [
+    {
+     "tokens": 20,
+     "coins": 0,
+     "gems": 0,
+     "item": "pumpkin_head"
+    },
+    {
+     "tokens": 60,
+     "coins": 100,
+     "gems": 0
+    },
+    {
+     "tokens": 150,
+     "coins": 0,
+     "gems": 0,
+     "item": "candy_bag"
+    },
+    {
+     "tokens": 300,
+     "coins": 0,
+     "gems": 3
+    },
+    {
+     "tokens": 500,
+     "coins": 0,
+     "gems": 0,
+     "item": "bat_wings"
+    }
+   ]
+  },
+  {
+   "id": "frost",
+   "name": "Frost Fair",
+   "icon": "⛄",
+   "token": "snowflakes",
+   "tokenIcon": "❄️",
+   "stepsPerToken": 300,
+   "start": "12-01",
+   "end": "01-15",
+   "decor": [
+    "⛄",
+    "🎄",
+    "❄️"
+   ],
+   "milestones": [
+    {
+     "tokens": 20,
+     "coins": 0,
+     "gems": 0,
+     "item": "snowman_hat"
+    },
+    {
+     "tokens": 80,
+     "coins": 120,
+     "gems": 0
+    },
+    {
+     "tokens": 200,
+     "coins": 0,
+     "gems": 0,
+     "item": "mittens"
+    },
+    {
+     "tokens": 350,
+     "coins": 0,
+     "gems": 3
+    },
+    {
+     "tokens": 600,
+     "coins": 0,
+     "gems": 0,
+     "item": "skates"
+    }
+   ]
+  },
+  {
+   "id": "bloom",
+   "name": "Bloom Walk",
+   "icon": "🌸",
+   "token": "petals",
+   "tokenIcon": "🌸",
+   "stepsPerToken": 300,
+   "start": "03-20",
+   "end": "04-30",
+   "decor": [
+    "🌷",
+    "🌸",
+    "🦋"
+   ],
+   "milestones": [
+    {
+     "tokens": 20,
+     "coins": 0,
+     "gems": 0,
+     "item": "flower_crown"
+    },
+    {
+     "tokens": 80,
+     "coins": 120,
+     "gems": 0
+    },
+    {
+     "tokens": 200,
+     "coins": 0,
+     "gems": 0,
+     "item": "bouquet"
+    },
+    {
+     "tokens": 400,
+     "coins": 0,
+     "gems": 3
+    },
+    {
+     "tokens": 700,
+     "coins": 0,
+     "gems": 0,
+     "item": "butterfly"
+    }
+   ]
+  },
+  {
+   "id": "sunny",
+   "name": "Sunny Trail",
+   "icon": "🌞",
+   "token": "shells",
+   "tokenIcon": "🐚",
+   "stepsPerToken": 300,
+   "start": "07-01",
+   "end": "08-31",
+   "decor": [
+    "🌻",
+    "🏖️",
+    "🐚"
+   ],
+   "milestones": [
+    {
+     "tokens": 30,
+     "coins": 0,
+     "gems": 0,
+     "item": "swim_ring"
+    },
+    {
+     "tokens": 100,
+     "coins": 150,
+     "gems": 0
+    },
+    {
+     "tokens": 250,
+     "coins": 0,
+     "gems": 2
+    },
+    {
+     "tokens": 500,
+     "coins": 0,
+     "gems": 0,
+     "item": "flipflops"
+    }
+   ]
+  }
+ ],
+ "quests": [
+  {
+   "id": "goal",
+   "title": "Goal getter",
+   "icon": "🏁",
+   "kind": "steps",
+   "reward": 50,
+   "fraction": 1.0,
+   "hour": 0,
+   "steps": 0,
+   "count": 0
+  },
+  {
+   "id": "warmup",
+   "title": "Warm-up",
+   "icon": "🐾",
+   "kind": "steps",
+   "reward": 20,
+   "fraction": 0.25,
+   "hour": 0,
+   "steps": 0,
+   "count": 0
+  },
+  {
+   "id": "half",
+   "title": "Halfway there",
+   "icon": "🍃",
+   "kind": "steps",
+   "reward": 30,
+   "fraction": 0.5,
+   "hour": 0,
+   "steps": 0,
+   "count": 0
+  },
+  {
+   "id": "early",
+   "title": "Early paws",
+   "icon": "🌅",
+   "kind": "before",
+   "reward": 30,
+   "fraction": 0,
+   "hour": 9,
+   "steps": 1000,
+   "count": 0
+  },
+  {
+   "id": "lunch",
+   "title": "Lunch loop",
+   "icon": "🥪",
+   "kind": "before",
+   "reward": 30,
+   "fraction": 0,
+   "hour": 14,
+   "steps": 3000,
+   "count": 0
+  },
+  {
+   "id": "evening",
+   "title": "Evening stroll",
+   "icon": "🌆",
+   "kind": "after",
+   "reward": 30,
+   "fraction": 0,
+   "hour": 18,
+   "steps": 1500,
+   "count": 0
+  },
+  {
+   "id": "active5",
+   "title": "Keep moving",
+   "icon": "⏰",
+   "kind": "activeHours",
+   "reward": 40,
+   "fraction": 0,
+   "hour": 0,
+   "steps": 250,
+   "count": 5
+  },
+  {
+   "id": "active8",
+   "title": "Busy paws",
+   "icon": "🐈",
+   "kind": "activeHours",
+   "reward": 60,
+   "fraction": 0,
+   "hour": 0,
+   "steps": 250,
+   "count": 8
+  }
+ ],
+ "landmarks": [
+  {
+   "id": "park",
+   "name": "Park Gate",
+   "emoji": "🌳",
+   "steps": 20000,
+   "coins": 50,
+   "gems": 0
+  },
+  {
+   "id": "lake",
+   "name": "Swan Lake",
+   "emoji": "🦢",
+   "steps": 60000,
+   "coins": 80,
+   "gems": 1
+  },
+  {
+   "id": "bridge",
+   "name": "Stone Bridge",
+   "emoji": "🌉",
+   "steps": 150000,
+   "coins": 120,
+   "gems": 1
+  },
+  {
+   "id": "town",
+   "name": "Old Town",
+   "emoji": "🏘️",
+   "steps": 300000,
+   "coins": 200,
+   "gems": 2
+  },
+  {
+   "id": "light",
+   "name": "Lighthouse",
+   "emoji": "🗼",
+   "steps": 600000,
+   "coins": 300,
+   "gems": 3
+  },
+  {
+   "id": "peak",
+   "name": "Misty Peak",
+   "emoji": "🏔️",
+   "steps": 1000000,
+   "coins": 500,
+   "gems": 5
+  },
+  {
+   "id": "moon",
+   "name": "Moon Garden",
+   "emoji": "🌙",
+   "steps": 2000000,
+   "coins": 1000,
+   "gems": 10
+  }
+ ],
+ "achievements": [
+  {
+   "id": "day10k",
+   "title": "Ten thousand",
+   "icon": "🎯",
+   "detail": "Walk 10,000 steps in a day",
+   "kind": "bestDay",
+   "value": 10000,
+   "coins": 100,
+   "gems": 1
+  },
+  {
+   "id": "day15k",
+   "title": "Marathon paws",
+   "icon": "🏃",
+   "detail": "Walk 15,000 steps in a day",
+   "kind": "bestDay",
+   "value": 15000,
+   "coins": 200,
+   "gems": 2
+  },
+  {
+   "id": "streak3",
+   "title": "On a roll",
+   "icon": "🔥",
+   "detail": "Hit your goal 3 days in a row",
+   "kind": "streak",
+   "value": 3,
+   "coins": 50,
+   "gems": 0
+  },
+  {
+   "id": "streak7",
+   "title": "Week warrior",
+   "icon": "🗓️",
+   "detail": "Hit your goal 7 days in a row",
+   "kind": "streak",
+   "value": 7,
+   "coins": 150,
+   "gems": 1
+  },
+  {
+   "id": "streak30",
+   "title": "Unstoppable",
+   "icon": "⚡",
+   "detail": "Hit your goal 30 days in a row",
+   "kind": "streak",
+   "value": 30,
+   "coins": 500,
+   "gems": 5
+  },
+  {
+   "id": "goal10",
+   "title": "Goal x10",
+   "icon": "✅",
+   "detail": "Hit your goal on 10 days",
+   "kind": "goalDays",
+   "value": 10,
+   "coins": 100,
+   "gems": 1
+  },
+  {
+   "id": "goal50",
+   "title": "Goal x50",
+   "icon": "🏆",
+   "detail": "Hit your goal on 50 days",
+   "kind": "goalDays",
+   "value": 50,
+   "coins": 300,
+   "gems": 3
+  },
+  {
+   "id": "life100k",
+   "title": "100K club",
+   "icon": "🌍",
+   "detail": "Walk 100,000 steps in total",
+   "kind": "lifetime",
+   "value": 100000,
+   "coins": 100,
+   "gems": 1
+  },
+  {
+   "id": "life1m",
+   "title": "Millionaire",
+   "icon": "💫",
+   "detail": "Walk 1,000,000 steps in total",
+   "kind": "lifetime",
+   "value": 1000000,
+   "coins": 500,
+   "gems": 5
+  },
+  {
+   "id": "items10",
+   "title": "Fashionista",
+   "icon": "👗",
+   "detail": "Own 10 items",
+   "kind": "items",
+   "value": 10,
+   "coins": 100,
+   "gems": 1
+  },
+  {
+   "id": "items25",
+   "title": "Collector",
+   "icon": "🧳",
+   "detail": "Own 25 items",
+   "kind": "items",
+   "value": 25,
+   "coins": 300,
+   "gems": 3
+  },
+  {
+   "id": "level5",
+   "title": "Best buddies",
+   "icon": "💞",
+   "detail": "Reach level 5",
+   "kind": "level",
+   "value": 5,
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "level10",
+   "title": "Soulmates",
+   "icon": "💖",
+   "detail": "Reach level 10",
+   "kind": "level",
+   "value": 10,
+   "coins": 400,
+   "gems": 5
+  }
+ ]
+}
