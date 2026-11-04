@@ -225,3 +225,8 @@ Cloudflare: Workers Paid ($5/month) covers 10M requests; KV writes (1M/month inc
 - Rate-limit days are UTC.
 - A Plus transaction JWS is not bound to a device; anyone holding a valid JWS gets Plus limits.
 - Garmin push/ping payload field names (`dailies`, `calendarDate`, `steps`, `callbackURL`, `deregistrations`) come from the Health API spec as publicly described; confirm against the portal docs once the developer account is approved.
+
+### `POST /v1/coach/meal`
+
+Body: `{ context, image: base64 (JPEG/PNG/WebP, ≤ ~1.5 MB), mediaType?: "image/jpeg" }` → `200 { isFood, reaction, tags: string[], balance: 1-5 }`.
+Tags come from `veggies, fruit, protein, grains, dairy, sweets, fried, drink, homemade`. No calorie counting by design. Daily limit: free 1, Plus 20.

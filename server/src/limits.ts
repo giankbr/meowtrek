@@ -1,11 +1,12 @@
 import { today, type Env, type Plan } from "./env";
 
-export type LimitKind = "chat" | "insight" | "quests";
+export type LimitKind = "chat" | "insight" | "quests" | "meal";
 
 export const DAILY_LIMITS: Record<LimitKind, Record<Plan, number>> = {
   chat: { free: 5, plus: 200 },
   insight: { free: 3, plus: 30 },
   quests: { free: 3, plus: 30 },
+  meal: { free: 1, plus: 20 },
 };
 
 const key = (kind: LimitKind, device: string) => `rl:${kind}:${device}:${today()}`;

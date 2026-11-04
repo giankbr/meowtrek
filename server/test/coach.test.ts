@@ -187,3 +187,36 @@ describe("insight", () => {
     expect(await res.json()).toEqual({ error: "ai_unavailable" });
   });
 });
+
+describe("meal", () => {
+  const body = { context, image: "A".repeat(400), mediaType: "image/jpeg" };
+
+  it("rejects non-base64 images", async () => {
+    const res = await setup(makeEnv()).call("/v1/coach/meal", { json: { ...body, image: "not base64 <script>".repeat(10) } });
+    expect(res.status).toBe(400);
+  });
+
+  it("clamps balance, dedupes tags and sends the image", async () => {
+    const parsed = { isFood: true, reaction: "  Wah sayurnya banyak! ", tags: ["veggies", "veggies", "protein"], balance: 9 };
+    const mock = mockClaude({ parsed });
+    const res = await setup(makeEnv(), mock.client).call("/v1/coach/meal", { json: body });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ isFood: true, reaction: "Wah sayurnya banyak!", tags: ["veggies", "protein"], balance: 5 });
+    const req = (mock.parse.mock.calls[0] as unknown[])[0] as { messages: { content: { type: string }[] }[] };
+    expect(req.messages[0].content[0].type).toBe("image");
+  });
+
+  it("neutral result for non-food photos", async () => {
+    const parsed = { isFood: false, reaction: "Itu bukan makanan, meow!", tags: ["fried"], balance: 1 };
+    const res = await setup(makeEnv(), mockClaude({ parsed }).client).call("/v1/coach/meal", { json: body });
+    expect(await res.json()).toEqual({ isFood: false, reaction: "Itu bukan makanan, meow!", tags: [], balance: 3 });
+  });
+
+  it("free plan gets one meal a day", async () => {
+    const env = makeEnv();
+    const parsed = { isFood: true, reaction: "Yum!", tags: [], balance: 3 };
+    const { call } = setup(env, mockClaude({ parsed }).client);
+    expect((await call("/v1/coach/meal", { json: body })).status).toBe(200);
+    expect((await call("/v1/coach/meal", { json: body })).status).toBe(429);
+  });
+});

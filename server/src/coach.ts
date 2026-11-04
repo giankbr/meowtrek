@@ -5,7 +5,7 @@ import * as ai from "./claude";
 import type { AppEnv } from "./env";
 import { consume, remaining, type LimitKind } from "./limits";
 import { resolvePlan } from "./plus";
-import { ChatBody, Device, InsightBody, QuestsBody } from "./schemas";
+import { ChatBody, Device, InsightBody, MealBody, QuestsBody } from "./schemas";
 
 export const coach = new Hono<AppEnv>();
 
@@ -64,4 +64,8 @@ coach.post("/insight", (c) =>
 
 coach.post("/quests", (c) =>
   handle(c, "quests", QuestsBody, (client, { context, localHour }) => ai.quests(client, c.env, context, localHour)),
+);
+
+coach.post("/meal", (c) =>
+  handle(c, "meal", MealBody, (client, { context, image, mediaType }) => ai.meal(client, c.env, context, image, mediaType)),
 );

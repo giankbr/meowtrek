@@ -33,6 +33,13 @@ export const QuestsBody = z.object({
   localHour: z.number().int().min(0).max(23).optional(),
 });
 
+// ~1.5 MB of base64 is plenty for a 1024px JPEG; the app downsizes before upload.
+export const MealBody = z.object({
+  context: Context,
+  image: z.string().min(100).max(2_000_000).regex(/^[A-Za-z0-9+/=\s]+$/, "image must be base64"),
+  mediaType: z.enum(["image/jpeg", "image/png", "image/webp"]).default("image/jpeg"),
+});
+
 export const Device = z.uuid();
 
 // Shapes asked of the model; kept loose because ranges are enforced in code afterwards.
@@ -41,6 +48,14 @@ export const InsightOut = z.object({
   summary: z.string(),
   tips: z.array(z.string()),
   suggestedGoal: z.number().int(),
+});
+
+export const MealTag = z.enum(["veggies", "fruit", "protein", "grains", "dairy", "sweets", "fried", "drink", "homemade"]);
+export const MealOut = z.object({
+  isFood: z.boolean(),
+  reaction: z.string(),
+  tags: z.array(MealTag),
+  balance: z.number().int(),
 });
 
 export const QuestKind = z.enum(["steps", "before", "after", "activeHours"]);
