@@ -1001,7 +1001,17 @@
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rata-rata"
+            "value": "Rata²"
+          }
+        }
+      }
+    },
+    "Avg %@ a day": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rata-rata %@ sehari"
           }
         }
       }
@@ -1092,6 +1102,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Balon"
+          }
+        }
+      }
+    },
+    "Base": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dasar"
           }
         }
       }
@@ -2402,6 +2422,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pencapai target"
+          }
+        }
+      }
+    },
+    "Goal hit %lld/%lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target tercapai %lld/%lld"
+          }
+        }
+      }
+    },
+    "Goal reached": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target tercapai"
           }
         }
       }

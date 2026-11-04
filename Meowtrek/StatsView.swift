@@ -22,6 +22,8 @@ struct StatsView: View {
         let id: Int
         let steps: Int
         let hit: Bool
+        var future = false
+        var current = false
     }
 
     @State private var tab: Tab = .steps
@@ -29,6 +31,7 @@ struct StatsView: View {
     @State private var month = Self.monthStart(.now)
     @State private var selectedDay: Date?
     @Namespace private var rangeNS
+    @State private var pickedX: Double?
 
     private static var cal: Calendar {
         var c = Calendar.current
@@ -101,19 +104,21 @@ struct StatsView: View {
     private var bars: [Bar] {
         let goal = state.goal
         if range == .day {
-            return state.steps.hourly.enumerated().map { h, s in Bar(id: h + 1, steps: s, hit: s >= 250) }
+            let now = cal.component(.hour, from: .now)
+            return state.steps.hourly.enumerated().map { h, s in Bar(id: h + 1, steps: s, hit: s >= 250, future: h > now, current: h == now) }
         }
         if range == .year {
             let elapsed = rangeDays.filter { $0 <= today }
             return (1...12).map { m in
                 let total = elapsed.filter { cal.component(.month, from: $0) == m }
                     .reduce(0) { $0 + state.steps.steps(on: $1) }
-                return Bar(id: m, steps: total, hit: false)
+                let thisMonth = cal.component(.month, from: today)
+                return Bar(id: m, steps: total, hit: false, future: m > thisMonth, current: m == thisMonth)
             }
         }
         return rangeDays.enumerated().map { i, d in
             let s = d <= today ? state.steps.steps(on: d) : 0
-            return Bar(id: i + 1, steps: s, hit: s >= goal)
+            return Bar(id: i + 1, steps: s, hit: s >= goal, future: d > today, current: d == today)
         }
     }
 
@@ -121,7 +126,7 @@ struct StatsView: View {
         switch range {
         case .day: [1, 7, 13, 19]
         case .week: Array(1...7)
-        case .month: [1, 10, 20, rangeDays.count]
+        case .month: [1, 8, 15, 22]
         case .year: Array(1...12)
         }
     }
@@ -163,10 +168,16 @@ struct StatsView: View {
                     Text(total.formatted()).font(.game(38, .black)).contentTransition(.numericText())
                     Text(subtitle).font(.game(14, .bold)).foregroundStyle(Color.inkSoft)
                 }
-                Text(range == .day ? "\(state.remaining.formatted()) to go today"
-                     : "Average \(avg.formatted()) a day · goal hit \(hits) of \(elapsed.count)")
-                    .font(.game(13, .black))
-                    .foregroundStyle(Color.grassDark)
+                HStack(spacing: 6) {
+                    if range == .day {
+                        statChip("flag.checkered", state.remaining == 0 ? loc("Goal reached") : loc("\(state.remaining.formatted()) to go"), .tomato)
+                    } else {
+                        statChip("chart.line.flattrend.xyaxis", loc("Avg \(avg.formatted()) a day"), .grassDark)
+                        if range != .year {
+                            statChip("checkmark.seal.fill", loc("Goal hit \(hits)/\(elapsed.count)"), .sunDark)
+                        }
+                    }
+                }
 
                 if range == .day { ring }
                 chart(avg: avg).padding(.top, 8)
@@ -221,35 +232,90 @@ struct StatsView: View {
     }
 
     private func chart(avg: Int) -> some View {
-        Chart {
-            ForEach(bars) { b in
-                BarMark(x: .value("Day", String(b.id)), y: .value("Steps", b.steps), width: .ratio(0.7))
-                    .foregroundStyle(b.hit ? Color.leaf : Color.leafLight)
-                    .cornerRadius(3)
+        let data = bars
+        let showRules = range == .week || range == .month
+        let top = Double(max(data.map(\.steps).max() ?? 0, showRules ? max(state.goal, avg) : 0, 1)) * 1.18
+        let width = max(4, min(24, 250 / CGFloat(data.count)))
+        let picked = pickedX.map { Int($0.rounded()) }
+        return Chart {
+            ForEach(data) { b in
+                if b.future {
+                    PointMark(x: .value("Day", Double(b.id)), y: .value("Steps", top * 0.012))
+                        .symbolSize(12)
+                        .foregroundStyle(Color.inkSoft.opacity(0.25))
+                } else {
+                    BarMark(x: .value("Day", Double(b.id)), yStart: .value("Base", 0), yEnd: .value("Steps", max(b.steps, Int(top * 0.012))),
+                            width: .fixed(width))
+                        .clipShape(RoundedRectangle(cornerRadius: width / 2, style: .continuous))
+                        .foregroundStyle(b.current ? Color.grassDark : b.hit || range == .year ? Color.grass : Color.grassLight)
+                        .opacity(picked == nil || picked == b.id ? 1 : 0.4)
+                }
             }
-            if range == .week || range == .month {
+            if showRules {
                 RuleMark(y: .value("Goal", state.goal))
-                    .foregroundStyle(Color.inkSoft.opacity(0.6))
-                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
-                    .annotation(position: .top, alignment: .trailing) {
-                        Text("goal").font(.caption2).foregroundStyle(Color.inkSoft)
-                    }
+                    .foregroundStyle(Color.tomato.opacity(0.7))
+                    .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                    .annotation(position: .top, alignment: .trailing, spacing: 3) { rulePill(loc("Goal"), state.goal, .tomato) }
                 RuleMark(y: .value("Average", avg))
-                    .foregroundStyle(Color.leafDark.opacity(0.5))
-                    .annotation(position: .top, alignment: .leading) {
-                        Text("avg").font(.caption2).foregroundStyle(Color.leafDark)
+                    .foregroundStyle(Color.grassDark.opacity(0.5))
+                    .lineStyle(StrokeStyle(lineWidth: 1.5))
+                    .annotation(position: .bottom, alignment: .trailing, spacing: 3) { rulePill(loc("Avg"), avg, .grassDark) }
+            }
+            if let p = picked, let b = data.first(where: { $0.id == p }), !b.future {
+                RuleMark(x: .value("Day", Double(p)))
+                    .foregroundStyle(Color.ink.opacity(0.12))
+                    .annotation(position: .top, spacing: 4, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
+                        VStack(spacing: 1) {
+                            Text(calloutLabel(p)).font(.game(11, .semibold)).foregroundStyle(Color.inkSoft)
+                            Text(b.steps.formatted()).font(.game(15, .bold)).foregroundStyle(Color.ink)
+                        }
+                        .padding(.horizontal, 10).padding(.vertical, 6)
+                        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.paper))
+                        .shadow(color: .black.opacity(0.1), radius: 6, y: 2)
                     }
             }
         }
+        .chartXScale(domain: 0.4...(Double(data.count) + 0.6))
+        .chartYScale(domain: 0...top)
+        .chartXSelection(value: $pickedX)
         .chartXAxis {
-            AxisMarks(values: xMarks.map(String.init)) { v in
+            AxisMarks(values: xMarks.map(Double.init)) { v in
                 AxisValueLabel {
-                    if let i = v.as(String.self).flatMap(Int.init) { Text(xLabel(i)) }
+                    if let i = v.as(Double.self) { Text(xLabel(Int(i))).font(.game(11, .semibold)) }
                 }
             }
         }
         .chartYAxis(.hidden)
-        .frame(height: 200)
+        .frame(height: 210)
+        .sensoryFeedback(.selection, trigger: picked)
+        .onChange(of: range) { pickedX = nil }
+    }
+
+    private func rulePill(_ label: String, _ value: Int, _ tint: Color) -> some View {
+        Text("\(label) \(shortSteps(value))")
+            .font(.game(10, .bold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, 6).padding(.vertical, 2)
+            .background(Capsule().fill(Color.paper))
+            .overlay(Capsule().stroke(tint.opacity(0.3), lineWidth: 1))
+    }
+
+    private func statChip(_ symbol: String, _ text: String, _ tint: Color) -> some View {
+        Label(text, systemImage: symbol)
+            .font(.game(12, .bold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, 10).padding(.vertical, 5)
+            .background(Capsule().fill(tint.opacity(0.12)))
+    }
+
+    private func calloutLabel(_ i: Int) -> String {
+        switch range {
+        case .day: return String(format: "%02d:00", i - 1)
+        case .year: return cal.shortMonthSymbols[i - 1]
+        default:
+            guard i - 1 < rangeDays.count else { return "" }
+            return rangeDays[i - 1].formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated))
+        }
     }
 
     private func activeTime(_ steps: Int) -> String {
