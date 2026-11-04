@@ -6,11 +6,11 @@ enum ShareKind: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .today: "Today"
-        case .streak: "Streak"
-        case .outfit: "Outfit"
-        case .journey: "Journey"
-        case .trek: "Trek"
+        case .today: loc("Today")
+        case .streak: loc("Streak")
+        case .outfit: loc("Outfit")
+        case .journey: loc("Journey")
+        case .trek: loc("Trek")
         }
     }
 }
@@ -254,7 +254,7 @@ struct ShareCardsView: View {
                             Button {
                                 UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
                                 saved = true
-                                state.show("Saved to Photos", art: "deco_cloud")
+                                state.show(loc("Saved to Photos"), art: "deco_cloud")
                             } label: {
                                 Label(saved ? "Saved" : "Save", systemImage: saved ? "checkmark" : "arrow.down.to.line")
                                     .frame(maxWidth: .infinity)

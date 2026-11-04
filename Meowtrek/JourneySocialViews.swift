@@ -12,8 +12,8 @@ struct JourneyView: View {
         let nextIndex = landmarks.firstIndex { $0.steps > walked }
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                ScreenHeader(title: "Journey") {
-                    Tag(text: "Lv \(state.level)", color: .sun, textColor: .ink).scaleEffect(1.3).padding(.trailing, 8)
+                ScreenHeader(title: loc("Journey")) {
+                    Tag(text: loc("Lv \(state.level)"), color: .sun, textColor: .ink).scaleEffect(1.3).padding(.trailing, 8)
                 }
 
                 HStack(spacing: 14) {
@@ -43,9 +43,9 @@ struct JourneyView: View {
                         .font(.game(13, .medium)).foregroundStyle(Color.inkSoft)
                 } else {
                     HStack {
-                        statPill("\(state.treks.treks.count)", "treks")
-                        statPill(state.distanceText(state.treks.totalKm * 1000), "total")
-                        statPill(String(format: "%.1f km", state.treks.longest(.run)), "longest run")
+                        statPill("\(state.treks.treks.count)", loc("treks"))
+                        statPill(state.distanceText(state.treks.totalKm * 1000), loc("total"))
+                        statPill(String(format: "%.1f km", state.treks.longest(.run)), loc("longest run"))
                     }
                     ForEach(state.treks.treks.prefix(5)) { t in
                         Button { opened = t } label: { TrekRow(trek: t) }.buttonStyle(SquishStyle())
@@ -118,7 +118,7 @@ struct JourneyView: View {
                     .frame(width: 130)
             }
             if claimed {
-                Tag(text: "Visited", color: .grass)
+                Tag(text: loc("Visited"), color: .grass)
             } else if reached {
                 Button("Claim") { withAnimation { state.claim(l) } }.buttonStyle(.chunky(.sun, padH: 12, padV: 5))
             }
@@ -141,7 +141,7 @@ struct SocialView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                ScreenHeader(title: "Social") { EmptyView() }
+                ScreenHeader(title: loc("Social")) { EmptyView() }
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 12) {
@@ -149,8 +149,8 @@ struct SocialView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(state.petName).font(.game(22, .black))
                             HStack(spacing: 6) {
-                                Tag(text: "\(shortSteps(me.week)) this week", color: .sky)
-                                Tag(text: "\(me.streak) day streak", color: .pumpkin)
+                                Tag(text: loc("\(shortSteps(me.week)) this week"), color: .sky)
+                                Tag(text: loc("\(me.streak) day streak"), color: .pumpkin)
                             }
                         }
                     }
@@ -192,10 +192,10 @@ struct SocialView: View {
         .alert("Add friend", isPresented: $adding) {
             TextField("Paste their card link", text: $code)
             Button("Paste from clipboard") {
-                if let s = UIPasteboard.general.string, !state.addFriend(from: s) { state.show("No friend card on the clipboard") }
+                if let s = UIPasteboard.general.string, !state.addFriend(from: s) { state.show(loc("No friend card on the clipboard")) }
             }
             Button("Add") {
-                if !state.addFriend(from: code) { state.show("That code didn't work") }
+                if !state.addFriend(from: code) { state.show(loc("That code didn't work")) }
                 code = ""
             }
             Button("Cancel", role: .cancel) { code = "" }

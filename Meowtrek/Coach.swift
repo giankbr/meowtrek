@@ -33,8 +33,8 @@ enum CoachError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .unavailable: "AI isn't available on this device yet."
-        case .limit: "You've used today's free chats."
+        case .unavailable: loc("AI isn't available on this device yet.")
+        case .limit: loc("You've used today's free chats.")
         case .server(let m): m
         }
     }
@@ -208,9 +208,9 @@ struct CloudCoach: CoachEngine {
         if code == 429 { throw CoachError.limit }
         guard (200..<300).contains(code) else {
             let msg = (try? JSONDecoder().decode(ServerError.self, from: data))?.error ?? "server_\(code)"
-            throw CoachError.server(msg == "ai_busy" ? "The coach is napping, try again in a moment."
+            throw CoachError.server(msg == "ai_busy" ? loc("The coach is napping, try again in a moment.")
                                     : msg == "ai_not_configured" ? CoachError.unavailable.localizedDescription
-                                    : "AI coach error (\(msg))")
+                                    : loc("AI coach error (\(msg))"))
         }
         return try JSONDecoder().decode(T.self, from: data)
     }
@@ -250,7 +250,7 @@ struct CoachView: View {
     @State private var error: String?
     @State private var showPaywall = false
 
-    private let starters = ["How am I doing this week?", "Plan an evening walk for me", "I'm feeling lazy today", "Motivate me!"]
+    private let starters = [loc("How am I doing this week?"), loc("Plan an evening walk for me"), loc("I'm feeling lazy today"), loc("Motivate me!")]
 
     var body: some View {
         NavigationStack {
@@ -300,8 +300,8 @@ struct CoachView: View {
     }
 
     private var engineLabel: String {
-        guard let engine = Coach.engine(state) else { return "AI isn't set up on this device" }
-        return engine is CloudCoach ? "AI coach · cloud" : "AI coach · on this iPhone"
+        guard let engine = Coach.engine(state) else { return loc("AI isn't set up on this device") }
+        return engine is CloudCoach ? loc("AI coach · cloud") : loc("AI coach · on this iPhone")
     }
 
     private var inputBar: some View {
@@ -404,7 +404,7 @@ struct InsightCard: View {
                 GameIcon(symbol: "sparkles", tint: .grape, size: 36)
                 Text("AI weekly insight").font(.game(17, .bold))
                 Spacer()
-                if !state.isPlus { Tag(text: "Plus", color: .sun, textColor: .ink) }
+                if !state.isPlus { Tag(text: loc("Plus"), color: .sun, textColor: .ink) }
             }
             if let insight {
                 Text(insight.headline).font(.game(18, .bold))
@@ -417,7 +417,7 @@ struct InsightCard: View {
                     Button("Set goal to \(insight.suggestedGoal.formatted()) steps") {
                         state.goal = insight.suggestedGoal
                         state.save()
-                        state.show("Goal updated", art: "coin")
+                        state.show(loc("Goal updated"), art: "coin")
                     }
                     .buttonStyle(.chunky(.grassLight, text: .grassDark))
                 }

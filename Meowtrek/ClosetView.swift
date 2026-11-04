@@ -95,7 +95,7 @@ struct ClosetView: View {
                     Text(slot.title).font(.game(22, .black))
                     Text(state.outfit[slot]?.name ?? "nothing on").font(.game(13, .bold)).foregroundStyle(Color.inkSoft)
                     Spacer()
-                    Tag(text: "\(items.filter { state.owned.contains($0.id) }.count) yours", color: .grass)
+                    Tag(text: loc("\(items.filter { state.owned.contains($0.id) }.count) yours"), color: .grass)
                 }
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 14) {
                     ForEach(items) { item in

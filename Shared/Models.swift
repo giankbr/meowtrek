@@ -4,7 +4,18 @@ enum Slot: String, CaseIterable, Codable, Identifiable {
     case fur, hat, eyes, neck, body, hand, bag, shoes
 
     var id: String { rawValue }
-    var title: String { rawValue.capitalized }
+    var title: String {
+        switch self {
+        case .fur: loc("Fur")
+        case .hat: loc("Hat")
+        case .eyes: loc("Eyes")
+        case .neck: loc("Neck")
+        case .body: loc("Body")
+        case .hand: loc("Hand")
+        case .bag: loc("Bag")
+        case .shoes: loc("Shoes")
+        }
+    }
     var icon: String {
         switch self {
         case .fur: "pawprint.fill"
@@ -137,8 +148,23 @@ struct GameContent: Codable {
     static let shared: GameContent = {
         guard let url = Bundle.main.url(forResource: "content", withExtension: "json"),
               let data = try? Data(contentsOf: url) else { fatalError("content.json missing from bundle") }
-        do { return try JSONDecoder().decode(GameContent.self, from: data) } catch { fatalError("content.json: \(error)") }
+        do { return try JSONDecoder().decode(GameContent.self, from: localized(data)) } catch { fatalError("content.json: \(error)") }
     }()
+
+    /// Display strings in content.json are English keys; translate them once at load.
+    private static func localized(_ data: Data) -> Data {
+        guard var root = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return data }
+        let fields: Set<String> = ["name", "title", "detail", "token"]
+        for (section, value) in root {
+            guard let list = value as? [[String: Any]] else { continue }
+            root[section] = list.map { entry in
+                var e = entry
+                for f in fields { if let s = e[f] as? String { e[f] = L(s) } }
+                return e
+            }
+        }
+        return (try? JSONSerialization.data(withJSONObject: root)) ?? data
+    }
 }
 
 enum Catalog {

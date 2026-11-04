@@ -1,0 +1,41 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "shouldTranslate": false
+    },
+    "NSHealthShareUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meowtrek reads your steps so your cat can walk with you."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meowtrek membaca langkahmu supaya kucingmu bisa ikut jalan."
+          }
+        }
+      }
+    },
+    "NSHealthUpdateUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meowtrek saves your walks, runs and hikes to Apple Health."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meowtrek menyimpan jalan, lari, dan hiking-mu ke Apple Health."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

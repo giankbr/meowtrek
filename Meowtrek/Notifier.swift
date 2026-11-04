@@ -17,10 +17,10 @@ enum Notifier {
             dc.hour = s.reminderHour
             guard let fire = cal.date(from: dc), fire > now else { continue }
             let content = UNMutableNotificationContent()
-            content.title = "\(s.petName) wants a walk 🐾"
+            content.title = loc("\(s.petName) wants a walk 🐾")
             content.body = offset == 0
-                ? "\(s.remaining.formatted()) steps to go today. The light won't wait."
-                : s.streak > 0 ? "Your streak is \(s.streak) days. Let's keep it going!" : "A short walk makes a happy cat."
+                ? loc("\(s.remaining.formatted()) steps to go today. The light won't wait.")
+                : s.streak > 0 ? loc("Your streak is \(s.streak) days. Let's keep it going!") : loc("A short walk makes a happy cat.")
             content.sound = .default
             center.add(UNNotificationRequest(identifier: "remind-\(offset)", content: content,
                                              trigger: UNCalendarNotificationTrigger(dateMatching: dc, repeats: false)))
@@ -30,8 +30,8 @@ enum Notifier {
             dc.hour = 10
             if let fire = cal.date(from: dc), fire > now {
                 let content = UNMutableNotificationContent()
-                content.title = "\(a.event.icon) \(a.event.name) ends tomorrow"
-                content.body = "Collect your last \(a.event.token) and claim your rewards."
+                content.title = loc("\(a.event.name) ends tomorrow")
+                content.body = loc("Collect your last \(a.event.token) and claim your rewards.")
                 center.add(UNNotificationRequest(identifier: "event-end", content: content,
                                                  trigger: UNCalendarNotificationTrigger(dateMatching: dc, repeats: false)))
             }

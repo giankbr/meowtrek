@@ -23,7 +23,7 @@ struct ShopView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                ScreenHeader(title: "Shop") {
+                ScreenHeader(title: loc("Shop")) {
                     HStack(spacing: 8) {
                         Pill(art: "coin", text: state.coins.formatted())
                         Pill(art: "gem", text: "\(state.gems)")

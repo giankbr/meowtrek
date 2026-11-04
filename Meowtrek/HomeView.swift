@@ -58,7 +58,7 @@ struct HomeView: View {
                                 Text("\(state.petName) reacts · no calorie counting").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                             }
                             Spacer()
-                            if !state.isPlus { Tag(text: "Plus", color: .sun, textColor: .ink) }
+                            if !state.isPlus { Tag(text: loc("Plus"), color: .sun, textColor: .ink) }
                         }
                         .card()
                     }
@@ -119,7 +119,7 @@ struct HomeView: View {
             do {
                 let q = try await engine.quests(ctx)
                 withAnimation(.spring) { state.setAIQuests(q) }
-                state.show("\(state.petName) made today's quests", art: "token_petal")
+                state.show(loc("\(state.petName) made today's quests"), art: "token_petal")
             } catch {
                 state.show(error.localizedDescription)
             }
@@ -177,7 +177,7 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(spacing: 6) {
                         Text(a.event.name).font(.game(18, .black))
-                        Tag(text: "Event", color: .sun, textColor: .ink)
+                        Tag(text: loc("Event"), color: .sun, textColor: .ink)
                     }
                     HStack(spacing: 4) {
                         ArtView(id: a.event.tokenArt, size: 18, line: 1.4)
@@ -413,7 +413,7 @@ private struct PetScene: View {
             HStack(spacing: 8) {
                 HStack(spacing: 6) {
                     Text(state.petName).font(.game(15, .black))
-                    Text(state.mood).font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                    Text(L(state.mood)).font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
                 }
                 .padding(.horizontal, 12).padding(.vertical, 7)
                 .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
@@ -604,21 +604,21 @@ struct InboxView: View {
             ScrollView {
                 VStack(spacing: 12) {
                     if state.claimable > 0 {
-                        row(art: "coin", "Walking coins", "\(state.claimable * 10) unclaimed steps", "+\(state.claimable)") { state.claimSteps() }
+                        row(art: "coin", loc("Walking coins"), loc("\(state.claimable * 10) unclaimed steps"), loc("+\(state.claimable)")) { state.claimSteps() }
                     }
                     ForEach(state.quests.filter { state.isDone($0) && !state.isClaimed($0) }) { q in
-                        row(symbol: q.t.icon, tint: q.t.tint, q.t.title, "Daily quest", "+\(q.t.reward)") { state.claim(q) }
+                        row(symbol: q.t.icon, tint: q.t.tint, q.t.title, loc("Daily quest"), loc("+\(q.t.reward)")) { state.claim(q) }
                     }
                     if state.chestReady {
-                        row(art: "chest", "Daily chest", "All quests done", "+30 +1 gem") { state.openChest() }
+                        row(art: "chest", loc("Daily chest"), loc("All quests done"), loc("+30 +1 gem")) { state.openChest() }
                     }
                     if let a = state.activeEvent {
                         ForEach(a.event.milestones.filter { state.canClaim(a, $0) }) { m in
-                            row(art: m.item ?? a.event.tokenArt, a.event.name, "\(m.tokens) \(a.event.token)", reward(m)) { state.claim(a, m) }
+                            row(art: m.item ?? a.event.tokenArt, a.event.name, loc("\(m.tokens) \(a.event.token)"), reward(m)) { state.claim(a, m) }
                         }
                     }
                     ForEach(state.content.landmarks.filter { state.isReached($0) && !state.isClaimed($0) }) { l in
-                        row(symbol: l.icon, tint: l.tint, l.name, "Landmark reached", reward(l.coins, l.gems)) { state.claim(l) }
+                        row(symbol: l.icon, tint: l.tint, l.name, loc("Landmark reached"), reward(l.coins, l.gems)) { state.claim(l) }
                     }
                     ForEach(state.content.achievements.filter { state.isUnlocked($0) && !state.isClaimed($0) }) { a in
                         row(symbol: a.icon, tint: a.tint, a.title, a.detail, reward(a.coins, a.gems)) { state.claim(a) }
@@ -798,7 +798,7 @@ struct SettingsView: View {
                         Task {
                             let ok = on ? await Notifier.requestAuth() : true
                             state.remindersOn = on && ok
-                            if on && !ok { state.show("Allow notifications in Settings") }
+                            if on && !ok { state.show(loc("Allow notifications in Settings")) }
                             state.save()
                             Notifier.reschedule(state)
                         }

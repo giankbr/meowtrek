@@ -7,7 +7,7 @@ import SwiftUI
 enum TrekKind: String, Codable, CaseIterable, Identifiable {
     case walk, run, hike
     var id: String { rawValue }
-    var title: String { rawValue.capitalized }
+    var title: String { self == .walk ? loc("Walk") : self == .run ? loc("Run") : loc("Hike") }
     var symbol: String {
         switch self {
         case .walk: "figure.walk"
@@ -315,9 +315,9 @@ struct TrekRecordView: View {
                     }
                     TimelineView(.periodic(from: .now, by: 1)) { _ in
                         HStack {
-                            stat(durationText(rec.elapsed), "time")
-                            stat(paceText(rec.currentPace > 0 ? rec.currentPace : rec.avgPace), "pace /km")
-                            stat("\(Int(rec.climb))m", "climb")
+                            stat(durationText(rec.elapsed), loc("time"))
+                            stat(paceText(rec.currentPace > 0 ? rec.currentPace : rec.avgPace), loc("pace /km"))
+                            stat("\(Int(rec.climb))m", loc("climb"))
                         }
                     }
                 }
@@ -347,7 +347,7 @@ struct TrekRecordView: View {
         .onChange(of: rec.splits.count) { _, n in
             guard n > 0 else { return }
             hop += 1
-            state.show("\(n) km! \(paceText(rec.splits.last ?? 0)) /km", art: "coin")
+            state.show(loc("\(n) km! \(paceText(rec.splits.last ?? 0)) /km"), art: "coin")
         }
         .confirmationDialog("Finish this trek?", isPresented: $confirmStop, titleVisibility: .visible) {
             Button("Finish and save") { stop() }
@@ -367,7 +367,7 @@ struct TrekRecordView: View {
 
     private func stop() {
         guard let t = rec.finish() else {
-            state.show("Too short to save")
+            state.show(loc("Too short to save"))
             dismiss()
             return
         }
@@ -414,12 +414,12 @@ struct TrekSummaryView: View {
                         }
                     }
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                        metric(state.distanceText(trek.meters), "distance")
-                        metric(durationText(trek.moving), "time")
-                        metric(paceText(trek.pace), "avg pace")
-                        metric("\(Int(trek.climb))m", "climb")
-                        metric("\(trek.kcal)", "kcal est.")
-                        metric("\(trek.splits.count)", "full km")
+                        metric(state.distanceText(trek.meters), loc("distance"))
+                        metric(durationText(trek.moving), loc("time"))
+                        metric(paceText(trek.pace), loc("avg pace"))
+                        metric("\(Int(trek.climb))m", loc("climb"))
+                        metric("\(trek.kcal)", loc("kcal est."))
+                        metric("\(trek.splits.count)", loc("full km"))
                     }
                     .card()
                     if !trek.splits.isEmpty {

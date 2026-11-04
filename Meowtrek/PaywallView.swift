@@ -7,12 +7,12 @@ struct PaywallView: View {
     @State private var selected: String = "id.gian.meowtrek.plus.yearly"
 
     private let perks: [(String, Color, String, String)] = [
-        ("bubble.left.and.bubble.right.fill", .grape, "Unlimited cat chat", "Talk with your cat coach any time"),
-        ("sparkles", .sun, "Weekly AI insights", "Personal walking report and goal tips"),
-        ("wand.and.stars", .bubble, "AI daily quests", "Quests tuned to your own rhythm"),
-        ("bitcoinsign.circle.fill", .pumpkin, "1.5× coins", "Every claimed step pays more"),
-        ("snowflake", .sky, "Free weekly streak freeze", "One freeze every Monday"),
-        ("crown.fill", .tomato, "Plus badge", "Show it on your friend card"),
+        ("bubble.left.and.bubble.right.fill", .grape, loc("Unlimited cat chat"), loc("Talk with your cat coach any time")),
+        ("sparkles", .sun, loc("Weekly AI insights"), loc("Personal walking report and goal tips")),
+        ("wand.and.stars", .bubble, loc("AI daily quests"), loc("Quests tuned to your own rhythm")),
+        ("bitcoinsign.circle.fill", .pumpkin, loc("1.5× coins"), loc("Every claimed step pays more")),
+        ("snowflake", .sky, loc("Free weekly streak freeze"), loc("One freeze every Monday")),
+        ("crown.fill", .tomato, loc("Plus badge"), loc("Show it on your friend card")),
     ]
 
     var body: some View {
@@ -68,7 +68,7 @@ struct PaywallView: View {
                         guard let p = store.plusProducts.first(where: { $0.id == selected }) else { return }
                         Task {
                             if await store.buy(p), store.isPlus {
-                                state.show("Welcome to Plus!", art: "crown")
+                                state.show(loc("Welcome to Plus!"), art: "crown")
                                 state.celebrate(.confetti)
                                 dismiss()
                             }
@@ -108,7 +108,7 @@ struct PaywallView: View {
     private var trialText: String? {
         guard let p = state.store.plusProducts.first(where: { $0.id == selected }),
               let offer = p.subscription?.introductoryOffer, offer.paymentMode == .freeTrial else { return nil }
-        return "Start \(offer.period.value)-\(unitName(offer.period.unit)) free trial"
+        return offer.period.unit == .week && offer.period.value == 1 ? loc("Start 1-week free trial") : loc("Start free trial")
     }
 
     private func unitName(_ u: Product.SubscriptionPeriod.Unit) -> String {
@@ -137,7 +137,7 @@ struct PaywallView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(yearly ? "Yearly" : "Monthly").font(.game(16, .bold))
-                        if let saving { Tag(text: "Save \(saving)%", color: .tomato) }
+                        if let saving { Tag(text: loc("Save \(saving)%"), color: .tomato) }
                     }
                     if yearly {
                         Text("\(p.displayPrice) / year").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)

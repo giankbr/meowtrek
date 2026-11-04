@@ -9,11 +9,11 @@ struct DailyQuest: Identifiable {
     var unit: String { t.kind == .activeHours ? "active hours" : t.kind == .water ? "glasses" : "steps" }
     var detail: String {
         switch t.kind {
-        case .steps: "Walk \(target.formatted()) steps"
-        case .before: "\(target.formatted()) steps before \(t.hour):00"
-        case .after: "\(target.formatted()) steps after \(t.hour):00"
-        case .activeHours: "\(target) hours with \(t.steps)+ steps"
-        case .water: "Drink \(target) glasses of water"
+        case .steps: loc("Walk \(target.formatted()) steps")
+        case .before: loc("\(target.formatted()) steps before \(t.hour):00")
+        case .after: loc("\(target.formatted()) steps after \(t.hour):00")
+        case .activeHours: loc("\(target) hours with \(t.steps)+ steps")
+        case .water: loc("Drink \(target) glasses of water")
         }
     }
 }
@@ -95,7 +95,7 @@ final class AppState {
         guard !creditedTx.contains(tx) else { return false }
         creditedTx.insert(tx)
         gems += n
-        show("+\(n) gems", art: "gem")
+        show(loc("+\(n) gems"), art: "gem")
         celebrate(.gems)
         save()
         return true
@@ -156,9 +156,9 @@ final class AppState {
 
     private func rewardText(coins c: Int, gems g: Int, item: String? = nil) -> String {
         var parts: [String] = []
-        if c > 0 { parts.append("+\(c) coins") }
-        if g > 0 { parts.append("+\(g) gem\(g == 1 ? "" : "s")") }
-        if let item, let it = Catalog.item(item) { parts.append("\(it.name) unlocked") }
+        if c > 0 { parts.append(loc("+\(c) coins")) }
+        if g > 0 { parts.append(g == 1 ? loc("+1 gem") : loc("+\(g) gems")) }
+        if let item, let it = Catalog.item(item) { parts.append(loc("\(it.name) unlocked")) }
         return parts.joined(separator: " · ")
     }
 
@@ -220,7 +220,7 @@ final class AppState {
             if !hitGoal(y), hitGoal(dayBefore), streakFreezes > 0 {
                 streakFreezes -= 1
                 frozenDays.insert(key(y))
-                show("Streak freeze saved your streak", art: "streak_freeze")
+                show(loc("Streak freeze saved your streak"), art: "streak_freeze")
             }
         }
         claimedDay = dayKey
@@ -236,7 +236,7 @@ final class AppState {
         guard isPlus, freezeWeek != week else { return }
         freezeWeek = week
         streakFreezes += 1
-        show("Plus: +1 streak freeze", art: "streak_freeze")
+        show(loc("Plus: +1 streak freeze"), art: "streak_freeze")
     }
 
     func claimSteps() {
@@ -244,7 +244,7 @@ final class AppState {
         let n = isPlus ? claimable * 3 / 2 : claimable
         coins += n
         claimedSteps += claimable * 10
-        show("+\(n) coins", art: "coin")
+        show(loc("+\(n) coins"), art: "coin")
         celebrate(.coins)
         save()
     }
@@ -271,7 +271,7 @@ final class AppState {
         let g = lv - rewardedLevel
         gems += g
         rewardedLevel = lv
-        show("Level \(lv)! +\(g) gem\(g == 1 ? "" : "s")", art: "gem")
+        show(loc("Level \(lv)! +\(g) gems"), art: "gem")
         celebrate(.confetti)
         save()
     }
@@ -292,13 +292,13 @@ final class AppState {
     var bubble: String {
         let left = remaining.formatted()
         switch mood {
-        case "Hungry": return "My tummy's rumbling… a snack?"
-        case "Proud": return "We did it! \(today.formatted()) steps!"
-        case "Sleepy": return remaining > 0 ? "\(left) to go… or tomorrow?" : "Zzz…"
+        case "Hungry": return loc("My tummy's rumbling… a snack?")
+        case "Proud": return loc("We did it! \(today.formatted()) steps!")
+        case "Sleepy": return remaining > 0 ? loc("\(left) to go… or tomorrow?") : loc("Zzz…")
         default:
-            if hour >= 16 { return "\(left) to go. The light won't wait." }
-            if hour < 11 { return "Morning! \(left) steps today?" }
-            return "\(left) to go. Walk with me?"
+            if hour >= 16 { return loc("\(left) to go. The light won't wait.") }
+            if hour < 11 { return loc("Morning! \(left) steps today?") }
+            return loc("\(left) to go. Walk with me?")
         }
     }
 
@@ -307,7 +307,7 @@ final class AppState {
         inventory[c.id, default: 0] -= 1
         storedFullness = min(100, fullness + Double(c.food))
         fullnessAt = .now
-        show("\(petName) loved the \(c.name)", art: c.id)
+        show(loc("\(petName) loved the \(c.name)"), art: c.id)
         save()
     }
 
@@ -320,7 +320,7 @@ final class AppState {
         if item.currency == .coin { coins -= item.price } else { gems -= item.price }
         owned.insert(item.id)
         equipped[item.slot] = item.id
-        show("\(item.name) is yours", art: item.id)
+        show(loc("\(item.name) is yours"), art: item.id)
         celebrate(.confetti)
         save()
     }
@@ -329,7 +329,7 @@ final class AppState {
         guard balance(c.currency) >= c.price else { return }
         if c.currency == .coin { coins -= c.price } else { gems -= c.price }
         if c.id == "streak_freeze" { streakFreezes += 1 } else { inventory[c.id, default: 0] += 1 }
-        show("+1 \(c.name)", art: c.id)
+        show(loc("+1 \(c.name)"), art: c.id)
         save()
     }
 
@@ -424,7 +424,7 @@ final class AppState {
         guard isDone(q), !isClaimed(q) else { return }
         coins += q.t.reward
         claimed.insert(q.id)
-        show("\(q.t.title) · +\(q.t.reward) coins", art: "coin")
+        show(loc("\(q.t.title) · +\(q.t.reward) coins"), art: "coin")
         celebrate(.coins)
         save()
     }
@@ -436,7 +436,7 @@ final class AppState {
         guard chestReady else { return }
         grant(coins: 30, gems: 1)
         claimed.insert("chest")
-        show("Chest opened · +30 coins · +1 gem", art: "chest")
+        show(loc("Chest opened · +30 coins · +1 gem"), art: "chest")
         celebrate(.confetti)
         save()
     }
@@ -584,10 +584,10 @@ final class AppState {
               f.id != profileID else { return false }
         if let i = friends.firstIndex(where: { $0.id == f.id }) {
             friends[i] = f
-            show("\(f.name) updated", art: f.fur)
+            show(loc("\(f.name) updated"), art: f.fur)
         } else {
             friends.append(f)
-            show("\(f.name) joined your pack", art: f.fur)
+            show(loc("\(f.name) joined your pack"), art: f.fur)
             celebrate(.confetti)
         }
         save()
@@ -605,7 +605,7 @@ final class AppState {
         let c = isPlus ? t.coins * 3 / 2 : t.coins
         guard c > 0 else { return }
         coins += c
-        show("\(t.kind.title) done · +\(c) coins", art: "coin")
+        show(loc("\(t.kind.title) done · +\(c) coins"), art: "coin")
         celebrate(.confetti)
         save()
     }
@@ -613,7 +613,7 @@ final class AppState {
     func shareMeal() {
         storedFullness = min(100, fullness + 15)
         fullnessAt = .now
-        show("\(petName) shared your meal · +15% food", art: "fish")
+        show(loc("\(petName) shared your meal · +15% food"), art: "fish")
         save()
     }
 
@@ -622,7 +622,7 @@ final class AppState {
     func addWater() {
         if waterDay != dayKey { waterDay = dayKey; water = 0 }
         water += 1
-        if water == waterGoal { show("Water goal reached!", art: "water"); celebrate(.confetti) }
+        if water == waterGoal { show(loc("Water goal reached!"), art: "water"); celebrate(.confetti) }
         save()
         Task { await WaterHealth.log() }
     }

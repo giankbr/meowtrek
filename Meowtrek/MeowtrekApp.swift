@@ -13,7 +13,7 @@ struct MeowtrekApp: App {
                 .fontDesign(.rounded)
                 .onOpenURL { url in
                     if url.host == "friend", !state.addFriend(from: url.absoluteString) {
-                        state.show("That friend link didn't work")
+                        state.show(loc("That friend link didn't work"))
                     }
                 }
                 .onChange(of: scenePhase, initial: true) { _, phase in

@@ -34,8 +34,8 @@ enum LinkError: LocalizedError {
     case notConfigured(String), cancelled, failed(String)
     var errorDescription: String? {
         switch self {
-        case .notConfigured(let what): "\(what) isn't set up yet."
-        case .cancelled: "Cancelled."
+        case .notConfigured(let what): loc("\(what) isn't set up yet.")
+        case .cancelled: loc("Cancelled.")
         case .failed(let m): m
         }
     }
@@ -207,11 +207,11 @@ struct DevicesSection: View {
     @State private var garmin = Garmin.linked
 
     var body: some View {
-        row("heart.fill", .tomato, "Apple Health", state.steps.source == .health ? "Connected" : "Not connected", connected: state.steps.source == .health) {
+        row("heart.fill", .tomato, "Apple Health", state.steps.source == .health ? loc("Connected") : loc("Not connected"), connected: state.steps.source == .health) {
             Task { await state.steps.load(); state.refresh() }
         }
-        row("applewatch", .ink, "Apple Watch", "Syncs through Apple Health · open Meowtrek on your watch", connected: state.steps.source == .health, action: nil)
-        row("figure.walk.motion", .sky, "Fitbit", fitbit ? "Connected" : "Sign in to sync steps", connected: fitbit) {
+        row("applewatch", .ink, "Apple Watch", loc("Syncs through Apple Health · open Meowtrek on your watch"), connected: state.steps.source == .health, action: nil)
+        row("figure.walk.motion", .sky, "Fitbit", fitbit ? loc("Connected") : loc("Sign in to sync steps"), connected: fitbit) {
             if fitbit {
                 Fitbit.disconnect(); state.steps.removeExternal("fitbit"); fitbit = false
             } else {
@@ -222,7 +222,7 @@ struct DevicesSection: View {
                 }
             }
         }
-        row("location.north.circle.fill", .grassDark, "Garmin", garmin ? "Connected" : "Sign in to sync steps", connected: garmin) {
+        row("location.north.circle.fill", .grassDark, "Garmin", garmin ? loc("Connected") : loc("Sign in to sync steps"), connected: garmin) {
             if garmin {
                 Garmin.disconnect(device: state.profileID); state.steps.removeExternal("garmin"); garmin = false
             } else {
@@ -243,7 +243,7 @@ struct DevicesSection: View {
             do {
                 try await work()
                 state.refresh()
-                state.show("\(name.capitalized) connected", art: "coin")
+                state.show(loc("\(name.capitalized) connected"), art: "coin")
             } catch LinkError.cancelled {
             } catch {
                 state.show(error.localizedDescription)
@@ -263,7 +263,7 @@ struct DevicesSection: View {
             if busy == title.lowercased() {
                 ProgressView()
             } else if let action {
-                Button(connected && title != "Apple Health" ? "Disconnect" : connected ? "Refresh" : "Connect", action: action)
+                Button(connected && title != "Apple Health" ? loc("Disconnect") : connected ? loc("Refresh") : loc("Connect"), action: action)
                     .font(.game(13, .bold))
                     .buttonStyle(.borderless)
                     .tint(connected && title != "Apple Health" ? .tomato : .grassDark)

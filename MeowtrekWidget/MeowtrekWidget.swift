@@ -37,7 +37,7 @@ struct MeowtrekWidgetView: View {
             .gaugeStyle(.accessoryCircularCapacity)
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 2) {
-                Text("\(s.petName) · \(s.mood)").font(.caption2.weight(.semibold))
+                Text("\(s.petName) · \(L(s.mood))").font(.caption2.weight(.semibold))
                 Text("\(s.stepsToday.formatted()) steps").font(.headline)
                 ProgressView(value: s.progress)
             }
@@ -45,7 +45,7 @@ struct MeowtrekWidgetView: View {
             HStack(spacing: 14) {
                 CatView(outfit: s.outfit, size: 100)
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("\(s.petName) · \(s.mood)").font(.caption.weight(.semibold)).foregroundStyle(Color.inkSoft)
+                    Text("\(s.petName) · \(L(s.mood))").font(.caption.weight(.semibold)).foregroundStyle(Color.inkSoft)
                     Text(s.stepsToday.formatted()).font(.system(size: 30, weight: .bold))
                     Text("/ \(s.goal.formatted()) steps").font(.caption).foregroundStyle(Color.inkSoft)
                     bar

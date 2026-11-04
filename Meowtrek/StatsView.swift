@@ -41,7 +41,7 @@ struct StatsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                ScreenHeader(title: "Stats") {
+                ScreenHeader(title: loc("Stats")) {
                     HStack(spacing: 4) {
                         Image(systemName: "flame.fill").foregroundStyle(Color.pumpkin)
                         Text("\(state.streak)").font(.game(16, .black))
@@ -71,7 +71,7 @@ struct StatsView: View {
                 Button { withAnimation(.snappy) { tab = t } } label: {
                     VStack(spacing: 2) {
                         Image(systemName: t.icon).font(.system(size: 15, weight: .black))
-                        Text(t.rawValue).font(.game(11, .black)).lineLimit(1)
+                        Text(L(t.rawValue)).font(.game(11, .black)).lineLimit(1)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -173,10 +173,10 @@ struct StatsView: View {
             .card()
 
             HStack {
-                metric("map.fill", .sky, state.distanceText(meters), "distance\(est)")
-                metric("timer", .grape, activeTime(total), "active · est.")
-                metric("flame.fill", .tomato, kcal.formatted(), "kcal\(est)")
-                metric("stairs", .grass, state.steps.source == .health ? "\(flights)" : "–", "flights")
+                metric("map.fill", .sky, state.distanceText(meters), loc("distance\(est)"))
+                metric("timer", .grape, activeTime(total), loc("active · est."))
+                metric("flame.fill", .tomato, kcal.formatted(), loc("kcal\(est)"))
+                metric("stairs", .grass, state.steps.source == .health ? "\(flights)" : "–", loc("flights"))
             }
             .card(padding: 12)
 
@@ -188,7 +188,7 @@ struct StatsView: View {
         HStack(spacing: 4) {
             ForEach(Range.allCases, id: \.self) { r in
                 Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { range = r } } label: {
-                    Text(r.rawValue).font(.game(14, .black))
+                    Text(L(r.rawValue)).font(.game(14, .black))
                         .padding(.horizontal, 14).padding(.vertical, 7)
                         .background(Capsule().fill(range == r ? Color.sun : .clear))
                         .overlay(Capsule().stroke(range == r ? Color.ink : .clear, lineWidth: 2.5))
@@ -428,12 +428,12 @@ struct StatsView: View {
         let bestWeek = weeks.max { $0.value < $1.value }
 
         return VStack(spacing: 12) {
-            record("trophy.fill", .sun, "Best day", best.map { "\($0.value.formatted()) steps" } ?? "–",
+            record("trophy.fill", .sun, loc("Best day"), best.map { "\($0.value.formatted()) steps" } ?? "–",
                    best.map { $0.key.formatted(date: .abbreviated, time: .omitted) } ?? "")
-            record("calendar", .sky, "Best week", bestWeek.map { "\($0.value.formatted()) steps" } ?? "–",
+            record("calendar", .sky, loc("Best week"), bestWeek.map { "\($0.value.formatted()) steps" } ?? "–",
                    bestWeek.map { "Week of \($0.key.formatted(date: .abbreviated, time: .omitted))" } ?? "")
-            record("flame.fill", .pumpkin, "Longest streak", "\(state.longestStreak) days", "Current: \(state.streak) days · \(state.streakFreezes) freezes")
-            record("globe.asia.australia.fill", .grass, "All time", "\(daily.values.reduce(0, +).formatted()) steps", "\(daily.count) days tracked")
+            record("flame.fill", .pumpkin, loc("Longest streak"), "\(state.longestStreak) days", loc("Current: \(state.streak) days · \(state.streakFreezes) freezes"))
+            record("globe.asia.australia.fill", .grass, loc("All time"), "\(daily.values.reduce(0, +).formatted()) steps", loc("\(daily.count) days tracked"))
 
             Text("Badges").font(.game(22, .black)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
@@ -449,7 +449,7 @@ struct StatsView: View {
             Text(a.title).font(.game(15, .black))
             Text(a.detail).font(.game(11, .bold)).foregroundStyle(Color.inkSoft).multilineTextAlignment(.center).lineLimit(2)
             if claimed {
-                Tag(text: "Claimed", color: .grass)
+                Tag(text: loc("Claimed"), color: .grass)
             } else if unlocked {
                 Button("Claim") { withAnimation { state.claim(a) } }.buttonStyle(.chunky(.sun, padH: 12, padV: 5))
             } else {
