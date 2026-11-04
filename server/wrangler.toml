@@ -1,0 +1,18 @@
+name = "meowtrek-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+CLAUDE_MODEL = "claude-opus-5-5"
+APPLE_BUNDLE_ID = "id.gian.meowtrek"
+APPLE_ENVIRONMENT = "Sandbox"
+# APPLE_APP_ID = "1234567890"      # required when APPLE_ENVIRONMENT = "Production"
+ALLOW_UNVERIFIED_PLUS = "false"     # dev only; see README
+
+[[kv_namespaces]]
+binding = "KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+[observability]
+enabled = true
