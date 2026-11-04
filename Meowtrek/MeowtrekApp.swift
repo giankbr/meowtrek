@@ -23,6 +23,7 @@ struct MeowtrekApp: App {
                         Task {
                             await state.steps.load()
                             await Devices.refreshAll(state)
+                            state.applyWidgetActions()
                             if state.store.loaded { await state.store.refreshEntitlements() } else { await state.store.load() }
                             state.refresh()
                             await CloudBackup.autoBackupIfDue(state)

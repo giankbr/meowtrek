@@ -736,15 +736,40 @@ final class AppState {
     }
 
     func pushWidget() {
+        let wq = quests.map { q in
+            WidgetQuest(id: q.id, title: q.t.title, icon: q.t.icon, tint: q.t.tint, value: value(q),
+                        target: q.target, reward: q.t.reward, claimed: isClaimed(q))
+        }
         WidgetBridge.write(WidgetSnapshot(
             petName: petName, steps: today, goal: goal, streak: streak, mood: mood,
             equipped: Dictionary(uniqueKeysWithValues: equipped.map { ($0.key.rawValue, $0.value) }),
-            updated: .now))
+            updated: .now, coins: coins, claimable: isPlus ? claimable * 3 / 2 : claimable,
+            water: waterToday, waterGoal: waterGoal, fullness: Int(fullness),
+            treats: foods.reduce(0) { $0 + owns($1) }, quests: wq, pettedAt: WidgetBridge.read()?.pettedAt))
         WidgetCenter.shared.reloadAllTimelines()
         WatchLink.shared.send([
             "petName": petName, "goal": goal, "streak": streak, "mood": mood, "steps": today,
             "equipped": Dictionary(uniqueKeysWithValues: equipped.map { ($0.key.rawValue, $0.value) }),
         ])
+    }
+
+    /// Applies taps made in the interactive widget since the app last ran.
+    func applyWidgetActions() {
+        let actions = WidgetBridge.drain()
+        guard !actions.isEmpty else { return }
+        for a in actions {
+            switch a.kind {
+            case "water" where a.day == dayKey: addWater()
+            case "claim": claimSteps()
+            case "feed":
+                if let c = foods.sorted(by: { $0.food > $1.food }).first(where: { owns($0) > 0 }) { feed(c) }
+            case "quest":
+                if a.day == dayKey, let q = quests.first(where: { $0.id == a.arg }) { claim(q) }
+            default: break
+            }
+        }
+        Telemetry.track("widget_action")
+        pushWidget()
     }
 
     func resetAll() {

@@ -1,3 +1,4 @@
+import AppIntents
 import SwiftUI
 import WidgetKit
 
@@ -25,6 +26,7 @@ struct MeowtrekWidgetView: View {
     let entry: StepEntry
 
     private var s: WidgetSnapshot { entry.snap }
+    private var mood: CatMood { s.recentlyPetted ? .happy : CatMood(s.mood) }
 
     var body: some View {
         switch family {
@@ -42,39 +44,134 @@ struct MeowtrekWidgetView: View {
                 ProgressView(value: s.progress)
             }
         case .systemMedium:
-            HStack(spacing: 14) {
-                CatView(outfit: s.outfit, size: 100)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("\(s.petName) · \(L(s.mood))").font(.caption.weight(.semibold)).foregroundStyle(Color.inkSoft)
-                    Text(s.stepsToday.formatted()).font(.system(size: 30, weight: .bold))
-                    Text("/ \(s.goal.formatted()) steps").font(.caption).foregroundStyle(Color.inkSoft)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    petButton(size: 70)
+                    Text(s.stepsToday.formatted()).font(.system(size: 24, weight: .bold, design: .rounded)).minimumScaleFactor(0.7)
                     bar
-                    Text(s.stepsToday >= s.goal ? "Goal reached 🎉" : "🔥 \(s.streak) · \(max(0, s.goal - s.stepsToday).formatted()) to go")
-                        .font(.caption2.weight(.semibold)).foregroundStyle(Color.leafDark)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(spacing: 6) {
+                    waterButton
+                    claimButton
+                    feedButton
+                }
+                .frame(width: 128)
+            }
+        case .systemLarge:
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .center, spacing: 10) {
+                    petButton(size: 76)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("\(s.petName) · \(L(s.mood))").font(.caption.weight(.semibold)).foregroundStyle(Color.inkSoft)
+                        Text(s.stepsToday.formatted()).font(.system(size: 30, weight: .bold, design: .rounded))
+                        Text("of \(s.goal.formatted()) steps").font(.caption).foregroundStyle(Color.inkSoft)
+                        bar
+                    }
+                }
+                Text("Today").font(.system(size: 15, weight: .bold, design: .rounded))
+                ForEach(s.questsToday.prefix(3)) { q in questRow(q) }
+                Spacer(minLength: 0)
+                HStack(spacing: 6) {
+                    waterButton
+                    claimButton
+                    feedButton
                 }
             }
         default:
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .top) {
-                    CatView(outfit: s.outfit, size: 58)
+                    petButton(size: 58)
                     Spacer()
                     Text("🔥\(s.streak)").font(.caption.weight(.bold))
                 }
                 Spacer(minLength: 0)
-                Text(s.stepsToday.formatted()).font(.system(size: 24, weight: .bold))
+                Text(s.stepsToday.formatted()).font(.system(size: 24, weight: .bold, design: .rounded))
                 bar
             }
         }
     }
 
+    private func petButton(size: CGFloat) -> some View {
+        Button(intent: PetCatIntent()) {
+            CatView(outfit: s.outfit, size: size, mood: mood, animated: false)
+                .overlay(alignment: .topTrailing) {
+                    if s.recentlyPetted {
+                        Image(systemName: "heart.fill").font(.system(size: size * 0.22)).foregroundStyle(Color.tomato)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+    }
+
     private var bar: some View {
         GeometryReader { g in
             ZStack(alignment: .leading) {
-                Capsule().fill(Color.leafLight.opacity(0.5))
+                Capsule().fill(Color.leafLight.opacity(0.6))
                 Capsule().fill(Color.leaf).frame(width: g.size.width * s.progress)
             }
         }
         .frame(height: 7)
+    }
+
+    private func action<I: AppIntent>(_ intent: I, art: String, title: String, tint: Color, enabled: Bool = true) -> some View {
+        Button(intent: intent) {
+            HStack(spacing: 6) {
+                ArtView(id: art, size: 20, line: 1.4)
+                Text(title).font(.system(size: 13, weight: .bold, design: .rounded)).lineLimit(1).minimumScaleFactor(0.7)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 9).padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: 11, style: .continuous).fill(tint.opacity(enabled ? 0.18 : 0.07)))
+            .foregroundStyle(enabled ? Color.ink : Color.inkSoft)
+        }
+        .buttonStyle(.plain)
+        .disabled(!enabled)
+    }
+
+    private var waterButton: some View {
+        action(LogWaterIntent(), art: "water", title: "\(s.waterToday)/\(s.waterGoal ?? 8) +1", tint: .sky)
+    }
+
+    private var claimButton: some View {
+        action(ClaimCoinsIntent(), art: "coin", title: s.claimableNow > 0 ? "+\(s.claimableNow)" : "\((s.coins ?? 0).formatted())",
+               tint: .sun, enabled: s.claimableNow > 0)
+    }
+
+    private var feedButton: some View {
+        action(FeedCatIntent(), art: "fish", title: "\(s.fullness ?? 0)%", tint: .grass, enabled: (s.treats ?? 0) > 0)
+    }
+
+    private func questRow(_ q: WidgetQuest) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: q.icon).font(.system(size: 12, weight: .bold)).foregroundStyle(Color(hexString: q.tint))
+                .frame(width: 26, height: 26).background(Circle().fill(Color(hexString: q.tint).opacity(0.16)))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(q.title).font(.system(size: 13, weight: .semibold, design: .rounded)).lineLimit(1)
+                GeometryReader { g in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Color.leafLight.opacity(0.6))
+                        Capsule().fill(Color(hexString: q.tint)).frame(width: g.size.width * min(1, Double(q.value) / Double(max(1, q.target))))
+                    }
+                }
+                .frame(height: 5)
+            }
+            if q.claimed {
+                Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.leaf)
+            } else {
+                Button(intent: ClaimQuestIntent(questID: q.id)) {
+                    HStack(spacing: 3) {
+                        ArtView(id: "coin", size: 14, line: 1.1)
+                        Text(q.done ? "Claim" : "\(q.reward)").font(.system(size: 12, weight: .bold, design: .rounded))
+                    }
+                    .padding(.horizontal, 8).padding(.vertical, 4)
+                    .background(Capsule().fill(q.done ? Color.honey : Color.honey.opacity(0.2)))
+                }
+                .buttonStyle(.plain)
+                .disabled(!q.done)
+            }
+        }
     }
 }
 
@@ -88,8 +185,8 @@ struct MeowtrekWidget: Widget {
                 .widgetURL(URL(string: "meowtrek://home"))
         }
         .configurationDisplayName("Meowtrek")
-        .description("Today's steps with your cat.")
-        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular])
+        .description("Today's steps with your cat. Tap to log water, claim coins, feed and pet your cat.")
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .accessoryCircular, .accessoryRectangular])
     }
 }
 

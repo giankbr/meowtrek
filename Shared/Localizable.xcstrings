@@ -1226,6 +1226,26 @@
         }
       }
     },
+    "Claim quest reward": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klaim hadiah quest"
+          }
+        }
+      }
+    },
+    "Claim walking coins": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klaim koin jalan"
+          }
+        }
+      }
+    },
     "Claimed": {
       "localizations": {
         "id": {
@@ -1672,6 +1692,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Beri makan %@"
+          }
+        }
+      }
+    },
+    "Feed your cat": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beri makan kucingmu"
           }
         }
       }
@@ -2356,6 +2386,16 @@
         }
       }
     },
+    "Log a glass of water": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catat segelas air"
+          }
+        }
+      }
+    },
     "Lollipop": {
       "localizations": {
         "id": {
@@ -2989,6 +3029,16 @@
         }
       }
     },
+    "Pet your cat": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elus kucingmu"
+          }
+        }
+      }
+    },
     "Picnic Basket": {
       "localizations": {
         "id": {
@@ -3085,6 +3135,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kepala Labu"
+          }
+        }
+      }
+    },
+    "Quest": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quest"
           }
         }
       }
@@ -4045,6 +4105,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Langkah hari ini bersama kucingmu."
+          }
+        }
+      }
+    },
+    "Today's steps with your cat. Tap to log water, claim coins, feed and pet your cat.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langkah hari ini bersama kucingmu. Ketuk untuk catat minum, klaim koin, beri makan, dan elus kucingmu."
           }
         }
       }
