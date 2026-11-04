@@ -11,6 +11,7 @@ export interface Env {
   GARMIN_CONSUMER_KEY?: string;
   GARMIN_CONSUMER_SECRET?: string;
   GARMIN_WEBHOOK_SECRET?: string;
+  ADMIN_TOKEN?: string;
 }
 
 export type Plan = "free" | "plus";

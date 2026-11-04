@@ -94,6 +94,7 @@ final class AppState {
     private func creditGems(_ n: Int, _ tx: String) -> Bool {
         guard !creditedTx.contains(tx) else { return false }
         creditedTx.insert(tx)
+        Telemetry.track("gem_pack_bought")
         gems += n
         show(loc("+\(n) gems"), art: "gem")
         celebrate(.gems)
@@ -244,6 +245,7 @@ final class AppState {
         let n = isPlus ? claimable * 3 / 2 : claimable
         coins += n
         claimedSteps += claimable * 10
+        Telemetry.track("steps_claimed")
         show(loc("+\(n) coins"), art: "coin")
         celebrate(.coins)
         save()
@@ -271,6 +273,7 @@ final class AppState {
         let g = lv - rewardedLevel
         gems += g
         rewardedLevel = lv
+        Telemetry.track("level_up")
         show(loc("Level \(lv)! +\(g) gems"), art: "gem")
         celebrate(.confetti)
         save()
@@ -307,6 +310,7 @@ final class AppState {
         inventory[c.id, default: 0] -= 1
         storedFullness = min(100, fullness + Double(c.food))
         fullnessAt = .now
+        Telemetry.track("cat_fed")
         show(loc("\(petName) loved the \(c.name)"), art: c.id)
         save()
     }
@@ -320,6 +324,7 @@ final class AppState {
         if item.currency == .coin { coins -= item.price } else { gems -= item.price }
         owned.insert(item.id)
         equipped[item.slot] = item.id
+        Telemetry.track("item_bought")
         show(loc("\(item.name) is yours"), art: item.id)
         celebrate(.confetti)
         save()
@@ -329,6 +334,7 @@ final class AppState {
         guard balance(c.currency) >= c.price else { return }
         if c.currency == .coin { coins -= c.price } else { gems -= c.price }
         if c.id == "streak_freeze" { streakFreezes += 1 } else { inventory[c.id, default: 0] += 1 }
+        Telemetry.track("treat_bought")
         show(loc("+1 \(c.name)"), art: c.id)
         save()
     }
@@ -354,6 +360,7 @@ final class AppState {
 
     func saveLook(_ name: String) {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
+        Telemetry.track("look_saved")
         looks.append(Look(name: trimmed.isEmpty ? "Look \(looks.count + 1)" : trimmed,
                           equipped: Dictionary(uniqueKeysWithValues: equipped.map { ($0.key.rawValue, $0.value) })))
         save()
@@ -424,6 +431,7 @@ final class AppState {
         guard isDone(q), !isClaimed(q) else { return }
         coins += q.t.reward
         claimed.insert(q.id)
+        Telemetry.track("quest_claimed")
         show(loc("\(q.t.title) · +\(q.t.reward) coins"), art: "coin")
         celebrate(.coins)
         save()
@@ -436,6 +444,7 @@ final class AppState {
         guard chestReady else { return }
         grant(coins: 30, gems: 1)
         claimed.insert("chest")
+        Telemetry.track("chest_opened")
         show(loc("Chest opened · +30 coins · +1 gem"), art: "chest")
         celebrate(.confetti)
         save()
@@ -484,6 +493,7 @@ final class AppState {
         let dup = m.item.map { owned.contains($0) } ?? false
         grant(coins: m.coins + (dup ? 100 : 0), gems: m.gems, item: m.item)
         claimedForever.insert(key(a, m))
+        Telemetry.track("event_reward")
         show(rewardText(coins: m.coins + (dup ? 100 : 0), gems: m.gems, item: dup ? nil : m.item),
              art: dup ? "coin" : m.item ?? (m.gems > 0 ? "gem" : "coin"))
         celebrate(m.item != nil ? .confetti : m.gems > 0 ? .gems : .coins)
@@ -587,6 +597,7 @@ final class AppState {
             show(loc("\(f.name) updated"), art: f.fur)
         } else {
             friends.append(f)
+            Telemetry.track("friend_added")
             show(loc("\(f.name) joined your pack"), art: f.fur)
             celebrate(.confetti)
         }
@@ -604,6 +615,7 @@ final class AppState {
     func rewardTrek(_ t: Trek) {
         let c = isPlus ? t.coins * 3 / 2 : t.coins
         guard c > 0 else { return }
+        Telemetry.track("trek_finished_\(t.kind.rawValue)")
         coins += c
         show(loc("\(t.kind.title) done · +\(c) coins"), art: "coin")
         celebrate(.confetti)
@@ -611,6 +623,7 @@ final class AppState {
     }
 
     func shareMeal() {
+        Telemetry.track("meal_snapped")
         storedFullness = min(100, fullness + 15)
         fullnessAt = .now
         show(loc("\(petName) shared your meal · +15% food"), art: "fish")
@@ -622,6 +635,7 @@ final class AppState {
     func addWater() {
         if waterDay != dayKey { waterDay = dayKey; water = 0 }
         water += 1
+        Telemetry.track("water_logged")
         if water == waterGoal { show(loc("Water goal reached!"), art: "water"); celebrate(.confetti) }
         save()
         Task { await WaterHealth.log() }
@@ -750,6 +764,7 @@ final class AppState {
         rewardedLevel = level
         claimedDay = dayKey
         onboarded = true
+        Telemetry.track("onboarding_done")
         save()
     }
 }

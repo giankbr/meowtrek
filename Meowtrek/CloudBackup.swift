@@ -51,6 +51,7 @@ enum CloudBackup {
         record["device"] = UIDevice.current.name as CKRecordValue
         _ = try await db.modifyRecords(saving: [record], deleting: [], savePolicy: .allKeys)
         UserDefaults.standard.set(Date.now, forKey: lastKey)
+        Telemetry.track("backup_done")
     }
 
     @MainActor

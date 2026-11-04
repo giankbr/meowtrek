@@ -68,6 +68,7 @@ struct PaywallView: View {
                         guard let p = store.plusProducts.first(where: { $0.id == selected }) else { return }
                         Task {
                             if await store.buy(p), store.isPlus {
+                                Telemetry.track("plus_purchased")
                                 state.show(loc("Welcome to Plus!"), art: "crown")
                                 state.celebrate(.confetti)
                                 dismiss()
@@ -103,6 +104,7 @@ struct PaywallView: View {
             .padding(16)
         }
         .task { if !store.loaded { await store.load() } }
+        .onAppear { Telemetry.track("paywall_shown") }
     }
 
     private var trialText: String? {

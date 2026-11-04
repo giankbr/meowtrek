@@ -13,6 +13,8 @@ Launch arguments for development: `-demo` (skip Health and onboarding), `-tab N`
 
 Website: https://giankbr.github.io/meowtrek/ (source in `site/`, deployed by GitHub Pages).
 
+Accounts, IDs and deployment: see [docs/SETUP.md](docs/SETUP.md).
+
 ## Layout
 
 - `Meowtrek/` — app (screens, state, HealthKit, notifications)

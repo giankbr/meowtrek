@@ -3469,6 +3469,16 @@
         }
       }
     },
+    "Share anonymous usage and crash reports": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kirim data pemakaian dan laporan crash anonim"
+          }
+        }
+      }
+    },
     "Share card": {
       "localizations": {
         "id": {

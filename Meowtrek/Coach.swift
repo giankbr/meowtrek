@@ -363,6 +363,7 @@ struct CoachView: View {
             do {
                 let reply = try await engine.chat(history, ctx)
                 state.countChat()
+                Telemetry.track("chat_sent")
                 withAnimation(.spring) { messages.append(ChatMessage(role: "assistant", content: reply)) }
             } catch CoachError.limit {
                 showPaywall = true
@@ -449,7 +450,10 @@ struct InsightCard: View {
         error = nil
         let ctx = Coach.context(state), days = Coach.last28(state)
         Task {
-            do { insight = try await engine.insight(ctx, days: days) } catch { self.error = error.localizedDescription }
+            do {
+                insight = try await engine.insight(ctx, days: days)
+                Telemetry.track("insight_generated")
+            } catch { self.error = error.localizedDescription }
             loading = false
         }
     }

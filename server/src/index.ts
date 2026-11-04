@@ -3,6 +3,7 @@ import { makeAnthropic } from "./claude";
 import { coach } from "./coach";
 import type { AppEnv, Deps } from "./env";
 import { garmin } from "./garmin";
+import { telemetry } from "./telemetry";
 
 export function createApp(deps: Partial<Deps> = {}) {
   const resolved: Deps = { anthropic: makeAnthropic, fetch: (...a) => fetch(...a), ...deps };
@@ -14,6 +15,7 @@ export function createApp(deps: Partial<Deps> = {}) {
   app.get("/v1/health", (c) => c.json({ ok: true }));
   app.route("/v1/coach", coach);
   app.route("/v1/garmin", garmin);
+  app.route("/v1/telemetry", telemetry);
   app.notFound((c) => c.json({ error: "not_found" }, 404));
   app.onError((err, c) => {
     console.error(err);

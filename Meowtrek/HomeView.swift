@@ -119,6 +119,7 @@ struct HomeView: View {
             do {
                 let q = try await engine.quests(ctx)
                 withAnimation(.spring) { state.setAIQuests(q) }
+                Telemetry.track("ai_quests")
                 state.show(loc("\(state.petName) made today's quests"), art: "token_petal")
             } catch {
                 state.show(error.localizedDescription)
@@ -821,6 +822,7 @@ struct SettingsView: View {
                     Text("Meowtrek nudges you if you're short of your goal, and before events end.")
                 }
                 Section("Units") {
+                    Toggle("Share anonymous usage and crash reports", isOn: Binding(get: { Telemetry.enabled }, set: { Telemetry.enabled = $0 }))
                     Picker("Distance", selection: $s.useMiles) {
                         Text("Kilometres").tag(false)
                         Text("Miles").tag(true)

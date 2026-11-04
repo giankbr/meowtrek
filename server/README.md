@@ -230,3 +230,9 @@ Cloudflare: Workers Paid ($5/month) covers 10M requests; KV writes (1M/month inc
 
 Body: `{ context, image: base64 (JPEG/PNG/WebP, ≤ ~1.5 MB), mediaType?: "image/jpeg" }` → `200 { isFood, reaction, tags: string[], balance: 1-5 }`.
 Tags come from `veggies, fruit, protein, grains, dairy, sweets, fried, drink, homemade`. No calorie counting by design. Daily limit: free 1, Plus 20.
+
+### Telemetry (anonymous)
+
+- `POST /v1/telemetry/events` — `{ appVersion, events: [{ name: "trek_finished_run", count?: 1 }] }` (≤ 50 events, names `[a-z][a-z0-9_]`). Stored only as per-day counters `tm:ev:<date>:<name>`; no device or user id is kept.
+- `POST /v1/telemetry/diagnostics` — `{ appVersion, osVersion, model, payload }` where `payload` is a MetricKit `MXDiagnosticPayload` JSON (crashes, hangs). Kept 30 days.
+- `GET /v1/telemetry/summary?days=7` — `Authorization: Bearer $ADMIN_TOKEN` (set with `wrangler secret put ADMIN_TOKEN`). Returns daily event counts, app versions and recent diagnostics.

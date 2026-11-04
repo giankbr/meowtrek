@@ -239,6 +239,7 @@ struct ShareCardsView: View {
                 VStack(spacing: 10) {
                     Button {
                         guard let img = ShareOut.render(kind, data) else { return }
+                        Telemetry.track("share_story")
                         if !ShareOut.instagramStory(img) { image = img }
                     } label: {
                         Label("Share to Instagram Story", systemImage: "camera.circle.fill").frame(maxWidth: .infinity)
@@ -253,6 +254,7 @@ struct ShareCardsView: View {
                             .buttonStyle(.chunky(.paper, radius: 18, padV: 12))
                             Button {
                                 UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
+                                Telemetry.track("share_saved")
                                 saved = true
                                 state.show(loc("Saved to Photos"), art: "deco_cloud")
                             } label: {
