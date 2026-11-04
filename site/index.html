@@ -18,98 +18,229 @@
 </head>
 <body>
 <header class="wrap nav">
-  <a class="brand" href="./"><img src="assets/icon.png" alt="" width="36" height="36"><span>Meow<b>trek</b></span></a>
+  <a class="brand" href="./"><img src="assets/icon.png" alt="" width="40" height="40"><span>Meow<b>trek</b></span></a>
   <nav aria-label="Sections">
     <a href="#how">How it works</a>
     <a href="#features">Features</a>
     <a href="#plus">Plus</a>
     <a href="#faq">FAQ</a>
   </nav>
+  <a class="btn ghost sm" href="https://github.com/giankbr/meowtrek">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+    View on GitHub
+  </a>
 </header>
 
 <main>
-  <section class="hero-band">
-    <div class="wrap hero">
-      <div>
-        <span class="eyebrow">Step tracker · iPhone &amp; Apple Watch</span>
-        <h1 style="margin-top:14px">Every step,<br>your cat <em>walks too.</em></h1>
-        <p class="lede">Meowtrek turns your daily steps into a little life for your cat. Walk to earn coins, dress them up, unlock places on your journey and keep each other going.</p>
+  <section class="hero">
+    <svg class="hills hills-back" viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 160 C 240 90, 420 150, 640 110 S 1040 40, 1440 100 V300 H0 Z" fill="var(--hill-far)"/>
+      <path d="M0 230 C 300 170, 560 240, 820 185 S 1240 130, 1440 170 V300 H0 Z" fill="var(--hill-mid)"/>
+    </svg>
+
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="pill"><i class="pill-dot"></i>Step tracker · iPhone &amp; Apple Watch</span>
+        <h1>Every step, your cat <em>walks too.</em></h1>
+        <p class="lede">Meowtrek turns your daily steps into a little life for your cat. Walk to earn coins, dress them up and unlock places on your journey together.</p>
         <div class="ctas">
-          <span class="btn primary" aria-disabled="true">
+          <span class="btn primary lg" aria-disabled="true">
             <svg width="20" height="24" viewBox="0 0 20 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.7c0-2.9 2.4-4.3 2.5-4.4-1.4-2-3.5-2.3-4.3-2.3-1.8-.2-3.6 1.1-4.5 1.1-.9 0-2.4-1.1-3.9-1-2 0-3.9 1.2-4.9 3-2.1 3.7-.5 9.1 1.5 12.1 1 1.4 2.2 3.1 3.8 3 1.5-.1 2.1-1 3.9-1s2.3 1 3.9 1c1.6 0 2.6-1.5 3.6-2.9 1.1-1.7 1.6-3.3 1.6-3.4 0 0-3.1-1.2-3.2-4.8zM13.5 4c.8-1 1.4-2.4 1.2-3.8-1.2.1-2.6.8-3.5 1.8-.8.9-1.4 2.3-1.2 3.7 1.3.1 2.7-.7 3.5-1.7z"/></svg>
             <span class="stack"><small>Coming soon to the</small>App Store</span>
           </span>
-          <a class="btn ghost" href="#features">See what's inside</a>
+          <a class="btn ghost lg" href="#how">See how it works</a>
         </div>
-        <div class="works-with"><b>Works with</b><span>Apple Health</span><span>Apple Watch</span><span>Fitbit</span><span>Garmin</span></div>
+        <ul class="hero-notes">
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Free to play</li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Plus from $3.99/month</li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Works with Apple Health</li>
+        </ul>
       </div>
 
       <div class="stage">
-        <div class="halo" aria-hidden="true"></div>
-        <figure class="device left"><img src="assets/screens/closet.jpg" alt="Closet screen: dressing the cat in hats and outfits" width="552" height="1200" loading="lazy"></figure>
-        <figure class="device right"><img src="assets/screens/stats.jpg" alt="Stats screen: monthly steps chart and daily average" width="552" height="1200" loading="lazy"></figure>
-        <figure class="device front"><img src="assets/screens/home.jpg" alt="Home screen: the cat in a sunny park, 7,240 steps and today's quests" width="552" height="1200"></figure>
-        <div class="chip coins" aria-hidden="true"><i style="background:#E0A92B">◎</i>+50 coins</div>
-        <div class="chip streak" aria-hidden="true"><i style="background:var(--rose)">▲</i>7-day streak</div>
-        <div class="chip water" aria-hidden="true"><i style="background:#5BA6CF">●</i>6 of 8 glasses</div>
+        <span class="sun" aria-hidden="true"></span>
+        <div class="phone" role="img" aria-label="Meowtrek home screen: the cat on a park scene, 7,240 of 8,000 steps, a daily quest ready to claim">
+          <div class="screen">
+            <div class="scene">
+              <div class="pills"><span><i class="coin"></i>1,645</span><span><i class="gem"></i>3</span></div>
+              <div class="bubble">760 to go. Walk with me?</div>
+              <img class="cat" src="assets/icon.png" alt="">
+            </div>
+            <div class="sheet">
+              <div class="mcard">
+                <div class="steps"><b>7,240</b><span>/ 8,000 steps</span></div>
+                <div class="bar"><i></i></div>
+              </div>
+              <div class="mcard quest">
+                <span class="dot" style="background:#FCEFC4"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+                <span>Early paws<small>1,000 steps before 9:00</small></span>
+                <span class="claim">Claim</span>
+              </div>
+              <div class="mcard quest">
+                <span class="dot" style="background:#DCEEF6"><i class="drop"></i></span>
+                <span>Hydrate<small>5 of 6 glasses</small></span>
+              </div>
+            </div>
+            <div class="tabbar">
+              <span class="on"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</span>
+              <span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>Journey</span>
+              <span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Shop</span>
+              <span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Social</span>
+              <span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats</span>
+            </div>
+          </div>
+        </div>
+        <div class="sticker coins" aria-hidden="true"><i class="coin-big"></i><span><b>+724</b>coins today</span></div>
+        <div class="sticker streak" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg><span><b>12-day streak</b>+1 gem earned</span></div>
       </div>
     </div>
-    <svg class="trail" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 90 C 220 20, 420 120, 640 70 S 1020 10, 1200 60" fill="none" stroke="var(--leaf)" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 16"/>
+
+    <svg class="hills hills-front" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 110 C 260 70, 520 125, 760 85 S 1180 25, 1440 60 V160 H0 Z" fill="var(--hill-near)"/>
+      <path d="M60 128 C 300 92, 520 136, 760 104 S 980 70, 1010 62" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 18" vector-effect="non-scaling-stroke"/>
     </svg>
   </section>
 
   <section id="how" class="band paper">
     <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">How it works</span>
-        <h2>Walk. Claim. Dress up. Repeat.</h2>
+      <div class="split-head">
+        <div class="section-head">
+          <span class="eyebrow">How it works</span>
+          <h2>Walk. Claim. Dress up. Repeat.</h2>
+        </div>
         <p>No new habits to learn. Meowtrek reads the steps your iPhone and Apple Watch already count.</p>
       </div>
-      <div class="steps-row">
-        <div class="step"><span class="num">1</span><h3>Just walk</h3><p>Steps come in from Apple Health, Apple Watch, Fitbit or Garmin. Your cat cheers when you're close to your daily goal.</p></div>
-        <div class="step"><span class="num">2</span><h3>Claim coins</h3><p>Every 10 steps is a coin. Daily quests and the daily chest add more, and streaks earn gems.</p></div>
-        <div class="step"><span class="num">3</span><h3>Dress &amp; explore</h3><p>Spend coins on hats, glasses, scarves and outfits, unlock landmarks on your journey and collect seasonal event items.</p></div>
-      </div>
+      <ol class="milestones">
+        <li>
+          <span class="marker">1</span>
+          <h3>Just walk</h3>
+          <p>Steps come in from Apple Health, Apple Watch, Fitbit or Garmin. Your cat cheers when you’re close to your daily goal.</p>
+          <span class="chip">7,240 steps</span>
+        </li>
+        <li>
+          <span class="marker">2</span>
+          <h3>Claim coins</h3>
+          <p>Every 10 steps is a coin. Daily quests and the daily chest add more, and streaks earn gems.</p>
+          <span class="chip">+724 coins</span>
+        </li>
+        <li>
+          <span class="marker">3</span>
+          <h3>Dress &amp; explore</h3>
+          <p>Spend coins on hats, glasses, scarves and outfits, unlock landmarks and collect seasonal event items.</p>
+          <span class="chip">Straw hat unlocked</span>
+        </li>
+      </ol>
     </div>
   </section>
 
   <section id="features" class="band">
     <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Features</span>
-        <h2>A little world that grows with every walk</h2>
+      <div class="split-head">
+        <div class="section-head">
+          <span class="eyebrow">Features</span>
+          <h2>A little world that grows with every walk</h2>
+        </div>
+        <p>Everything below runs on the steps you already take. No extra logging.</p>
       </div>
-      <div class="features">
-        <article class="feature">
-          <span class="ico" style="background:color-mix(in srgb, var(--rose) 20%, transparent);color:var(--rose)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17c3-6 6 2 9-4s5-6 9-3"/><circle cx="20" cy="9" r="2"/><circle cx="4" cy="18" r="2"/></svg></span>
-          <h3>Walks, runs &amp; hikes</h3>
-          <p>Record a trek with a live route map, pace and km splits. It shows on your lock screen and saves as a workout in Apple Health.</p>
+
+      <div class="bento">
+        <article class="tile wide">
+          <div class="visual treks" style="background:var(--leaf-soft)">
+            <svg class="map" viewBox="0 0 610 280" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <path d="M0 80 H610 M0 190 H610 M150 0 V280 M330 0 V280 M480 0 V280" stroke="var(--paper)" stroke-width="12"/>
+              <path d="M70 230 C 130 160, 200 210, 250 140 S 380 60, 450 90 S 540 60, 560 50" fill="none" stroke="var(--rose)" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="70" cy="230" r="9" fill="var(--paper)" stroke="var(--rose)" stroke-width="4"/>
+              <circle cx="560" cy="50" r="10" fill="var(--rose)"/>
+            </svg>
+            <span class="live"><i></i>Hike · Recording</span>
+            <dl class="route-stats">
+              <div><dt>Distance</dt><dd>3.42 km</dd></div>
+              <div><dt>Pace /km</dt><dd>9′14″</dd></div>
+              <div><dt>Time</dt><dd>31:36</dd></div>
+              <div><dt>Coins</dt><dd>+214</dd></div>
+            </dl>
+          </div>
+          <div class="tile-copy">
+            <h3><svg class="i" viewBox="0 0 24 24" style="color:var(--rose)" aria-hidden="true"><path d="M3 17c3-6 6 2 9-4s5-6 9-3"/><circle cx="20" cy="9" r="2"/><circle cx="4" cy="18" r="2"/></svg>Walks, runs &amp; hikes</h3>
+            <p>Record a trek with a live route map, pace and km splits. It shows on your lock screen and saves as a workout in Apple Health.</p>
+          </div>
         </article>
-        <article class="feature">
-          <span class="ico" style="background:color-mix(in srgb, var(--lilac) 20%, transparent);color:var(--lilac)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg></span>
-          <h3>Cat coach</h3>
-          <p>Chat with your cat about your week, get a weekly insight and quests tuned to your rhythm. On-device with Apple Intelligence where available.</p>
+
+        <article class="tile wide">
+          <div class="visual coach" style="background:var(--lilac-wash)">
+            <div class="msg you">How did I do this week?</div>
+            <div class="msg-row"><img src="assets/icon.png" alt="" width="36" height="36"><div class="msg cat">51,300 steps, your best since June. Tuesday was a little slow. Lunch walk tomorrow?</div></div>
+            <span class="suggest"><i></i>New quest: 2,000 steps before 13:00</span>
+          </div>
+          <div class="tile-copy">
+            <h3><svg class="i" viewBox="0 0 24 24" style="color:var(--lilac)" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg>Cat coach</h3>
+            <p>Chat with your cat about your week, get a weekly insight and quests tuned to your rhythm. On-device with Apple Intelligence where available.</p>
+          </div>
         </article>
-        <article class="feature">
-          <span class="ico" style="background:color-mix(in srgb, var(--honey) 28%, transparent);color:#B88A12"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3"/></svg></span>
-          <h3>Seasonal events</h3>
-          <p>Gourd Night in autumn, Frost Fair in winter, Bloom Walk in spring, Sunny Trail in summer. Collect tokens by walking for items you can't buy.</p>
+
+        <article class="tile">
+          <div class="visual events" style="background:var(--honey-soft)">
+            <div class="tokens" aria-hidden="true">
+              <span class="on"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+              <span><svg class="i" viewBox="0 0 24 24"><line x1="2" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="22"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/></svg></span>
+              <span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5"/><path d="M12 7.5V9M7.5 12H9M16.5 12H15M12 16.5V15M8 8l1.88 1.88M14.12 9.88 16 8M8 16l1.88-1.88M14.12 14.12 16 16"/></svg></span>
+              <span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span>
+            </div>
+            <div class="mini-card">
+              <div class="row"><b>Gourd Night</b><span>18 / 30 tokens</span></div>
+              <div class="meter honey"><i style="width:60%"></i></div>
+            </div>
+          </div>
+          <div class="tile-copy">
+            <h3>Seasonal events</h3>
+            <p>Four seasons, four events. Walk for tokens and trade them for items you can’t buy.</p>
+          </div>
         </article>
-        <article class="feature">
-          <span class="ico" style="background:color-mix(in srgb, var(--leaf) 22%, transparent);color:var(--leaf-deep)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="5" width="12" height="14" rx="4"/><path d="M9 5l1-3h4l1 3M9 19l1 3h4l1-3"/></svg></span>
-          <h3>Apple Watch &amp; widgets</h3>
-          <p>Your cat on your wrist with today's steps and a workout mode, plus home and lock screen widgets on iPhone.</p>
+
+        <article class="tile">
+          <div class="visual watch" style="background:var(--leaf-soft)">
+            <span class="band-strap top"></span><span class="band-strap bottom"></span>
+            <div class="watch-body">
+              <div class="watch-screen">
+                <img src="assets/icon.png" alt="" width="44" height="44">
+                <b>7,240</b>
+                <span class="watch-bar"><i></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="tile-copy">
+            <h3>Apple Watch &amp; widgets</h3>
+            <p>Your cat on your wrist with a workout mode, plus home and lock screen widgets.</p>
+          </div>
         </article>
-        <article class="feature">
-          <span class="ico" style="background:color-mix(in srgb, var(--sky) 26%, transparent);color:#3E86AE"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c2.8 0 5 2.2 5 5"/></svg></span>
-          <h3>Friends &amp; stories</h3>
-          <p>Swap friend cards for a weekly leaderboard, and share your steps, streak, outfit or route straight to Instagram Stories.</p>
+
+        <article class="tile">
+          <div class="visual friends" style="background:var(--sky-soft)">
+            <span class="board-label">This week</span>
+            <ol class="board">
+              <li><span>1</span><b>Maya</b><em>58,210</em></li>
+              <li class="me"><span>2</span><b>You</b><em>51,300</em></li>
+              <li><span>3</span><b>Rafi</b><em>44,870</em></li>
+            </ol>
+          </div>
+          <div class="tile-copy">
+            <h3>Friends &amp; stories</h3>
+            <p>Swap friend cards for a weekly leaderboard and share your week to Instagram Stories.</p>
+          </div>
         </article>
-        <article class="feature">
-          <span class="ico" style="background:color-mix(in srgb, var(--rose) 18%, transparent);color:var(--rose)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg></span>
-          <h3>Care for your cat</h3>
-          <p>Feed treats, track water, and snap your meals for a playful reaction. No calorie counting, ever.</p>
+
+        <article class="tile">
+          <div class="visual care" style="background:var(--rose-soft)">
+            <div class="mini-card">
+              <div class="row"><b>Water</b><span>5 of 6</span></div>
+              <div class="glasses" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i class="empty"></i></div>
+            </div>
+            <span class="treat"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Fed a salmon bite</span>
+          </div>
+          <div class="tile-copy">
+            <h3>Care for your cat</h3>
+            <p>Feed treats, track water and snap meals for a playful reaction. No calorie counting, ever.</p>
+          </div>
         </article>
       </div>
     </div>
@@ -117,15 +248,17 @@
 
   <section id="plus" class="band paper">
     <div class="wrap">
-      <div class="section-head">
+      <div class="section-head center">
         <span class="eyebrow">Pricing</span>
         <h2>Free to walk. Plus for the extras.</h2>
         <p>Everything that gets you moving is free. Plus adds the AI coach and a few comforts for your cat.</p>
       </div>
       <div class="pricing">
         <div class="plan">
-          <h3>Free</h3>
-          <div class="price">$0</div>
+          <div class="plan-head">
+            <h3>Free</h3>
+            <div class="price">$0</div>
+          </div>
           <ul>
             <li>Steps, goals, streaks and daily quests</li>
             <li>Wardrobe, shop, journey and events</li>
@@ -135,8 +268,10 @@
           </ul>
         </div>
         <div class="plan plus">
-          <h3>Meowtrek Plus</h3>
-          <div class="price">$3.99 <small>/ month · or $29.99 / year</small></div>
+          <div class="plan-head">
+            <div class="plan-name"><h3>Meowtrek Plus</h3><span class="trial">1-week free trial</span></div>
+            <div class="price">$3.99 <small>/ month · or $29.99 / year</small></div>
+          </div>
           <ul>
             <li>Unlimited chats with your cat coach</li>
             <li>Weekly AI insight and AI daily quests</li>
@@ -151,73 +286,112 @@
     </div>
   </section>
 
-  <section class="band">
+  <section class="band privacy-band">
     <div class="wrap privacy">
-      <div class="section-head" style="margin:0">
+      <div class="privacy-statement">
+        <span class="lock"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
         <span class="eyebrow">Privacy</span>
         <h2>Your steps stay on your phone</h2>
-        <p>Meowtrek has no accounts, no ads and no third-party tracking.</p>
+        <p>No accounts, no ads and no third-party tracking.</p>
       </div>
-      <ul>
-        <li>Health data, routes, water and meal diary are stored only on your device.</li>
-        <li>AI features send only what they need (your stats, your message or photo) to answer, and our server doesn't store it.</li>
-        <li>Fitbit, Garmin and iCloud backup are optional and can be turned off at any time.</li>
-        <li>Anonymous usage counts and crash reports help us fix bugs; you can switch them off in Settings.</li>
-        <li>Read the full <a href="privacy.html">privacy policy</a>.</li>
-      </ul>
+      <div>
+        <ul class="privacy-points">
+          <li>Health data, routes, water and meal diary are stored only on your device.</li>
+          <li>AI features send only what they need (your stats, your message or photo) to answer, and our server doesn’t store it.</li>
+          <li>Fitbit, Garmin and iCloud backup are optional and can be turned off at any time.</li>
+          <li>Anonymous usage counts and crash reports help us fix bugs; you can switch them off in Settings.</li>
+        </ul>
+        <a class="policy-link" href="privacy.html">Read the full privacy policy</a>
+      </div>
     </div>
   </section>
 
-  <section id="faq" class="band paper">
-    <div class="wrap faq-wrap">
-      <div class="faq-intro">
+  <section id="faq" class="band">
+    <div class="wrap faq-grid">
+      <div class="section-head">
         <span class="eyebrow">FAQ</span>
         <h2>Questions, answered</h2>
-        <p>Everything about steps, trackers, privacy and Meowtrek Plus. Can't find yours?</p>
-        <a class="btn ghost" href="support.html">Visit support</a>
+        <p>Anything else? The <a href="support.html">support page</a> has more.</p>
       </div>
       <div class="faq">
-        <details open><summary>Is Meowtrek free?</summary><p>Yes. Steps, goals, quests, the wardrobe, journey, seasonal events, trek recording, widgets and the Apple Watch app are all free. Meowtrek Plus adds the unlimited AI cat coach, weekly insights, 1.5× coins, a weekly streak freeze and daily iCloud backup.</p></details>
-        <details><summary>Do I need an Apple Watch?</summary><p>No. Your iPhone counts steps on its own. An Apple Watch, Fitbit or Garmin just makes the count more complete, and Meowtrek takes the highest count for each day so nothing is double counted.</p></details>
+        <details open><summary>Do I need an Apple Watch?</summary><p>No. Your iPhone counts steps on its own. An Apple Watch, Fitbit or Garmin just makes the count more complete, and Meowtrek always uses the highest count per day so nothing is double counted.</p></details>
         <details><summary>Which trackers work?</summary><p>Anything that syncs to Apple Health works automatically: Apple Watch, Mi Band, Zepp, Huawei, Oura, Withings and more. Fitbit and Garmin can also be linked directly.</p></details>
-        <details><summary>Is my health data private?</summary><p>Your steps, routes and water stay on your iPhone and in Apple Health. There are no accounts, ads or third-party trackers. AI features only send what they need to answer, and our server doesn't store it. Read the <a href="privacy.html">privacy policy</a>.</p></details>
         <details><summary>Does the AI coach work offline?</summary><p>On iPhones with Apple Intelligence, chat, insights and quests run on the device. Other iPhones use our cloud coach. Meal reactions always use the cloud.</p></details>
-        <details><summary>Is it available in Indonesian?</summary><p>Yes. Meowtrek speaks English and Bahasa Indonesia and follows your iPhone's language, including the cat coach.</p></details>
-        <details><summary>What happens if I delete the app?</summary><p>Your step history stays in Apple Health. With Meowtrek Plus your cat, coins, items and treks are backed up to your private iCloud every day, so you can restore them on a new iPhone.</p></details>
+        <details><summary>What happens if I delete the app?</summary><p>Your step history stays in Apple Health. Coins, items and your cat's progress live on the device; with Meowtrek Plus they are also backed up to your private iCloud every day, so you can restore them on a new iPhone.</p></details>
+        <details><summary>How do I get help?</summary><p>See the <a href="support.html">support page</a>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="wrap">
+      <div class="cta">
+        <svg class="cta-trail" viewBox="0 0 1280 340" preserveAspectRatio="none" aria-hidden="true"><path d="M620 380 C 720 260, 820 300, 900 200 S 1080 60, 1300 90" fill="none" stroke="#2B2622" stroke-opacity=".25" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 18" vector-effect="non-scaling-stroke"/></svg>
+        <div class="cta-copy">
+          <h2>Your cat is waiting by the door.</h2>
+          <p>Meowtrek is coming soon to iPhone and Apple Watch. Free to play, no account needed.</p>
+          <span class="btn primary lg" aria-disabled="true">
+            <svg width="20" height="24" viewBox="0 0 20 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.7c0-2.9 2.4-4.3 2.5-4.4-1.4-2-3.5-2.3-4.3-2.3-1.8-.2-3.6 1.1-4.5 1.1-.9 0-2.4-1.1-3.9-1-2 0-3.9 1.2-4.9 3-2.1 3.7-.5 9.1 1.5 12.1 1 1.4 2.2 3.1 3.8 3 1.5-.1 2.1-1 3.9-1s2.3 1 3.9 1c1.6 0 2.6-1.5 3.6-2.9 1.1-1.7 1.6-3.3 1.6-3.4 0 0-3.1-1.2-3.2-4.8zM13.5 4c.8-1 1.4-2.4 1.2-3.8-1.2.1-2.6.8-3.5 1.8-.8.9-1.4 2.3-1.2 3.7 1.3.1 2.7-.7 3.5-1.7z"/></svg>
+            <span class="stack"><small>Coming soon to the</small>App Store</span>
+          </span>
+        </div>
+        <img class="cta-cat" src="assets/icon.png" alt="" width="240" height="240">
       </div>
     </div>
   </section>
 </main>
 
-<footer class="site-footer">
-  <div class="wrap foot-grid">
-    <div class="foot-brand">
-      <a class="brand" href="./"><img src="assets/icon.png" alt="" width="36" height="36"><span>Meow<b>trek</b></span></a>
-      <p>A cozy step tracker for iPhone and Apple Watch, with a little cat who walks every step with you.</p>
-      <span class="foot-badge">Coming soon to the App Store</span>
-    </div>
-    <nav class="foot-col" aria-label="Product">
-      <h2>Product</h2>
-      <a href="#how">How it works</a>
-      <a href="#features">Features</a>
-      <a href="#plus">Meowtrek Plus</a>
-      <a href="#faq">FAQ</a>
-    </nav>
-    <nav class="foot-col" aria-label="Help">
-      <h2>Help</h2>
-      <a href="support.html">Support</a>
-      <a href="https://github.com/giankbr/meowtrek/issues">Report a bug</a>
-      <a href="https://github.com/giankbr/meowtrek">Source on GitHub</a>
-    </nav>
-    <nav class="foot-col" aria-label="Legal">
-      <h2>Legal</h2>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms of Use</a>
-    </nav>
+<footer class="trail-footer">
+  <div class="footer-edge" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path d="M0 120 V72 C 240 32, 480 92, 760 62 S 1180 12, 1440 42 V120 Z" fill="var(--night)"/>
+      <path d="M80 104 C 300 70, 520 108, 760 84 S 1080 48, 1196 40" fill="none" stroke="var(--honey)" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 18" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <span class="footer-bubble">See you on the trail</span>
+    <img class="footer-cat" src="assets/icon.png" alt="" width="84" height="84">
   </div>
-  <div class="wrap foot-bottom">
-    <span>© 2026 Meowtrek. All rights reserved.</span>
-    <span>Made for walkers and their cats.</span>
+  <div class="footer-body">
+    <div class="wrap">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="./"><img src="assets/icon.png" alt="" width="52" height="52"><span>Meow<b>trek</b></span></a>
+          <p>A cozy step tracker for iPhone and Apple Watch, with a little cat who walks every step with you.</p>
+          <div class="footer-actions">
+            <span class="btn light" aria-disabled="true">
+              <svg width="17" height="20" viewBox="0 0 20 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.7c0-2.9 2.4-4.3 2.5-4.4-1.4-2-3.5-2.3-4.3-2.3-1.8-.2-3.6 1.1-4.5 1.1-.9 0-2.4-1.1-3.9-1-2 0-3.9 1.2-4.9 3-2.1 3.7-.5 9.1 1.5 12.1 1 1.4 2.2 3.1 3.8 3 1.5-.1 2.1-1 3.9-1s2.3 1 3.9 1c1.6 0 2.6-1.5 3.6-2.9 1.1-1.7 1.6-3.3 1.6-3.4 0 0-3.1-1.2-3.2-4.8zM13.5 4c.8-1 1.4-2.4 1.2-3.8-1.2.1-2.6.8-3.5 1.8-.8.9-1.4 2.3-1.2 3.7 1.3.1 2.7-.7 3.5-1.7z"/></svg>
+              <span class="stack"><small>Coming soon to the</small>App Store</span>
+            </span>
+            <a class="btn outline-night" href="https://github.com/giankbr/meowtrek">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              Source on GitHub
+            </a>
+          </div>
+        </div>
+        <div class="footer-cols">
+          <nav aria-label="Product">
+            <h2>Product</h2>
+            <a href="#how">How it works</a>
+            <a href="#features">Features</a>
+            <a href="#plus">Meowtrek Plus</a>
+            <a href="#faq">FAQ</a>
+          </nav>
+          <nav aria-label="Help">
+            <h2>Help</h2>
+            <a href="support.html">Support</a>
+            <a href="https://github.com/giankbr/meowtrek/issues">Report a bug<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+          </nav>
+          <nav aria-label="Legal">
+            <h2>Legal</h2>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Use</a>
+          </nav>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Meowtrek. All rights reserved.</span>
+        <span class="tagline"><i></i>Made for walkers and their cats.</span>
+      </div>
+    </div>
   </div>
 </footer>
 </body>
