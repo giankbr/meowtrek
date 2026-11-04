@@ -2,11 +2,16 @@ import SwiftUI
 
 struct ShopView: View {
     @Environment(AppState.self) private var state
+    @Environment(\.dismiss) private var dismiss
     @State private var filter: Slot?
     @State private var buying: Item?
     @State private var hideOwned = false
+    private let pushed: Bool
 
-    init(filter: Slot? = nil) { _filter = State(initialValue: filter) }
+    init(filter: Slot? = nil) {
+        _filter = State(initialValue: filter)
+        pushed = filter != nil
+    }
 
     private var items: [Item] {
         Catalog.items.filter {
@@ -16,29 +21,38 @@ struct ShopView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Treats & boosts").font(.headline)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(state.content.consumables) { c in consumableCard(c) }
+            VStack(alignment: .leading, spacing: 16) {
+                ScreenHeader(title: "Shop") {
+                    HStack(spacing: 8) {
+                        Pill(art: "coin", text: state.coins.formatted())
+                        Pill(art: "gem", text: "\(state.gems)")
                     }
                 }
 
-                HStack {
-                    Text("Wardrobe").font(.headline)
-                    Spacer()
-                    Toggle("Hide owned", isOn: $hideOwned).toggleStyle(.button).font(.caption).tint(.leaf)
+                Text("Treats & boosts").font(.game(20, .black))
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(state.content.consumables) { c in consumableCard(c) }
+                    }
+                    .padding(.vertical, 4).padding(.bottom, 4).padding(.horizontal, 2)
                 }
-                .padding(.top, 6)
+
+                HStack {
+                    Text("Wardrobe").font(.game(20, .black))
+                    Spacer()
+                    Button { withAnimation(.snappy) { hideOwned.toggle() } } label: {
+                        Label(hideOwned ? "Show owned" : "Hide owned", systemImage: hideOwned ? "eye" : "eye.slash")
+                    }
+                    .buttonStyle(.chunky(hideOwned ? .grass : .paper, text: hideOwned ? .white : .ink, padH: 10, padV: 6))
+                }
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         chip("All", selected: filter == nil) { filter = nil }
-                        ForEach(Slot.allCases) { s in
-                            chip(s.title, selected: filter == s) { filter = s }
-                        }
+                        ForEach(Slot.allCases) { s in chip(s.title, selected: filter == s) { filter = s } }
                     }
+                    .padding(.vertical, 4).padding(.bottom, 3).padding(.horizontal, 2)
                 }
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 14) {
                     ForEach(items) { item in
                         ItemCell(item: item) {
                             if state.owned.contains(item.id) {
@@ -50,54 +64,51 @@ struct ShopView: View {
                     }
                 }
                 if items.isEmpty {
-                    Text("You own everything here. Nice!").font(.subheadline).foregroundStyle(Color.inkSoft)
+                    Text("You own everything here. Nice!").font(.game(15, .bold)).foregroundStyle(Color.inkSoft)
                         .frame(maxWidth: .infinity).padding(.vertical, 30)
                 }
             }
             .padding(16)
+            .padding(.bottom, 20)
         }
         .foregroundStyle(Color.ink)
         .background(Color.cream)
-        .navigationTitle("Shop")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                HStack(spacing: 6) {
-                    Pill(icon: "🪙", text: state.coins.formatted())
-                    Pill(icon: "💎", text: "\(state.gems)")
-                }
-            }
-        }
+        .toolbar(pushed ? .visible : .hidden, for: .navigationBar)
         .buyDialog($buying)
     }
 
     private func consumableCard(_ c: Consumable) -> some View {
         let afford = state.balance(c.currency) >= c.price
         return VStack(spacing: 6) {
-            Text(c.emoji).font(.system(size: 34))
-            Text(c.name).font(.caption.weight(.bold)).lineLimit(1)
-            Text(c.food > 0 ? "+\(c.food)% food" : "Saves 1 missed day")
-                .font(.caption2).foregroundStyle(Color.inkSoft)
-            Text("Have \(state.owns(c))").font(.caption2).foregroundStyle(Color.inkSoft)
+            ArtView(id: c.id, size: 56, line: 2.6)
+                .frame(maxWidth: .infinity).frame(height: 66)
+                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.cream))
+                .overlay(alignment: .topTrailing) {
+                    if state.owns(c) > 0 {
+                        Text("×\(state.owns(c))").font(.game(11, .black)).foregroundStyle(.white)
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(Capsule().fill(Color.grape)).overlay(Capsule().stroke(Color.ink, lineWidth: 2))
+                            .offset(x: 6, y: -6)
+                    }
+                }
+            Text(c.name).font(.game(13, .black)).lineLimit(1)
+            Text(c.food > 0 ? "+\(c.food)% food" : "Saves a streak").font(.game(11, .bold)).foregroundStyle(Color.inkSoft)
             Button { withAnimation { state.buy(c) } } label: {
-                Text("\(c.currency.icon) \(c.price)").font(.caption.weight(.bold))
-                    .frame(maxWidth: .infinity).padding(.vertical, 6)
-                    .background(afford ? Color.honey : Color.cream, in: Capsule())
+                HStack(spacing: 4) {
+                    ArtView(id: c.currency == .coin ? "coin" : "gem", size: 16, line: 1.3)
+                    Text("\(c.price)")
+                }
+                .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.chunky(.sun, radius: 12, padH: 6, padV: 5))
             .disabled(!afford)
         }
         .frame(width: 112)
-        .padding(10)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .card(padding: 10, radius: 18)
     }
 
     private func chip(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button { withAnimation(.snappy) { action() } } label: {
-            Text(title).font(.subheadline.weight(.semibold))
-                .padding(.horizontal, 14).padding(.vertical, 8)
-                .background(selected ? Color.leaf : .white, in: Capsule())
-                .foregroundStyle(selected ? .white : Color.ink)
-        }
-        .buttonStyle(.plain)
+        Button { withAnimation(.snappy) { action() } } label: { Text(title) }
+            .buttonStyle(.chunky(selected ? .grape : .paper, text: selected ? .white : .ink, radius: 20, padH: 14, padV: 7))
     }
 }

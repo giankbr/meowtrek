@@ -17,6 +17,18 @@ struct DailyQuest: Identifiable {
     }
 }
 
+struct Toast: Equatable {
+    let id = UUID()
+    let text: String
+    let art: String?
+}
+
+struct FX: Equatable {
+    enum Kind { case coins, gems, confetti }
+    var tick = 0
+    var kind = Kind.coins
+}
+
 struct ActiveEvent {
     let event: GameEvent
     let start: Date
@@ -55,7 +67,8 @@ final class AppState {
     var reminderHour = 19
     var useMiles = false
 
-    var toast: String?
+    var toast: Toast?
+    var fx = FX()
 
     init() {
         apply(Self.loadSnapshot() ?? Self.fresh())
@@ -77,7 +90,14 @@ final class AppState {
     var remaining: Int { max(0, goal - today) }
     var claimable: Int { max(0, today - claimedSteps) / 10 }
 
-    func show(_ message: String) { withAnimation(.spring) { toast = message } }
+    func show(_ message: String, art: String? = nil) {
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.6)) { toast = Toast(text: message, art: art) }
+    }
+
+    func celebrate(_ kind: FX.Kind) {
+        fx.kind = kind
+        fx.tick += 1
+    }
 
     func balance(_ c: Currency) -> Int { c == .coin ? coins : gems }
 
@@ -89,10 +109,10 @@ final class AppState {
 
     private func rewardText(coins c: Int, gems g: Int, item: String? = nil) -> String {
         var parts: [String] = []
-        if c > 0 { parts.append("+\(c) 🪙") }
-        if g > 0 { parts.append("+\(g) 💎") }
+        if c > 0 { parts.append("+\(c) coins") }
+        if g > 0 { parts.append("+\(g) gem\(g == 1 ? "" : "s")") }
         if let item, let it = Catalog.item(item) { parts.append("\(it.name) unlocked") }
-        return parts.joined(separator: "  ")
+        return parts.joined(separator: " · ")
     }
 
     var daysTogether: Int {
@@ -153,7 +173,7 @@ final class AppState {
             if !hitGoal(y), hitGoal(dayBefore), streakFreezes > 0 {
                 streakFreezes -= 1
                 frozenDays.insert(key(y))
-                show("🧊 Streak freeze saved your streak")
+                show("Streak freeze saved your streak", art: "streak_freeze")
             }
         }
         claimedDay = dayKey
@@ -167,7 +187,8 @@ final class AppState {
         let n = claimable
         coins += n
         claimedSteps += n * 10
-        show("+\(n) 🪙")
+        show("+\(n) coins", art: "coin")
+        celebrate(.coins)
         save()
     }
 
@@ -193,7 +214,8 @@ final class AppState {
         let g = lv - rewardedLevel
         gems += g
         rewardedLevel = lv
-        show("🎉 Level \(lv)!  +\(g) 💎")
+        show("Level \(lv)! +\(g) gem\(g == 1 ? "" : "s")", art: "gem")
+        celebrate(.confetti)
         save()
     }
 
@@ -228,7 +250,7 @@ final class AppState {
         inventory[c.id, default: 0] -= 1
         storedFullness = min(100, fullness + Double(c.food))
         fullnessAt = .now
-        show("😋 \(petName) loved the \(c.name)")
+        show("\(petName) loved the \(c.name)", art: c.id)
         save()
     }
 
@@ -241,7 +263,8 @@ final class AppState {
         if item.currency == .coin { coins -= item.price } else { gems -= item.price }
         owned.insert(item.id)
         equipped[item.slot] = item.id
-        show("🛍️ \(item.name) is yours")
+        show("\(item.name) is yours", art: item.id)
+        celebrate(.confetti)
         save()
     }
 
@@ -249,7 +272,7 @@ final class AppState {
         guard balance(c.currency) >= c.price else { return }
         if c.currency == .coin { coins -= c.price } else { gems -= c.price }
         if c.id == "streak_freeze" { streakFreezes += 1 } else { inventory[c.id, default: 0] += 1 }
-        show("\(c.emoji) +1 \(c.name)")
+        show("+1 \(c.name)", art: c.id)
         save()
     }
 
@@ -337,7 +360,8 @@ final class AppState {
         guard isDone(q), !isClaimed(q) else { return }
         coins += q.t.reward
         claimed.insert(q.id)
-        show("\(q.t.icon) +\(q.t.reward) 🪙")
+        show("\(q.t.title) · +\(q.t.reward) coins", art: "coin")
+        celebrate(.coins)
         save()
     }
 
@@ -348,7 +372,8 @@ final class AppState {
         guard chestReady else { return }
         grant(coins: 30, gems: 1)
         claimed.insert("chest")
-        show("🧰 +30 🪙  +1 💎")
+        show("Chest opened · +30 coins · +1 gem", art: "chest")
+        celebrate(.confetti)
         save()
     }
 
@@ -395,7 +420,9 @@ final class AppState {
         let dup = m.item.map { owned.contains($0) } ?? false
         grant(coins: m.coins + (dup ? 100 : 0), gems: m.gems, item: m.item)
         claimedForever.insert(key(a, m))
-        show("\(a.event.icon) " + rewardText(coins: m.coins + (dup ? 100 : 0), gems: m.gems, item: dup ? nil : m.item))
+        show(rewardText(coins: m.coins + (dup ? 100 : 0), gems: m.gems, item: dup ? nil : m.item),
+             art: dup ? "coin" : m.item ?? (m.gems > 0 ? "gem" : "coin"))
+        celebrate(m.item != nil ? .confetti : m.gems > 0 ? .gems : .coins)
         save()
     }
 
@@ -408,7 +435,8 @@ final class AppState {
         guard isReached(l), !isClaimed(l) else { return }
         grant(coins: l.coins, gems: l.gems)
         claimedForever.insert("lm:\(l.id)")
-        show("\(l.emoji) " + rewardText(coins: l.coins, gems: l.gems))
+        show("\(l.name) · " + rewardText(coins: l.coins, gems: l.gems), art: "coin")
+        celebrate(.confetti)
         save()
     }
 
@@ -431,7 +459,8 @@ final class AppState {
         guard isUnlocked(a), !isClaimed(a) else { return }
         grant(coins: a.coins, gems: a.gems)
         claimedForever.insert("ach:\(a.id)")
-        show("\(a.icon) " + rewardText(coins: a.coins, gems: a.gems))
+        show("\(a.title) · " + rewardText(coins: a.coins, gems: a.gems), art: a.gems > 0 ? "gem" : "coin")
+        celebrate(.confetti)
         save()
     }
 
@@ -457,7 +486,8 @@ final class AppState {
         content.landmarks.forEach(claim)
         content.achievements.forEach(claim)
         quiet()
-        show(rewardText(coins: coins - before.0, gems: gems - before.1))
+        show(rewardText(coins: coins - before.0, gems: gems - before.1), art: "chest")
+        celebrate(.confetti)
     }
 
     // MARK: Friends
@@ -487,10 +517,11 @@ final class AppState {
               f.id != profileID else { return false }
         if let i = friends.firstIndex(where: { $0.id == f.id }) {
             friends[i] = f
-            show("🔄 \(f.name) updated")
+            show("\(f.name) updated", art: f.fur)
         } else {
             friends.append(f)
-            show("🐾 \(f.name) joined your pack")
+            show("\(f.name) joined your pack", art: f.fur)
+            celebrate(.confetti)
         }
         save()
         return true

@@ -62,8 +62,9 @@ struct GameEvent: Codable, Identifiable {
     let id: String
     let name: String
     let icon: String
+    let tint: String
     let token: String
-    let tokenIcon: String
+    let tokenArt: String
     let stepsPerToken: Int
     let start: String
     let end: String
@@ -76,6 +77,7 @@ struct QuestTemplate: Codable, Identifiable {
     let id: String
     let title: String
     let icon: String
+    let tint: String
     let kind: Kind
     let reward: Int
     let fraction: Double
@@ -87,7 +89,8 @@ struct QuestTemplate: Codable, Identifiable {
 struct Landmark: Codable, Identifiable {
     let id: String
     let name: String
-    let emoji: String
+    let icon: String
+    let tint: String
     let steps: Int
     let coins: Int
     let gems: Int
@@ -98,6 +101,7 @@ struct Achievement: Codable, Identifiable {
     let id: String
     let title: String
     let icon: String
+    let tint: String
     let detail: String
     let kind: Kind
     let value: Int

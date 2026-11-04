@@ -41,10 +41,14 @@ struct StatsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Text("Stats").font(.largeTitle.weight(.bold))
-                    Spacer()
-                    Pill(icon: "🔥", text: "\(state.streak)")
+                ScreenHeader(title: "Stats") {
+                    HStack(spacing: 4) {
+                        Image(systemName: "flame.fill").foregroundStyle(Color.pumpkin)
+                        Text("\(state.streak)").font(.game(16, .black))
+                    }
+                    .padding(.horizontal, 12).padding(.vertical, 6)
+                    .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.ink, lineWidth: 2.5))
+                    .background(Capsule().fill(Color.ink).offset(y: 3))
                 }
                 tabBar
                 switch tab {
@@ -55,6 +59,7 @@ struct StatsView: View {
                 }
             }
             .padding(16)
+            .padding(.bottom, 20)
         }
         .foregroundStyle(Color.ink)
         .background(Color.cream)
@@ -62,19 +67,16 @@ struct StatsView: View {
     }
 
     private var tabBar: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 6) {
             ForEach(Tab.allCases, id: \.self) { t in
                 Button { withAnimation(.snappy) { tab = t } } label: {
-                    VStack(spacing: 6) {
-                        Label(t.rawValue, systemImage: t.icon)
-                            .font(.footnote.weight(.semibold))
-                            .lineLimit(1)
-                            .fixedSize()
-                            .foregroundStyle(tab == t ? Color.ink : Color.inkSoft)
-                        Capsule().fill(tab == t ? Color.leaf : .clear).frame(height: 3)
+                    VStack(spacing: 2) {
+                        Image(systemName: t.icon).font(.system(size: 15, weight: .black))
+                        Text(t.rawValue).font(.game(11, .black)).lineLimit(1)
                     }
+                    .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.chunky(tab == t ? .grass : .paper, text: tab == t ? .white : .inkSoft, radius: 14, padH: 4, padV: 7))
             }
         }
     }
@@ -158,13 +160,13 @@ struct StatsView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(total.formatted()).font(.system(size: 36, weight: .bold)).contentTransition(.numericText())
-                    Text(subtitle).font(.subheadline).foregroundStyle(Color.inkSoft)
+                    Text(total.formatted()).font(.game(38, .black)).contentTransition(.numericText())
+                    Text(subtitle).font(.game(14, .bold)).foregroundStyle(Color.inkSoft)
                 }
                 Text(range == .day ? "\(state.remaining.formatted()) to go today"
                      : "Average \(avg.formatted()) a day · goal hit \(hits) of \(elapsed.count)")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Color.leafDark)
+                    .font(.game(13, .black))
+                    .foregroundStyle(Color.grassDark)
 
                 if range == .day { ring }
                 chart(avg: avg).padding(.top, 8)
@@ -172,10 +174,10 @@ struct StatsView: View {
             .card()
 
             HStack {
-                metric("🗺️", state.distanceText(meters), "distance\(est)")
-                metric("⏱️", activeTime(total), "active · est.")
-                metric("🔥", kcal.formatted(), "kcal\(est)")
-                metric("🪜", state.steps.source == .health ? "\(flights)" : "–", "flights")
+                metric("map.fill", .sky, state.distanceText(meters), "distance\(est)")
+                metric("timer", .grape, activeTime(total), "active · est.")
+                metric("flame.fill", .tomato, kcal.formatted(), "kcal\(est)")
+                metric("stairs", .grass, state.steps.source == .health ? "\(flights)" : "–", "flights")
             }
             .card(padding: 12)
 
@@ -184,19 +186,21 @@ struct StatsView: View {
     }
 
     private var rangePicker: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: 4) {
             ForEach(Range.allCases, id: \.self) { r in
-                Button { withAnimation(.snappy) { range = r } } label: {
-                    Text(r.rawValue).font(.subheadline.weight(.semibold))
+                Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { range = r } } label: {
+                    Text(r.rawValue).font(.game(14, .black))
                         .padding(.horizontal, 14).padding(.vertical, 7)
-                        .background(range == r ? Color.white : .clear, in: Capsule())
+                        .background(Capsule().fill(range == r ? Color.sun : .clear))
+                        .overlay(Capsule().stroke(range == r ? Color.ink : .clear, lineWidth: 2.5))
                         .foregroundStyle(range == r ? Color.ink : Color.inkSoft)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SquishStyle())
             }
         }
-        .padding(3)
-        .background(Color.leafLight.opacity(0.35), in: Capsule())
+        .padding(4)
+        .background(Capsule().fill(Color.paper))
+        .overlay(Capsule().stroke(Color.ink, lineWidth: 2.5))
     }
 
     private var ring: some View {
@@ -252,11 +256,11 @@ struct StatsView: View {
         return minutes >= 60 ? "\(minutes / 60)h \(minutes % 60)m" : "\(minutes)m"
     }
 
-    private func metric(_ icon: String, _ value: String, _ label: String) -> some View {
-        VStack(spacing: 4) {
-            Text(icon)
-            Text(value).font(.headline.weight(.bold)).lineLimit(1).minimumScaleFactor(0.7)
-            Text(label).font(.caption2).foregroundStyle(Color.inkSoft).lineLimit(1)
+    private func metric(_ symbol: String, _ tint: Color, _ value: String, _ label: String) -> some View {
+        VStack(spacing: 5) {
+            GameIcon(symbol: symbol, tint: tint, size: 34)
+            Text(value).font(.game(16, .black)).lineLimit(1).minimumScaleFactor(0.6)
+            Text(label).font(.game(10, .bold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
     }
@@ -273,7 +277,7 @@ struct StatsView: View {
 
         return VStack(spacing: 10) {
             HStack {
-                Text(first.formatted(.dateTime.month(.wide).year())).font(.headline)
+                Text(first.formatted(.dateTime.month(.wide).year())).font(.game(18, .black))
                 Spacer()
                 Button { shiftMonth(-1) } label: { navIcon("chevron.left") }
                 Button { shiftMonth(1) } label: { navIcon("chevron.right") }
@@ -311,9 +315,10 @@ struct StatsView: View {
     }
 
     private func navIcon(_ name: String) -> some View {
-        Image(systemName: name).font(.caption.weight(.bold))
-            .frame(width: 30, height: 30)
-            .background(Color.cream, in: Circle())
+        Image(systemName: name).font(.system(size: 13, weight: .black))
+            .frame(width: 32, height: 32)
+            .background(Circle().fill(Color.sun))
+            .overlay(Circle().stroke(Color.ink, lineWidth: 2.5))
     }
 
     private func dayDetail(_ d: Date) -> some View {
@@ -341,7 +346,9 @@ struct StatsView: View {
             Text("\(cal.component(.day, from: d))")
                 .font(.caption.weight(.bold))
                 .frame(width: 30, height: 30)
-                .background(Circle().fill(hit ? Color.leafLight : Color.cream))
+                .background(Circle().fill(hit ? Color.grass : Color.cream))
+                .foregroundStyle(hit ? .white : Color.ink)
+                .overlay(Circle().stroke(Color.ink.opacity(hit ? 1 : 0.15), lineWidth: 2))
                 .overlay(Circle().stroke(d == selectedDay ? Color.honey : d == today ? Color.leafDark : .clear, lineWidth: 2))
             Text(future || s == 0 ? " " : shortSteps(s))
                 .font(.system(size: 9))
@@ -421,14 +428,14 @@ struct StatsView: View {
         let bestWeek = weeks.max { $0.value < $1.value }
 
         return VStack(spacing: 12) {
-            record("🏆", "Best day", best.map { "\($0.value.formatted()) steps" } ?? "–",
+            record("trophy.fill", .sun, "Best day", best.map { "\($0.value.formatted()) steps" } ?? "–",
                    best.map { $0.key.formatted(date: .abbreviated, time: .omitted) } ?? "")
-            record("📅", "Best week", bestWeek.map { "\($0.value.formatted()) steps" } ?? "–",
+            record("calendar", .sky, "Best week", bestWeek.map { "\($0.value.formatted()) steps" } ?? "–",
                    bestWeek.map { "Week of \($0.key.formatted(date: .abbreviated, time: .omitted))" } ?? "")
-            record("🔥", "Longest streak", "\(state.longestStreak) days", "Current: \(state.streak) days · 🧊 \(state.streakFreezes) freezes")
-            record("🌍", "All time", "\(daily.values.reduce(0, +).formatted()) steps", "\(daily.count) days tracked")
+            record("flame.fill", .pumpkin, "Longest streak", "\(state.longestStreak) days", "Current: \(state.streak) days · \(state.streakFreezes) freezes")
+            record("globe.asia.australia.fill", .grass, "All time", "\(daily.values.reduce(0, +).formatted()) steps", "\(daily.count) days tracked")
 
-            Text("Badges").font(.headline).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
+            Text("Badges").font(.game(22, .black)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
                 ForEach(state.content.achievements) { a in badge(a) }
             }
@@ -438,30 +445,29 @@ struct StatsView: View {
     private func badge(_ a: Achievement) -> some View {
         let v = state.value(a), unlocked = state.isUnlocked(a), claimed = state.isClaimed(a)
         return VStack(spacing: 6) {
-            Text(a.icon).font(.system(size: 32)).grayscale(unlocked ? 0 : 1).opacity(unlocked ? 1 : 0.5)
-            Text(a.title).font(.subheadline.weight(.bold))
-            Text(a.detail).font(.caption2).foregroundStyle(Color.inkSoft).multilineTextAlignment(.center).lineLimit(2)
+            GameIcon(symbol: a.icon, tint: Color(hexString: a.tint), size: 52, muted: !unlocked)
+            Text(a.title).font(.game(15, .black))
+            Text(a.detail).font(.game(11, .bold)).foregroundStyle(Color.inkSoft).multilineTextAlignment(.center).lineLimit(2)
             if claimed {
-                Label("Claimed", systemImage: "checkmark.seal.fill").font(.caption2.weight(.bold)).foregroundStyle(Color.leaf)
+                Tag(text: "Claimed", color: .grass)
             } else if unlocked {
-                Button("Claim") { withAnimation { state.claim(a) } }
-                    .font(.caption.weight(.bold)).buttonStyle(.borderedProminent).tint(.honey).foregroundStyle(Color.night)
+                Button("Claim") { withAnimation { state.claim(a) } }.buttonStyle(.chunky(.sun, padH: 12, padV: 5))
             } else {
-                ProgressBar(value: Double(v) / Double(a.value), height: 5)
-                Text("\(min(v, a.value).formatted()) / \(a.value.formatted())").font(.caption2).foregroundStyle(Color.inkSoft)
+                ProgressBar(value: Double(v) / Double(a.value), color: Color(hexString: a.tint), height: 10)
+                Text("\(shortSteps(min(v, a.value))) / \(shortSteps(a.value))").font(.game(11, .bold)).foregroundStyle(Color.inkSoft)
             }
         }
         .frame(maxWidth: .infinity, minHeight: 150)
         .card(padding: 12)
     }
 
-    private func record(_ icon: String, _ title: String, _ value: String, _ detail: String) -> some View {
+    private func record(_ symbol: String, _ tint: Color, _ title: String, _ value: String, _ detail: String) -> some View {
         HStack(spacing: 14) {
-            Text(icon).font(.system(size: 30))
+            GameIcon(symbol: symbol, tint: tint, size: 46)
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.caption).foregroundStyle(Color.inkSoft)
-                Text(value).font(.headline)
-                Text(detail).font(.caption2).foregroundStyle(Color.inkSoft)
+                Text(title).font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                Text(value).font(.game(18, .black))
+                Text(detail).font(.game(11, .bold)).foregroundStyle(Color.inkSoft)
             }
             Spacer()
         }
@@ -483,8 +489,7 @@ struct StatsView: View {
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSoft)
             Button("Refresh") { Task { await state.steps.load() } }
-                .buttonStyle(.borderedProminent)
-                .tint(.leaf)
+                .buttonStyle(.chunky(.grass, text: .white))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .card()

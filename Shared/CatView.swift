@@ -11,25 +11,15 @@ struct Triangle: Shape {
     }
 }
 
-struct WitchHat: View {
-    var body: some View {
-        GeometryReader { g in
-            let w = g.size.width, h = g.size.height
-            ZStack {
-                Triangle().fill(Color(hex: 0x3E3266))
-                    .frame(width: w * 0.55, height: h * 0.85)
-                    .rotationEffect(.degrees(-8))
-                    .position(x: w * 0.5, y: h * 0.45)
-                Capsule().fill(Color(hex: 0xF6C945))
-                    .frame(width: w * 0.48, height: h * 0.09)
-                    .position(x: w / 2, y: h * 0.76)
-                Capsule().fill(Color(hex: 0x2E2447))
-                    .frame(width: w, height: h * 0.16)
-                    .position(x: w / 2, y: h * 0.88)
-                Text("☾").font(.system(size: h * 0.22, weight: .bold))
-                    .foregroundStyle(Color(hex: 0xF6C945))
-                    .position(x: w * 0.47, y: h * 0.5)
-            }
+enum CatMood {
+    case normal, happy, sleepy, hungry
+
+    init(_ text: String) {
+        switch text {
+        case "Proud", "Cheerful": self = .happy
+        case "Sleepy": self = .sleepy
+        case "Hungry": self = .hungry
+        default: self = .normal
         }
     }
 }
@@ -38,133 +28,249 @@ struct WitchHat: View {
 struct CatView: View {
     var outfit: [Slot: Item]
     var size: CGFloat = 200
+    var mood: CatMood = .normal
+    var hop = 0
+    var animated = true
+
     @State private var bob = false
+    @State private var blink = false
+    @State private var lift: CGFloat = 0
 
     var body: some View {
-        CatCanvas(outfit: outfit)
+        CatCanvas(outfit: outfit, mood: mood, blink: blink)
             .frame(width: 200, height: 250)
-            .offset(y: bob ? -3 : 0)
-            .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true), value: bob)
+            .scaleEffect(x: 1, y: bob ? 1.025 : 0.985, anchor: .bottom)
+            .offset(y: lift)
+            .animation(animated ? .easeInOut(duration: 1.3).repeatForever(autoreverses: true) : nil, value: bob)
             .scaleEffect(size / 200)
             .frame(width: size, height: size * 1.25)
-            .onAppear { bob = true }
+            .onAppear { if animated { bob = true } }
+            .task {
+                guard animated else { return }
+                while !Task.isCancelled {
+                    try? await Task.sleep(for: .seconds(Double.random(in: 2.2...4.5)))
+                    withAnimation(.easeIn(duration: 0.06)) { blink = true }
+                    try? await Task.sleep(for: .milliseconds(110))
+                    withAnimation(.easeOut(duration: 0.08)) { blink = false }
+                }
+            }
+            .onChange(of: hop) {
+                withAnimation(.easeOut(duration: 0.16)) { lift = -34 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
+                    withAnimation(.spring(response: 0.38, dampingFraction: 0.42)) { lift = 0 }
+                }
+            }
     }
 }
 
 private struct CatCanvas: View {
     let outfit: [Slot: Item]
+    let mood: CatMood
+    let blink: Bool
 
-    private let cream = Color(hex: 0xFFF6E8)
-    private let pink = Color(hex: 0xF4A3A8)
-    private var fur: Color { outfit[.fur]?.hex.map { Color(hex: $0) } ?? Color(hex: 0xF2A65A) }
+    private let line: CGFloat = 3.5
+    private let cream = Color(hex: 0xFFF3DE)
+    private let pink = Color(hex: 0xFF9FB2)
+    private var fur: Color { outfit[.fur]?.hex.map { Color(hex: $0) } ?? Color(hex: 0xF7A453) }
     private var suit: Item? { outfit[.body] }
     private var suitColor: Color { suit?.hex.map { Color(hex: $0) } ?? fur }
     private var hooded: Bool { suit?.suit == .frog || suit?.suit == .bear }
+    private static let backBags: Set<String> = ["bat_wings", "butterfly"]
 
     var body: some View {
         ZStack {
-            Capsule().fill(suit?.suit == .frog ? suitColor : fur)
-                .frame(width: 24, height: 72).rotationEffect(.degrees(35)).position(x: 152, y: 188)
-
+            if let bag = outfit[.bag], Self.backBags.contains(bag.id) {
+                ArtView(id: bag.id, size: 176, line: line).position(x: 100, y: 176)
+            }
+            tail
             feet
             torso
+            if let neck = outfit[.neck] { ArtView(id: neck.id, size: 92, line: line).position(x: 100, y: 152) }
             arms
-
-            if let bag = outfit[.bag] { emoji(bag.emoji, 32).position(x: 158, y: 206) }
-            if let neck = outfit[.neck] { emoji(neck.emoji, 30).position(x: 100, y: 152) }
-
+            if let bag = outfit[.bag], !Self.backBags.contains(bag.id) {
+                ArtView(id: bag.id, size: 62, line: line).position(x: 160, y: 204)
+            }
             if hooded { hood } else { ears }
             head
-            if let eyes = outfit[.eyes] { emoji(eyes.emoji, 54).position(x: 100, y: 104) }
-            hat
-            if let hand = outfit[.hand] { emoji(hand.emoji, 36).position(x: 42, y: 196) }
+            face
+            if let eyes = outfit[.eyes] { ArtView(id: eyes.id, size: 124, line: line).position(x: 100, y: 104) }
+            if let hat = outfit[.hat] { ArtView(id: hat.id, size: 124, line: line).position(x: 100, y: hooded ? 18 : 30) }
+            if let hand = outfit[.hand] { ArtView(id: hand.id, size: 66, line: line).position(x: 38, y: 190) }
         }
     }
 
-    private func emoji(_ s: String, _ size: CGFloat) -> some View {
-        Text(s).font(.system(size: size))
+    private var tail: some View {
+        UPath { p, pt in
+            p.move(to: pt(8, 92))
+            p.addCurve(to: pt(70, 14), control1: pt(80, 96), control2: pt(96, 40))
+        }
+        .tube(suit?.suit == .frog || suit?.suit == .bear ? suitColor : fur, 13)
+        .frame(width: 64, height: 90)
+        .position(x: 166, y: 178)
     }
 
     @ViewBuilder private var feet: some View {
         if let shoes = outfit[.shoes] {
-            emoji(shoes.emoji, 30).position(x: 76, y: 232)
-            emoji(shoes.emoji, 30).scaleEffect(x: -1).position(x: 124, y: 232)
+            ArtView(id: shoes.id, size: 46, line: line).scaleEffect(x: -1).position(x: 76, y: 232)
+            ArtView(id: shoes.id, size: 46, line: line).position(x: 124, y: 232)
         } else {
-            Ellipse().fill(fur).frame(width: 34, height: 20).position(x: 78, y: 232)
-            Ellipse().fill(fur).frame(width: 34, height: 20).position(x: 122, y: 232)
+            ForEach([78.0, 122.0], id: \.self) { x in
+                ZStack {
+                    Ellipse().sticker(fur, line).frame(width: 38, height: 24)
+                    HStack(spacing: 5) { ForEach(0..<2) { _ in Capsule().fill(Color.ink).frame(width: 2.5, height: 7) } }
+                        .offset(y: 3)
+                }
+                .position(x: x, y: 234)
+            }
         }
     }
 
     @ViewBuilder private var torso: some View {
-        Ellipse().fill(suitColor).frame(width: 104, height: 96).position(x: 100, y: 188)
+        UPath { p, pt in
+            p.move(to: pt(50, 0))
+            p.addCurve(to: pt(100, 70), control1: pt(86, 0), control2: pt(100, 36))
+            p.addCurve(to: pt(50, 100), control1: pt(100, 92), control2: pt(78, 100))
+            p.addCurve(to: pt(0, 70), control1: pt(22, 100), control2: pt(0, 92))
+            p.addCurve(to: pt(50, 0), control1: pt(0, 36), control2: pt(14, 0))
+        }
+        .sticker(suitColor, line)
+        .frame(width: 104, height: 100)
+        .position(x: 100, y: 186)
         if suit?.suit == .cloak {
-            Text("✦  ✧\n ✧ ✦").font(.system(size: 12)).foregroundStyle(Color.honey.opacity(0.9))
-                .position(x: 100, y: 196)
+            ZStack {
+                poly([(30, 0), (50, 40), (70, 0)]).sticker(.sun, line * 0.8)
+                star(30, 70, 8).fill(Color.sun)
+                star(70, 84, 6).fill(Color.sun)
+                star(64, 56, 4).fill(Color.white)
+            }
+            .frame(width: 80, height: 70).position(x: 100, y: 180)
         } else {
-            Ellipse().fill(hooded ? Color.white.opacity(0.75) : cream)
-                .frame(width: 58, height: 58).position(x: 100, y: 196)
+            Ellipse().fill(hooded ? Color.white.opacity(0.7) : cream).frame(width: 58, height: 54).position(x: 100, y: 198)
         }
     }
 
     @ViewBuilder private var arms: some View {
-        Capsule().fill(suitColor).frame(width: 24, height: 44).rotationEffect(.degrees(25)).position(x: 56, y: 180)
-        Capsule().fill(suitColor).frame(width: 24, height: 44).rotationEffect(.degrees(-25)).position(x: 144, y: 180)
-        Circle().fill(fur).frame(width: 18).position(x: 48, y: 198)
-        Circle().fill(fur).frame(width: 18).position(x: 152, y: 198)
+        ForEach([(54.0, 22.0), (146.0, -22.0)], id: \.0) { x, rot in
+            ZStack(alignment: .bottom) {
+                Capsule().sticker(suitColor, line).frame(width: 24, height: 44)
+                Circle().sticker(fur, line).frame(width: 22).offset(y: 4)
+            }
+            .rotationEffect(.degrees(rot))
+            .position(x: x, y: 182)
+        }
     }
 
     @ViewBuilder private var ears: some View {
-        Triangle().fill(fur).frame(width: 40, height: 46).rotationEffect(.degrees(-15)).position(x: 60, y: 50)
-        Triangle().fill(fur).frame(width: 40, height: 46).rotationEffect(.degrees(15)).position(x: 140, y: 50)
-        Triangle().fill(pink).frame(width: 20, height: 24).rotationEffect(.degrees(-15)).position(x: 61, y: 58)
-        Triangle().fill(pink).frame(width: 20, height: 24).rotationEffect(.degrees(15)).position(x: 139, y: 58)
+        ForEach([(58.0, -12.0), (142.0, 12.0)], id: \.0) { x, rot in
+            ZStack {
+                UPath { p, pt in
+                    p.move(to: pt(0, 100)); p.addLine(to: pt(38, 10))
+                    p.addQuadCurve(to: pt(62, 10), control: pt(50, -8))
+                    p.addLine(to: pt(100, 100)); p.closeSubpath()
+                }.sticker(fur, line)
+                UPath { p, pt in
+                    p.move(to: pt(22, 100)); p.addLine(to: pt(44, 34))
+                    p.addQuadCurve(to: pt(56, 34), control: pt(50, 24))
+                    p.addLine(to: pt(78, 100)); p.closeSubpath()
+                }.fill(pink)
+            }
+            .frame(width: 46, height: 54)
+            .rotationEffect(.degrees(rot))
+            .position(x: x, y: 54)
+        }
     }
 
     @ViewBuilder private var hood: some View {
-        Circle().fill(suitColor).frame(width: 158).position(x: 100, y: 100)
+        Circle().sticker(suitColor, line).frame(width: 172).position(x: 100, y: 100)
         if suit?.suit == .frog {
-            ForEach([64.0, 136.0], id: \.self) { x in
+            ForEach([62.0, 138.0], id: \.self) { x in
                 ZStack {
-                    Circle().fill(suitColor).frame(width: 48)
-                    Circle().fill(.white).frame(width: 32)
-                    Circle().fill(Color.ink).frame(width: 15)
+                    Circle().sticker(suitColor, line).frame(width: 50)
+                    Circle().sticker(.white, line * 0.8).frame(width: 32)
+                    Circle().fill(Color.ink).frame(width: 14).offset(y: 2)
                 }
-                .position(x: x, y: 32)
+                .position(x: x, y: 30)
             }
         } else {
-            ForEach([48.0, 152.0], id: \.self) { x in
+            ForEach([42.0, 158.0], id: \.self) { x in
                 ZStack {
-                    Circle().fill(suitColor).frame(width: 42)
-                    Circle().fill(.black.opacity(0.15)).frame(width: 22)
+                    Circle().sticker(suitColor, line).frame(width: 44)
+                    Circle().fill(Color.black.opacity(0.15)).frame(width: 22)
                 }
-                .position(x: x, y: 42)
+                .position(x: x, y: 40)
             }
         }
     }
 
     @ViewBuilder private var head: some View {
-        Ellipse().fill(fur).frame(width: 140, height: 118).position(x: 100, y: 104)
-        ForEach([88.0, 100.0, 112.0], id: \.self) { x in
-            Capsule().fill(.black.opacity(0.08)).frame(width: 6, height: 16).position(x: x, y: x == 100 ? 58 : 62)
+        UPath { p, pt in
+            p.move(to: pt(50, 0))
+            p.addCurve(to: pt(100, 52), control1: pt(84, 0), control2: pt(100, 22))
+            p.addCurve(to: pt(50, 100), control1: pt(100, 86), control2: pt(80, 100))
+            p.addCurve(to: pt(0, 52), control1: pt(20, 100), control2: pt(0, 86))
+            p.addCurve(to: pt(50, 0), control1: pt(0, 22), control2: pt(16, 0))
         }
-        Ellipse().fill(cream).frame(width: 92, height: 56).position(x: 100, y: 126)
-        ForEach([74.0, 126.0], id: \.self) { x in
-            Circle().fill(Color.ink).frame(width: 24).position(x: x, y: 104)
-            Circle().fill(.white).frame(width: 8).position(x: x - 5, y: 98)
+        .sticker(fur, line)
+        .frame(width: 152, height: 124)
+        .position(x: 100, y: 104)
+        ForEach([86.0, 100.0, 114.0], id: \.self) { x in
+            Capsule().fill(Color.black.opacity(0.13)).frame(width: 6, height: x == 100 ? 18 : 13)
+                .position(x: x, y: x == 100 ? 55 : 58)
         }
-        Ellipse().fill(pink.opacity(0.55)).frame(width: 18, height: 10).position(x: 58, y: 126)
-        Ellipse().fill(pink.opacity(0.55)).frame(width: 18, height: 10).position(x: 142, y: 126)
-        Triangle().fill(pink).frame(width: 10, height: 7).rotationEffect(.degrees(180)).position(x: 100, y: 120)
-        Text("ω").font(.system(size: 13, weight: .bold)).foregroundStyle(Color.ink).position(x: 100, y: 129)
+        Ellipse().fill(cream).frame(width: 94, height: 58).position(x: 100, y: 130)
     }
 
-    @ViewBuilder private var hat: some View {
-        if let hat = outfit[.hat] {
-            if hat.id == "witch_hat" {
-                WitchHat().frame(width: 116, height: 92).position(x: 100, y: 30)
-            } else {
-                emoji(hat.emoji, 64).position(x: 100, y: hooded ? 26 : 38)
+    @ViewBuilder private var face: some View {
+        ForEach([72.0, 128.0], id: \.self) { x in eye.position(x: x, y: 106) }
+        Ellipse().fill(pink.opacity(0.75)).frame(width: 20, height: 11).position(x: 54, y: 128)
+        Ellipse().fill(pink.opacity(0.75)).frame(width: 20, height: 11).position(x: 146, y: 128)
+        UPath { p, pt in
+            p.move(to: pt(0, 0)); p.addLine(to: pt(100, 0))
+            p.addQuadCurve(to: pt(0, 0), control: pt(50, 160))
+        }
+        .sticker(pink, 2).frame(width: 12, height: 8).position(x: 100, y: 122)
+        mouth
+        ForEach([(36.0, 132.0, -8.0), (36.0, 140.0, 6.0), (164.0, 132.0, 8.0), (164.0, 140.0, -6.0)], id: \.1) { x, y, r in
+            Capsule().fill(Color.ink.opacity(0.55)).frame(width: 16, height: 2).rotationEffect(.degrees(r)).position(x: x, y: y)
+        }
+        if mood == .hungry {
+            UPath { p, pt in
+                p.move(to: pt(50, 0)); p.addQuadCurve(to: pt(50, 100), control: pt(110, 80))
+                p.addQuadCurve(to: pt(50, 0), control: pt(-10, 80))
             }
+            .sticker(.sky, 2).frame(width: 12, height: 18).position(x: 156, y: 84)
+        }
+    }
+
+    @ViewBuilder private var eye: some View {
+        switch mood {
+        case .happy:
+            arc((0, 90), (100, 90), via: (50, -40)).line(4.5).frame(width: 24, height: 14)
+        case .sleepy:
+            arc((0, 20), (100, 20), via: (50, 110)).line(4.5).frame(width: 24, height: 12)
+        default:
+            ZStack {
+                Ellipse().fill(Color.ink).frame(width: mood == .hungry ? 30 : 25, height: mood == .hungry ? 34 : 29)
+                Circle().fill(.white).frame(width: mood == .hungry ? 12 : 10).offset(x: -5, y: -7)
+                Circle().fill(.white).frame(width: 5).offset(x: 5, y: 6)
+            }
+            .scaleEffect(x: 1, y: blink ? 0.08 : 1)
+        }
+    }
+
+    @ViewBuilder private var mouth: some View {
+        if mood == .happy {
+            UPath { p, pt in
+                p.move(to: pt(0, 0)); p.addLine(to: pt(100, 0))
+                p.addQuadCurve(to: pt(0, 0), control: pt(50, 150))
+            }
+            .sticker(.tomato, 2.5).frame(width: 18, height: 12).position(x: 100, y: 134)
+        } else {
+            UPath { p, pt in
+                p.move(to: pt(0, 10)); p.addQuadCurve(to: pt(50, 10), control: pt(25, 100))
+                p.addQuadCurve(to: pt(100, 10), control: pt(75, 100))
+            }
+            .line(3).frame(width: 22, height: 10).position(x: 100, y: 132)
         }
     }
 }

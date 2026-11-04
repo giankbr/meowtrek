@@ -129,7 +129,7 @@
   },
   {
    "id": "snowman_hat",
-   "name": "Snowman",
+   "name": "Snow Beanie",
    "slot": "hat",
    "emoji": "⛄",
    "price": 0,
@@ -464,16 +464,17 @@
   {
    "id": "gourd",
    "name": "Gourd Night",
-   "icon": "🎃",
+   "icon": "moon.stars.fill",
+   "tint": "8B6CEF",
    "token": "candy",
-   "tokenIcon": "🍬",
+   "tokenArt": "token_candy",
    "stepsPerToken": 300,
    "start": "10-15",
    "end": "11-10",
    "decor": [
-    "🎃",
-    "🦇",
-    "🕯️"
+    "pumpkin_head",
+    "deco_bat",
+    "lantern"
    ],
    "milestones": [
     {
@@ -509,16 +510,17 @@
   {
    "id": "frost",
    "name": "Frost Fair",
-   "icon": "⛄",
+   "icon": "snowflake",
+   "tint": "3D9BD6",
    "token": "snowflakes",
-   "tokenIcon": "❄️",
+   "tokenArt": "token_snow",
    "stepsPerToken": 300,
    "start": "12-01",
    "end": "01-15",
    "decor": [
-    "⛄",
-    "🎄",
-    "❄️"
+    "deco_snowman",
+    "deco_pine",
+    "deco_pine"
    ],
    "milestones": [
     {
@@ -554,16 +556,17 @@
   {
    "id": "bloom",
    "name": "Bloom Walk",
-   "icon": "🌸",
+   "icon": "leaf.fill",
+   "tint": "FF8FB1",
    "token": "petals",
-   "tokenIcon": "🌸",
+   "tokenArt": "token_petal",
    "stepsPerToken": 300,
    "start": "03-20",
    "end": "04-30",
    "decor": [
-    "🌷",
-    "🌸",
-    "🦋"
+    "tulip",
+    "deco_bush",
+    "butterfly"
    ],
    "milestones": [
     {
@@ -599,16 +602,17 @@
   {
    "id": "sunny",
    "name": "Sunny Trail",
-   "icon": "🌞",
+   "icon": "sun.max.fill",
+   "tint": "FFC93C",
    "token": "shells",
-   "tokenIcon": "🐚",
+   "tokenArt": "token_shell",
    "stepsPerToken": 300,
    "start": "07-01",
    "end": "08-31",
    "decor": [
-    "🌻",
-    "🏖️",
-    "🐚"
+    "deco_sunflower",
+    "deco_bush",
+    "token_shell"
    ],
    "milestones": [
     {
@@ -640,7 +644,8 @@
   {
    "id": "goal",
    "title": "Goal getter",
-   "icon": "🏁",
+   "icon": "flag.checkered",
+   "tint": "FF6B5B",
    "kind": "steps",
    "reward": 50,
    "fraction": 1.0,
@@ -651,7 +656,8 @@
   {
    "id": "warmup",
    "title": "Warm-up",
-   "icon": "🐾",
+   "icon": "pawprint.fill",
+   "tint": "FF9A3C",
    "kind": "steps",
    "reward": 20,
    "fraction": 0.25,
@@ -662,7 +668,8 @@
   {
    "id": "half",
    "title": "Halfway there",
-   "icon": "🍃",
+   "icon": "leaf.fill",
+   "tint": "6CC24A",
    "kind": "steps",
    "reward": 30,
    "fraction": 0.5,
@@ -673,7 +680,8 @@
   {
    "id": "early",
    "title": "Early paws",
-   "icon": "🌅",
+   "icon": "sunrise.fill",
+   "tint": "FFC93C",
    "kind": "before",
    "reward": 30,
    "fraction": 0,
@@ -684,7 +692,8 @@
   {
    "id": "lunch",
    "title": "Lunch loop",
-   "icon": "🥪",
+   "icon": "fork.knife",
+   "tint": "FF8FB1",
    "kind": "before",
    "reward": 30,
    "fraction": 0,
@@ -695,7 +704,8 @@
   {
    "id": "evening",
    "title": "Evening stroll",
-   "icon": "🌆",
+   "icon": "sunset.fill",
+   "tint": "8B6CEF",
    "kind": "after",
    "reward": 30,
    "fraction": 0,
@@ -706,7 +716,8 @@
   {
    "id": "active5",
    "title": "Keep moving",
-   "icon": "⏰",
+   "icon": "clock.fill",
+   "tint": "3D9BD6",
    "kind": "activeHours",
    "reward": 40,
    "fraction": 0,
@@ -717,7 +728,8 @@
   {
    "id": "active8",
    "title": "Busy paws",
-   "icon": "🐈",
+   "icon": "bolt.fill",
+   "tint": "FF6B5B",
    "kind": "activeHours",
    "reward": 60,
    "fraction": 0,
@@ -730,7 +742,8 @@
   {
    "id": "park",
    "name": "Park Gate",
-   "emoji": "🌳",
+   "icon": "tree.fill",
+   "tint": "6CC24A",
    "steps": 20000,
    "coins": 50,
    "gems": 0
@@ -738,7 +751,8 @@
   {
    "id": "lake",
    "name": "Swan Lake",
-   "emoji": "🦢",
+   "icon": "bird.fill",
+   "tint": "3D9BD6",
    "steps": 60000,
    "coins": 80,
    "gems": 1
@@ -746,7 +760,8 @@
   {
    "id": "bridge",
    "name": "Stone Bridge",
-   "emoji": "🌉",
+   "icon": "building.columns.fill",
+   "tint": "9A6545",
    "steps": 150000,
    "coins": 120,
    "gems": 1
@@ -754,7 +769,8 @@
   {
    "id": "town",
    "name": "Old Town",
-   "emoji": "🏘️",
+   "icon": "house.fill",
+   "tint": "FF9A3C",
    "steps": 300000,
    "coins": 200,
    "gems": 2
@@ -762,7 +778,8 @@
   {
    "id": "light",
    "name": "Lighthouse",
-   "emoji": "🗼",
+   "icon": "light.beacon.max.fill",
+   "tint": "FF6B5B",
    "steps": 600000,
    "coins": 300,
    "gems": 3
@@ -770,7 +787,8 @@
   {
    "id": "peak",
    "name": "Misty Peak",
-   "emoji": "🏔️",
+   "icon": "mountain.2.fill",
+   "tint": "8B6CEF",
    "steps": 1000000,
    "coins": 500,
    "gems": 5
@@ -778,7 +796,8 @@
   {
    "id": "moon",
    "name": "Moon Garden",
-   "emoji": "🌙",
+   "icon": "moon.stars.fill",
+   "tint": "2E2452",
    "steps": 2000000,
    "coins": 1000,
    "gems": 10
@@ -788,7 +807,8 @@
   {
    "id": "day10k",
    "title": "Ten thousand",
-   "icon": "🎯",
+   "icon": "target",
+   "tint": "FF6B5B",
    "detail": "Walk 10,000 steps in a day",
    "kind": "bestDay",
    "value": 10000,
@@ -798,7 +818,8 @@
   {
    "id": "day15k",
    "title": "Marathon paws",
-   "icon": "🏃",
+   "icon": "figure.run",
+   "tint": "FF9A3C",
    "detail": "Walk 15,000 steps in a day",
    "kind": "bestDay",
    "value": 15000,
@@ -808,7 +829,8 @@
   {
    "id": "streak3",
    "title": "On a roll",
-   "icon": "🔥",
+   "icon": "flame.fill",
+   "tint": "FF9A3C",
    "detail": "Hit your goal 3 days in a row",
    "kind": "streak",
    "value": 3,
@@ -818,7 +840,8 @@
   {
    "id": "streak7",
    "title": "Week warrior",
-   "icon": "🗓️",
+   "icon": "calendar",
+   "tint": "3D9BD6",
    "detail": "Hit your goal 7 days in a row",
    "kind": "streak",
    "value": 7,
@@ -828,7 +851,8 @@
   {
    "id": "streak30",
    "title": "Unstoppable",
-   "icon": "⚡",
+   "icon": "bolt.fill",
+   "tint": "FFC93C",
    "detail": "Hit your goal 30 days in a row",
    "kind": "streak",
    "value": 30,
@@ -838,7 +862,8 @@
   {
    "id": "goal10",
    "title": "Goal x10",
-   "icon": "✅",
+   "icon": "checkmark.seal.fill",
+   "tint": "6CC24A",
    "detail": "Hit your goal on 10 days",
    "kind": "goalDays",
    "value": 10,
@@ -848,7 +873,8 @@
   {
    "id": "goal50",
    "title": "Goal x50",
-   "icon": "🏆",
+   "icon": "trophy.fill",
+   "tint": "FFC93C",
    "detail": "Hit your goal on 50 days",
    "kind": "goalDays",
    "value": 50,
@@ -858,7 +884,8 @@
   {
    "id": "life100k",
    "title": "100K club",
-   "icon": "🌍",
+   "icon": "globe.asia.australia.fill",
+   "tint": "3D9BD6",
    "detail": "Walk 100,000 steps in total",
    "kind": "lifetime",
    "value": 100000,
@@ -868,7 +895,8 @@
   {
    "id": "life1m",
    "title": "Millionaire",
-   "icon": "💫",
+   "icon": "sparkles",
+   "tint": "8B6CEF",
    "detail": "Walk 1,000,000 steps in total",
    "kind": "lifetime",
    "value": 1000000,
@@ -878,7 +906,8 @@
   {
    "id": "items10",
    "title": "Fashionista",
-   "icon": "👗",
+   "icon": "tshirt.fill",
+   "tint": "FF8FB1",
    "detail": "Own 10 items",
    "kind": "items",
    "value": 10,
@@ -888,7 +917,8 @@
   {
    "id": "items25",
    "title": "Collector",
-   "icon": "🧳",
+   "icon": "bag.fill",
+   "tint": "9A6545",
    "detail": "Own 25 items",
    "kind": "items",
    "value": 25,
@@ -898,7 +928,8 @@
   {
    "id": "level5",
    "title": "Best buddies",
-   "icon": "💞",
+   "icon": "heart.fill",
+   "tint": "FF6B5B",
    "detail": "Reach level 5",
    "kind": "level",
    "value": 5,
@@ -908,7 +939,8 @@
   {
    "id": "level10",
    "title": "Soulmates",
-   "icon": "💖",
+   "icon": "heart.circle.fill",
+   "tint": "FF8FB1",
    "detail": "Reach level 10",
    "kind": "level",
    "value": 10,
