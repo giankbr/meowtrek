@@ -178,7 +178,7 @@ struct SocialView: View {
         return HStack(spacing: 12) {
             Text("\(rank)").font(.game(16, .black))
                 .frame(width: 32, height: 32)
-                .background(Circle().fill(medal)).overlay(Circle().stroke(Color.ink, lineWidth: 2.5))
+                .background(Circle().fill(medal)).overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
             CatView(outfit: outfit, size: 44, animated: false)
                 .frame(width: 50, height: 54)
             VStack(alignment: .leading, spacing: 2) {
@@ -284,7 +284,7 @@ struct OnboardingView: View {
             HStack(spacing: 8) {
                 ForEach(0..<3) { i in
                     Capsule().fill(i == page ? Color.grass : Color.paper)
-                        .overlay(Capsule().stroke(Color.ink, lineWidth: 2))
+                        .overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
                         .frame(width: i == page ? 26 : 12, height: 12)
                 }
             }

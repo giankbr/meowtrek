@@ -57,10 +57,11 @@ func arc(_ from: (CGFloat, CGFloat), _ to: (CGFloat, CGFloat), via c: (CGFloat, 
 }
 
 extension Shape {
+    /// Soft illustration style: fill plus a thin outline in a deeper shade of the same colour.
     func sticker(_ color: Color, _ w: CGFloat = 3) -> some View {
         ZStack {
             fill(color)
-            stroke(Color.ink, style: StrokeStyle(lineWidth: w, lineCap: .round, lineJoin: .round))
+            stroke(color.darker(0.28).opacity(0.9), style: StrokeStyle(lineWidth: w * 0.55, lineCap: .round, lineJoin: .round))
         }
     }
 
@@ -70,7 +71,7 @@ extension Shape {
 
     func tube(_ color: Color, _ w: CGFloat) -> some View {
         ZStack {
-            stroke(Color.ink, style: StrokeStyle(lineWidth: w + 4, lineCap: .round, lineJoin: .round))
+            stroke(color.darker(0.28), style: StrokeStyle(lineWidth: w + 2, lineCap: .round, lineJoin: .round))
             stroke(color, style: StrokeStyle(lineWidth: w, lineCap: .round, lineJoin: .round))
         }
     }
@@ -619,7 +620,7 @@ enum Art {
     }
 }
 
-/// SF Symbol inside a chunky coloured badge — used for quests, landmarks and badges.
+/// SF Symbol on a soft tinted disc — used for quests, landmarks and badges.
 struct GameIcon: View {
     let symbol: String
     var tint: Color = .grass
@@ -627,15 +628,11 @@ struct GameIcon: View {
     var muted = false
 
     var body: some View {
-        ZStack {
-            Circle().fill(Color.ink).offset(y: size * 0.06)
-            Circle().fill(muted ? Color.inkSoft.opacity(0.35) : tint)
-            Circle().stroke(Color.ink, lineWidth: max(1.5, size / 18))
-            Image(systemName: symbol)
-                .font(.system(size: size * 0.44, weight: .black))
-                .foregroundStyle(.white)
-                .shadow(color: .ink.opacity(0.35), radius: 0, y: 1.5)
-        }
-        .frame(width: size, height: size)
+        let c = muted ? Color.inkSoft : tint
+        Image(systemName: symbol)
+            .font(.system(size: size * 0.42, weight: .bold))
+            .foregroundStyle(c)
+            .frame(width: size, height: size)
+            .background(Circle().fill(c.opacity(0.16)))
     }
 }

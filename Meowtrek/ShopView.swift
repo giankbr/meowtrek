@@ -6,6 +6,7 @@ struct ShopView: View {
     @State private var filter: Slot?
     @State private var buying: Item?
     @State private var hideOwned = false
+    @State private var showPaywall = false
     private let pushed: Bool
 
     init(filter: Slot? = nil) {
@@ -26,6 +27,43 @@ struct ShopView: View {
                     HStack(spacing: 8) {
                         Pill(art: "coin", text: state.coins.formatted())
                         Pill(art: "gem", text: "\(state.gems)")
+                    }
+                }
+
+                if !state.isPlus {
+                    Button { showPaywall = true } label: {
+                        HStack(spacing: 12) {
+                            GameIcon(symbol: "crown.fill", tint: .sun, size: 46)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Meowtrek Plus").font(.game(17, .bold))
+                                Text("AI cat coach · 1.5× coins · weekly freeze").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right").foregroundStyle(Color.inkSoft)
+                        }
+                        .card(padding: 14, color: Color(hex: 0xFFF6D8))
+                    }
+                    .buttonStyle(SquishStyle())
+                }
+
+                if !state.store.gemProducts.isEmpty {
+                    Text("Gems").font(.game(20, .black))
+                    HStack(spacing: 10) {
+                        ForEach(state.store.gemProducts, id: \.id) { p in
+                            Button { Task { await state.store.buy(p) } } label: {
+                                VStack(spacing: 6) {
+                                    ArtView(id: "gem", size: 40)
+                                    Text("\(state.store.gems(for: p))").font(.game(18, .bold))
+                                    Text(p.displayPrice).font(.game(13, .bold))
+                                        .padding(.horizontal, 10).padding(.vertical, 5)
+                                        .background(Capsule().fill(Color.sky.opacity(0.25)))
+                                }
+                                .frame(maxWidth: .infinity)
+                                .card(padding: 10, radius: 18)
+                            }
+                            .buttonStyle(SquishStyle())
+                            .disabled(state.store.purchasing)
+                        }
                     }
                 }
 
@@ -75,6 +113,8 @@ struct ShopView: View {
         .background(Color.cream)
         .toolbar(pushed ? .visible : .hidden, for: .navigationBar)
         .buyDialog($buying)
+        .sheet(isPresented: $showPaywall) { PaywallView() }
+        .task { if !state.store.loaded { await state.store.load() } }
     }
 
     private func consumableCard(_ c: Consumable) -> some View {
@@ -87,7 +127,7 @@ struct ShopView: View {
                     if state.owns(c) > 0 {
                         Text("×\(state.owns(c))").font(.game(11, .black)).foregroundStyle(.white)
                             .padding(.horizontal, 6).padding(.vertical, 2)
-                            .background(Capsule().fill(Color.grape)).overlay(Capsule().stroke(Color.ink, lineWidth: 2))
+                            .background(Capsule().fill(Color.grape)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
                             .offset(x: 6, y: -6)
                     }
                 }

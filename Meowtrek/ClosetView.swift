@@ -7,6 +7,7 @@ struct ClosetView: View {
     @State private var buying: Item?
     @State private var showLooks = false
     @State private var hop = 0
+    @State private var showShare = false
 
     private let left: [Slot] = [.fur, .hat, .eyes, .neck]
     private let right: [Slot] = [.body, .hand, .bag, .shoes]
@@ -22,6 +23,7 @@ struct ClosetView: View {
         .toolbar(.hidden, for: .navigationBar)
         .buyDialog($buying)
         .sheet(isPresented: $showLooks) { LooksView().presentationDetents([.medium, .large]) }
+        .sheet(isPresented: $showShare) { ShareCardsView(kind: .outfit) }
         .sensoryFeedback(.selection, trigger: state.equipped)
         .onChange(of: state.equipped) { hop += 1 }
     }
@@ -35,6 +37,8 @@ struct ClosetView: View {
                 Text("Tap to wear").font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
             }
             Spacer()
+            Button { showShare = true } label: { Image(systemName: "square.and.arrow.up") }
+                .buttonStyle(.chunky(.paper, padH: 10, padV: 7))
             Button { showLooks = true } label: { Label("Looks", systemImage: "sparkles") }
                 .buttonStyle(.chunky(.bubble, padH: 10, padV: 7))
             NavigationLink { ShopView(filter: slot) } label: { Label("Shop", systemImage: "bag.fill") }
@@ -59,8 +63,6 @@ struct ClosetView: View {
                 .onTapGesture { hop += 1 }
         }
         .frame(height: 340)
-        .overlay(Rectangle().frame(height: 3).foregroundStyle(Color.ink), alignment: .bottom)
-        .overlay(Rectangle().frame(height: 3).foregroundStyle(Color.ink), alignment: .top)
     }
 
     private func slotButton(_ s: Slot) -> some View {
@@ -76,8 +78,7 @@ struct ClosetView: View {
                 }
                 .frame(width: 52, height: 52)
                 .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(on ? Color.sun : Color.paper))
-                .overlay(RoundedRectangle(cornerRadius: 15, style: .continuous).stroke(Color.ink, lineWidth: 2.5))
-                .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color.ink).offset(y: on ? 1 : 3))
+                .overlay(RoundedRectangle(cornerRadius: 15, style: .continuous).stroke(Color.black.opacity(0.06), lineWidth: 1))
                 .offset(y: on ? 2 : 0)
                 Text(s.title).font(.game(11, on ? .black : .bold)).foregroundStyle(on ? Color.ink : Color.inkSoft)
             }

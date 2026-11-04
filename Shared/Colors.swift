@@ -9,31 +9,31 @@ extension Color {
 
     init(hexString: String) { self.init(hex: UInt32(hexString, radix: 16) ?? 0) }
 
-    static let ink = Color(hex: 0x2B2340)
-    static let inkSoft = Color(hex: 0x7A7290)
-    static let cream = Color(hex: 0xFFF4E0)
-    static let paper = Color(hex: 0xFFFDF8)
-    static let grass = Color(hex: 0x6CC24A)
-    static let grassDark = Color(hex: 0x3E8E2F)
-    static let grassLight = Color(hex: 0xC8EBB0)
-    static let sun = Color(hex: 0xFFC93C)
-    static let sunDark = Color(hex: 0xE09A00)
-    static let tomato = Color(hex: 0xFF6B5B)
-    static let grape = Color(hex: 0x8B6CEF)
-    static let grapeDark = Color(hex: 0x5B3FC4)
-    static let sky = Color(hex: 0x7CC8F2)
-    static let skyDark = Color(hex: 0x3D9BD6)
-    static let bubble = Color(hex: 0xFF8FB1)
-    static let choco = Color(hex: 0x9A6545)
-    static let pumpkin = Color(hex: 0xFF9A3C)
-    static let night = Color(hex: 0x2E2452)
-    static let coal = Color(hex: 0x3A3350)
+    static let ink = Color(hex: 0x2B2622)
+    static let inkSoft = Color(hex: 0x8A837A)
+    static let cream = Color(hex: 0xF7F4EC)
+    static let paper = Color.white
+    static let grass = Color(hex: 0x7FA86B)
+    static let grassDark = Color(hex: 0x4F7F3E)
+    static let grassLight = Color(hex: 0xDDEBCF)
+    static let sun = Color(hex: 0xF6C945)
+    static let sunDark = Color(hex: 0xC9962A)
+    static let tomato = Color(hex: 0xE5707A)
+    static let grape = Color(hex: 0x8B7BC8)
+    static let grapeDark = Color(hex: 0x5E4F9A)
+    static let sky = Color(hex: 0x8CC4DE)
+    static let skyDark = Color(hex: 0x4F93B8)
+    static let bubble = Color(hex: 0xF4A3A8)
+    static let choco = Color(hex: 0x9A6B4F)
+    static let pumpkin = Color(hex: 0xF2A65A)
+    static let night = Color(hex: 0x2E2447)
+    static let coal = Color(hex: 0x45404F)
 
     static let leaf = grass
     static let leafDark = grassDark
     static let leafLight = grassLight
     static let honey = sun
-    static let chestBg = Color(hex: 0xFFE7B0)
+    static let chestBg = Color(hex: 0xFBF0D3)
 
     func darker(_ k: Double = 0.18) -> Color {
         let ui = UIColor(self)

@@ -13,6 +13,19 @@
 			</array>
 		</dict>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>instagram-stories</string>
+		<string>instagram</string>
+	</array>
+	<key>MeowtrekAPIBase</key>
+	<string></string>
+	<key>MeowtrekFacebookAppID</key>
+	<string></string>
+	<key>MeowtrekFitbitClientID</key>
+	<string></string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save your Meowtrek cards to Photos.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Meowtrek counts your steps live so your cat can cheer you on.</string>
 </dict>

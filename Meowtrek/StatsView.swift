@@ -47,8 +47,7 @@ struct StatsView: View {
                         Text("\(state.streak)").font(.game(16, .black))
                     }
                     .padding(.horizontal, 12).padding(.vertical, 6)
-                    .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.ink, lineWidth: 2.5))
-                    .background(Capsule().fill(Color.ink).offset(y: 3))
+                    .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
                 }
                 tabBar
                 switch tab {
@@ -200,7 +199,7 @@ struct StatsView: View {
         }
         .padding(4)
         .background(Capsule().fill(Color.paper))
-        .overlay(Capsule().stroke(Color.ink, lineWidth: 2.5))
+        .overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
     }
 
     private var ring: some View {
@@ -318,7 +317,7 @@ struct StatsView: View {
         Image(systemName: name).font(.system(size: 13, weight: .black))
             .frame(width: 32, height: 32)
             .background(Circle().fill(Color.sun))
-            .overlay(Circle().stroke(Color.ink, lineWidth: 2.5))
+            .overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
     }
 
     private func dayDetail(_ d: Date) -> some View {
@@ -348,7 +347,7 @@ struct StatsView: View {
                 .frame(width: 30, height: 30)
                 .background(Circle().fill(hit ? Color.grass : Color.cream))
                 .foregroundStyle(hit ? .white : Color.ink)
-                .overlay(Circle().stroke(Color.ink.opacity(hit ? 1 : 0.15), lineWidth: 2))
+                .overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
                 .overlay(Circle().stroke(d == selectedDay ? Color.honey : d == today ? Color.leafDark : .clear, lineWidth: 2))
             Text(future || s == 0 ? " " : shortSteps(s))
                 .font(.system(size: 9))
@@ -383,6 +382,7 @@ struct StatsView: View {
         let change = before == 0 ? 0 : Int((Double(now - before) / Double(before) * 100).rounded())
 
         return VStack(alignment: .leading, spacing: 16) {
+            InsightCard()
             VStack(alignment: .leading, spacing: 6) {
                 Text("Daily average, last 12 weeks").font(.headline)
                 Text(change >= 0 ? "Up \(change)% vs last week" : "Down \(-change)% vs last week")

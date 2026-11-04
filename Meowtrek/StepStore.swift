@@ -13,6 +13,7 @@ final class StepStore {
     var hourly: [Int] = Array(repeating: 0, count: 24)
     var source: Source = .demo
     var live = false
+    var external: [String: [Date: Int]] = [:]
 
     @ObservationIgnored private let health = HKHealthStore()
     @ObservationIgnored private let pedometer = CMPedometer()
@@ -45,6 +46,7 @@ final class StepStore {
             // Read permission is opaque in HealthKit: empty results mean denied or no data, so keep demo.
             guard steps.values.contains(where: { $0 > 0 }) else { return }
             daily = steps.mapValues { Int($0) }
+            applyExternal()
             flights = ((try? await sums(.flightsClimbed, .count(), from: start, every: DateComponents(day: 1))) ?? [:]).mapValues { Int($0) }
             distance = (try? await sums(.distanceWalkingRunning, .meter(), from: start, every: DateComponents(day: 1))) ?? [:]
             energy = (try? await sums(.activeEnergyBurned, .kilocalorie(), from: start, every: DateComponents(day: 1))) ?? [:]
@@ -54,6 +56,25 @@ final class StepStore {
             source = .health
             startLive()
         } catch {}
+    }
+
+    /// Other trackers (Fitbit, Garmin) are merged per day by taking the highest count, so nothing is double counted.
+    func setExternal(_ name: String, _ data: [Date: Int]) {
+        external[name] = data
+        applyExternal()
+    }
+
+    func removeExternal(_ name: String) {
+        external[name] = nil
+    }
+
+    private func applyExternal() {
+        for (_, days) in external {
+            for (d, n) in days {
+                let k = cal.startOfDay(for: d)
+                if n > (daily[k] ?? 0) { daily[k] = n }
+            }
+        }
     }
 
     private func startLive() {

@@ -21,6 +21,8 @@ struct MeowtrekApp: App {
                     case .active where state.onboarded:
                         Task {
                             await state.steps.load()
+                            await Devices.refreshAll(state)
+                            if state.store.loaded { await state.store.refreshEntitlements() } else { await state.store.load() }
                             state.refresh()
                         }
                     case .background:
@@ -39,30 +41,26 @@ struct RootView: View {
 
     var body: some View {
         TabView(selection: $tab) {
-            NavigationStack { HomeView() }.tag(0).toolbar(.hidden, for: .tabBar)
-            NavigationStack { JourneyView() }.tag(1).toolbar(.hidden, for: .tabBar)
-            NavigationStack { ShopView() }.tag(2).toolbar(.hidden, for: .tabBar)
-            NavigationStack { SocialView() }.tag(3).toolbar(.hidden, for: .tabBar)
-            NavigationStack { StatsView() }.tag(4).toolbar(.hidden, for: .tabBar)
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            GameTabBar(selection: $tab, badge: state.inboxCount)
-                .padding(.bottom, 2)
-                .background(alignment: .bottom) {
-                    LinearGradient(colors: [Color.cream.opacity(0), Color.cream], startPoint: .top, endPoint: .center)
-                        .frame(height: 110)
-                        .ignoresSafeArea(edges: .bottom)
-                        .allowsHitTesting(false)
-                }
+            NavigationStack { HomeView() }
+                .tabItem { Label("Home", systemImage: "house.fill") }.tag(0)
+                .badge(state.inboxCount)
+            NavigationStack { JourneyView() }
+                .tabItem { Label("Journey", systemImage: "map.fill") }.tag(1)
+            NavigationStack { ShopView() }
+                .tabItem { Label("Shop", systemImage: "bag.fill") }.tag(2)
+            NavigationStack { SocialView() }
+                .tabItem { Label("Social", systemImage: "person.2.fill") }.tag(3)
+            NavigationStack { StatsView() }
+                .tabItem { Label("Stats", systemImage: "chart.bar.fill") }.tag(4)
         }
         .tint(.grassDark)
         .overlay { FXLayer(fx: state.fx) }
-        .overlay(alignment: .top) {
+        .overlay(alignment: .bottom) {
             if let t = state.toast {
                 ToastView(toast: t)
-                    .padding(.top, 6)
+                    .padding(.bottom, 96)
                     .padding(.horizontal, 20)
-                    .transition(.move(edge: .top).combined(with: .scale(scale: 0.6)).combined(with: .opacity))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                     .onTapGesture { state.toast = nil }
                     .task(id: t.id) {
                         try? await Task.sleep(for: .seconds(2.4))
@@ -71,7 +69,6 @@ struct RootView: View {
             }
         }
         .sensoryFeedback(.success, trigger: state.toast?.id)
-        .sensoryFeedback(.impact(weight: .medium), trigger: state.fx.tick)
         .fullScreenCover(isPresented: Binding(get: { !state.onboarded }, set: { _ in })) {
             OnboardingView()
         }

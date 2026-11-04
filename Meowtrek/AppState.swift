@@ -38,6 +38,7 @@ struct ActiveEvent {
 @Observable
 final class AppState {
     @ObservationIgnored let steps = StepStore()
+    @ObservationIgnored let store = Store()
     @ObservationIgnored let content = GameContent.shared
     @ObservationIgnored private let cal = Calendar.current
     static let demo = ProcessInfo.processInfo.arguments.contains("-demo")
@@ -66,12 +67,52 @@ final class AppState {
     var remindersOn = false
     var reminderHour = 19
     var useMiles = false
+    var creditedTx: Set<String> = []
+    var freezeWeek = ""
+    var aiQuestsDay = ""
+    var aiQuests: [QuestTemplate] = []
+    var chatDay = ""
+    var chatCount = 0
+    var aiEngine = "auto"
 
     var toast: Toast?
     var fx = FX()
 
     init() {
         apply(Self.loadSnapshot() ?? Self.fresh())
+        store.creditGems = { [weak self] n, tx in self?.creditGems(n, tx) ?? false }
+    }
+
+    var isPlus: Bool { store.isPlus }
+
+    private func creditGems(_ n: Int, _ tx: String) -> Bool {
+        guard !creditedTx.contains(tx) else { return false }
+        creditedTx.insert(tx)
+        gems += n
+        show("+\(n) gems", art: "gem")
+        celebrate(.gems)
+        save()
+        return true
+    }
+
+    static let freeChatsPerDay = 5
+
+    var chatsLeft: Int {
+        if isPlus { return .max }
+        return max(0, Self.freeChatsPerDay - (chatDay == dayKey ? chatCount : 0))
+    }
+
+    func countChat() {
+        if chatDay != dayKey { chatDay = dayKey; chatCount = 0 }
+        chatCount += 1
+        save()
+    }
+
+    func setAIQuests(_ list: [QuestTemplate]) {
+        aiQuests = list
+        aiQuestsDay = dayKey
+        claimed = claimed.filter { $0 == "chest" }
+        save()
     }
 
     // MARK: Basics
@@ -179,14 +220,24 @@ final class AppState {
         claimedDay = dayKey
         claimedSteps = 0
         claimed = []
+        grantWeeklyFreeze()
         save()
+    }
+
+    func grantWeeklyFreeze() {
+        let c = cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: .now)
+        let week = "\(c.yearForWeekOfYear ?? 0)-\(c.weekOfYear ?? 0)"
+        guard isPlus, freezeWeek != week else { return }
+        freezeWeek = week
+        streakFreezes += 1
+        show("Plus: +1 streak freeze", art: "streak_freeze")
     }
 
     func claimSteps() {
         guard claimable > 0 else { return }
-        let n = claimable
+        let n = isPlus ? claimable * 3 / 2 : claimable
         coins += n
-        claimedSteps += n * 10
+        claimedSteps += claimable * 10
         show("+\(n) coins", art: "coin")
         celebrate(.coins)
         save()
@@ -327,6 +378,12 @@ final class AppState {
     private var dayNumber: UInt64 { UInt64(max(0, startOfToday.timeIntervalSince1970 / 86400)) }
 
     var quests: [DailyQuest] {
+        if aiQuestsDay == dayKey, !aiQuests.isEmpty {
+            return aiQuests.prefix(3).map { t in
+                DailyQuest(t: t, target: t.kind == .steps ? Int((Double(goal) * t.fraction / 100).rounded()) * 100
+                           : t.kind == .activeHours ? t.count : t.steps)
+            }
+        }
         var rng = SeededRNG(state: dayNumber &* 2654435761 &+ 7)
         let isGoal: (QuestTemplate) -> Bool = { $0.kind == .steps && $0.fraction >= 1 }
         let picks = content.quests.filter { !isGoal($0) }.shuffled(using: &rng).prefix(2)
@@ -545,6 +602,10 @@ final class AppState {
         var looks: [Look]
         var friends: [Friend]
         var onboarded, remindersOn, useMiles: Bool
+        var creditedTx: [String]?
+        var freezeWeek, aiQuestsDay, chatDay, aiEngine: String?
+        var aiQuests: [QuestTemplate]?
+        var chatCount: Int?
     }
 
     private static let storeKey = "meowtrek.v2"
@@ -559,7 +620,8 @@ final class AppState {
             equipped: ["fur": "fur_ginger", "hat": "witch_hat", "body": "witch_cloak", "hand": "wand", "shoes": "sneakers"],
             inventory: ["fish": 2, "milk": 1], storedFullness: 70,
             firstDay: demo ? Calendar.current.date(byAdding: .day, value: -19, to: .now)! : .now, fullnessAt: .now,
-            looks: [], friends: [], onboarded: demo, remindersOn: false, useMiles: false)
+            looks: [], friends: [], onboarded: demo, remindersOn: false, useMiles: false,
+            creditedTx: nil, freezeWeek: nil, aiQuestsDay: nil, chatDay: nil, aiEngine: nil, aiQuests: nil, chatCount: nil)
     }
 
     private static func loadSnapshot() -> Snapshot? {
@@ -577,6 +639,9 @@ final class AppState {
         firstDay = s.firstDay; fullnessAt = s.fullnessAt
         looks = s.looks; friends = s.friends
         onboarded = s.onboarded; remindersOn = s.remindersOn; useMiles = s.useMiles
+        creditedTx = Set(s.creditedTx ?? []); freezeWeek = s.freezeWeek ?? ""
+        aiQuestsDay = s.aiQuestsDay ?? ""; aiQuests = s.aiQuests ?? []
+        chatDay = s.chatDay ?? ""; chatCount = s.chatCount ?? 0; aiEngine = s.aiEngine ?? "auto"
     }
 
     func save() {
@@ -587,7 +652,9 @@ final class AppState {
             frozenDays: Array(frozenDays),
             equipped: Dictionary(uniqueKeysWithValues: equipped.map { ($0.key.rawValue, $0.value) }),
             inventory: inventory, storedFullness: storedFullness, firstDay: firstDay, fullnessAt: fullnessAt,
-            looks: looks, friends: friends, onboarded: onboarded, remindersOn: remindersOn, useMiles: useMiles)
+            looks: looks, friends: friends, onboarded: onboarded, remindersOn: remindersOn, useMiles: useMiles,
+            creditedTx: Array(creditedTx), freezeWeek: freezeWeek, aiQuestsDay: aiQuestsDay, chatDay: chatDay,
+            aiEngine: aiEngine, aiQuests: aiQuests, chatCount: chatCount)
         UserDefaults.standard.set(try? JSONEncoder().encode(s), forKey: Self.storeKey)
         pushWidget()
     }

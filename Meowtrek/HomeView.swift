@@ -7,19 +7,33 @@ struct HomeView: View {
     @State private var showInbox = false
     @State private var showFeed = false
     @State private var showEvent = false
+    @State private var showCoach = false
+    @State private var showShare = false
+    @State private var showPaywall = false
+    @State private var personalizing = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
                 PetScene(showCloset: $showCloset, showSettings: $showSettings,
-                         showInbox: $showInbox, showFeed: $showFeed)
+                         showInbox: $showInbox, showFeed: $showFeed, showCoach: $showCoach)
                 VStack(alignment: .leading, spacing: 14) {
                     stepsCard
                     HStack {
-                        Text("Today").font(.game(24, .black))
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Today").font(.game(24, .black))
+                            Text(Date.now.formatted(.dateTime.weekday(.wide).day().month()))
+                                .font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                        }
                         Spacer()
-                        Text(Date.now.formatted(.dateTime.weekday(.wide).day().month()))
-                            .font(.game(13, .bold)).foregroundStyle(Color.inkSoft)
+                        Button { personalize() } label: {
+                            HStack(spacing: 5) {
+                                if personalizing { ProgressView().controlSize(.small) } else { Image(systemName: "wand.and.stars") }
+                                Text(state.aiQuestsDay == state.dayKey ? "AI quests" : "Personalize")
+                            }
+                        }
+                        .buttonStyle(.chunky(.grape.opacity(0.18), text: .grapeDark, radius: 18, padH: 12, padV: 7))
+                        .disabled(personalizing)
                     }
                     .padding(.top, 4)
                     if let a = state.activeEvent { eventCard(a) }
@@ -30,10 +44,6 @@ struct HomeView: View {
                 .padding(16)
                 .padding(.bottom, 20)
                 .background(Color.cream, in: UnevenRoundedRectangle(topLeadingRadius: 30, topTrailingRadius: 30))
-                .overlay(
-                    UnevenRoundedRectangle(topLeadingRadius: 30, topTrailingRadius: 30)
-                        .stroke(Color.ink, lineWidth: 3).mask(Rectangle().frame(height: 40).frame(maxHeight: .infinity, alignment: .top))
-                )
                 .padding(.top, -30)
             }
         }
@@ -46,6 +56,26 @@ struct HomeView: View {
         .sheet(isPresented: $showInbox) { InboxView().presentationDetents([.medium, .large]) }
         .sheet(isPresented: $showFeed) { FeedSheet().presentationDetents([.height(420)]) }
         .sheet(isPresented: $showEvent) { EventView().presentationDetents([.large]) }
+        .sheet(isPresented: $showCoach) { CoachView() }
+        .sheet(isPresented: $showShare) { ShareCardsView() }
+        .sheet(isPresented: $showPaywall) { PaywallView() }
+    }
+
+    private func personalize() {
+        guard state.isPlus else { showPaywall = true; return }
+        guard let engine = Coach.engine(state) else { state.show(CoachError.unavailable.localizedDescription); return }
+        personalizing = true
+        let ctx = Coach.context(state)
+        Task {
+            do {
+                let q = try await engine.quests(ctx)
+                withAnimation(.spring) { state.setAIQuests(q) }
+                state.show("\(state.petName) made today's quests", art: "token_petal")
+            } catch {
+                state.show(error.localizedDescription)
+            }
+            personalizing = false
+        }
     }
 
     private var stepsCard: some View {
@@ -71,13 +101,15 @@ struct HomeView: View {
                 .buttonStyle(.chunky(.sun, padH: 12, padV: 7))
                 .disabled(state.claimable == 0)
             }
-            ProgressBar(value: state.progress, height: 18)
+            ProgressBar(value: state.progress, height: 12)
             HStack {
                 Text(state.remaining == 0
                      ? "Goal reached — \(state.petName) is proud!"
                      : "\(state.remaining.formatted()) to go · about \(max(1, state.remaining / 100)) min")
                 Spacer()
                 Text("\(Int(state.progress * 100))%").font(.game(14, .black)).foregroundStyle(Color.grassDark)
+                Button { showShare = true } label: { Image(systemName: "square.and.arrow.up").font(.system(size: 14, weight: .bold)) }
+                    .buttonStyle(.chunky(.grassLight, text: .grassDark, radius: 14, padH: 9, padV: 6))
             }
             .font(.game(13, .bold))
             .foregroundStyle(Color.inkSoft)
@@ -111,7 +143,7 @@ struct HomeView: View {
                 if ready > 0 {
                     Text("\(ready)").font(.game(16, .black)).foregroundStyle(.white)
                         .frame(width: 30, height: 30)
-                        .background(Circle().fill(Color.tomato)).overlay(Circle().stroke(Color.ink, lineWidth: 2.5))
+                        .background(Circle().fill(Color.tomato)).overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
                 } else {
                     Image(systemName: "chevron.right").font(.game(16, .black)).foregroundStyle(.white.opacity(0.7))
                 }
@@ -131,12 +163,13 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Daily chest").font(.game(18, .black))
                 Text(state.chestOpened ? "Opened · see you tomorrow"
-                     : state.chestReady ? "Ready to open!" : "Claim all three quests")
+                     : state.chestReady ? "Ready to open!" : "Finish all 3 quests")
+                    .lineLimit(1)
                     .font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
                 HStack(spacing: 5) {
                     ForEach(state.quests) { q in
                         Capsule().fill(state.isClaimed(q) ? Color.grass : Color.paper)
-                            .overlay(Capsule().stroke(Color.ink, lineWidth: 2))
+                            .overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
                             .frame(width: 28, height: 10)
                     }
                 }
@@ -182,7 +215,7 @@ struct QuestRow: View {
             if claimed {
                 Image(systemName: "checkmark").font(.game(16, .black)).foregroundStyle(.white)
                     .frame(width: 34, height: 34)
-                    .background(Circle().fill(Color.grass)).overlay(Circle().stroke(Color.ink, lineWidth: 2.5))
+                    .background(Circle().fill(Color.grass)).overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
             } else {
                 Button { withAnimation { state.claim(q) } } label: {
                     HStack(spacing: 4) {
@@ -208,6 +241,7 @@ private struct PetScene: View {
     @Binding var showSettings: Bool
     @Binding var showInbox: Bool
     @Binding var showFeed: Bool
+    @Binding var showCoach: Bool
     @State private var drift = false
     @State private var hop = 0
     @State private var hearts = 0
@@ -333,10 +367,10 @@ private struct PetScene: View {
                     Text(state.mood).font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
                 }
                 .padding(.horizontal, 12).padding(.vertical, 7)
-                .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.ink, lineWidth: 2.5))
+                .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
                 Text("Lv \(state.level)").font(.game(13, .black))
                     .padding(.horizontal, 9).padding(.vertical, 7)
-                    .background(Capsule().fill(Color.sun)).overlay(Capsule().stroke(Color.ink, lineWidth: 2.5))
+                    .background(Capsule().fill(Color.sun)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
                 Spacer()
                 Button { showFeed = true } label: {
                     HStack(spacing: 4) {
@@ -346,6 +380,10 @@ private struct PetScene: View {
                 }
                 .buttonStyle(.chunky(state.fullness < 20 ? .tomato : .paper, text: state.fullness < 20 ? .white : .ink,
                                      radius: 20, padH: 10, padV: 6))
+                Button { showCoach = true } label: {
+                    Image(systemName: "bubble.left.and.bubble.right.fill").font(.game(14, .black))
+                }
+                .buttonStyle(.chunky(.sun, text: .ink, radius: 20, padH: 10, padV: 7))
                 Button { showCloset = true } label: {
                     Image(systemName: "tshirt.fill").font(.game(15, .black))
                 }
@@ -374,7 +412,7 @@ private struct PetScene: View {
             }
             .font(.game(13, .black))
             .padding(.horizontal, 9).padding(.vertical, 6)
-            .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.ink, lineWidth: 2.5))
+            .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
             Spacer(minLength: 4)
             Pill(art: "coin", text: state.coins.formatted())
             Pill(art: "gem", text: "\(state.gems)")
@@ -384,7 +422,7 @@ private struct PetScene: View {
                         if state.inboxCount > 0 {
                             Text("\(state.inboxCount)").font(.game(10, .black)).foregroundStyle(.white)
                                 .frame(minWidth: 18, minHeight: 18)
-                                .background(Circle().fill(Color.tomato)).overlay(Circle().stroke(Color.ink, lineWidth: 2))
+                                .background(Circle().fill(Color.tomato)).overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
                                 .offset(x: 14, y: -14)
                         }
                     }
@@ -408,7 +446,7 @@ private struct SpeechBubble: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 14).padding(.vertical, 9)
                 .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.paper))
-                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.ink, lineWidth: 2.5))
+                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.black.opacity(0.06), lineWidth: 1))
             Triangle().fill(Color.paper)
                 .overlay(UPath { p, pt in
                     p.move(to: pt(0, 0)); p.addLine(to: pt(50, 100)); p.addLine(to: pt(100, 0))
@@ -647,7 +685,7 @@ struct EventView: View {
             if claimed {
                 Image(systemName: "checkmark").font(.game(16, .black)).foregroundStyle(.white)
                     .frame(width: 34, height: 34)
-                    .background(Circle().fill(Color.grass)).overlay(Circle().stroke(Color.ink, lineWidth: 2.5))
+                    .background(Circle().fill(Color.grass)).overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
             } else {
                 Button("Claim") { withAnimation { state.claim(a, m) } }
                     .buttonStyle(.chunky(.sun))
@@ -665,11 +703,39 @@ struct SettingsView: View {
     @Environment(AppState.self) private var state
     @Environment(\.dismiss) private var dismiss
     @State private var confirmReset = false
+    @State private var showPaywall = false
 
     var body: some View {
         @Bindable var s = state
         NavigationStack {
             Form {
+                Section {
+                    Button { showPaywall = true } label: {
+                        HStack {
+                            GameIcon(symbol: "crown.fill", tint: .sun, size: 34)
+                            VStack(alignment: .leading) {
+                                Text(state.isPlus ? "Meowtrek Plus" : "Get Meowtrek Plus").font(.game(16, .bold)).foregroundStyle(Color.ink)
+                                Text(state.isPlus ? "Thanks for supporting us!" : "AI coach, insights, 1.5× coins").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                            }
+                        }
+                    }
+                }
+                Section {
+                    Picker("AI engine", selection: $s.aiEngine) {
+                        Text("Automatic").tag("auto")
+                        Text("On this iPhone").tag("device")
+                        Text("Cloud").tag("cloud")
+                    }
+                    LabeledContent("On-device AI", value: Coach.onDeviceAvailable ? "Available" : "Not available")
+                    LabeledContent("Cloud AI", value: Coach.cloudAvailable ? "Configured" : "Not configured")
+                } header: {
+                    Text("AI coach")
+                } footer: {
+                    Text("Automatic uses Apple Intelligence on supported iPhones and falls back to the cloud coach.")
+                }
+                Section("Connected devices") {
+                    DevicesSection()
+                }
                 Section("Pet") {
                     TextField("Name", text: $s.petName)
                     LabeledContent("Level", value: "\(state.level) · \(Int(state.levelProgress * 100))% to next")
@@ -725,6 +791,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { Button("Done") { dismiss() }.font(.game(15, .black)) }
+            .sheet(isPresented: $showPaywall) { PaywallView() }
             .confirmationDialog("Reset everything?", isPresented: $confirmReset, titleVisibility: .visible) {
                 Button("Reset", role: .destructive) { state.resetAll(); dismiss() }
             } message: {

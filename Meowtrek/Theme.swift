@@ -5,35 +5,35 @@ func shortSteps(_ n: Int) -> String {
 }
 
 extension Font {
-    static func game(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font {
-        .system(size: size, weight: weight, design: .rounded)
+    /// Rounded type; weights are softened so the UI stays calm.
+    static func game(_ size: CGFloat, _ weight: Font.Weight = .bold) -> Font {
+        let w: Font.Weight = weight == .black ? .bold : weight == .heavy ? .bold : weight == .bold ? .semibold : weight
+        return .system(size: size, weight: w, design: .rounded)
     }
 }
 
 // MARK: - Surfaces
 
-private struct StickerCard: ViewModifier {
+private struct SoftCard: ViewModifier {
     var padding: CGFloat
     var color: Color
     var radius: CGFloat
 
     func body(content: Content) -> some View {
-        let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
-        return content
+        content
             .padding(padding)
-            .background(shape.fill(color))
-            .overlay(shape.stroke(Color.ink, lineWidth: 2.5))
-            .background(shape.fill(Color.ink).offset(y: 4))
+            .background(RoundedRectangle(cornerRadius: radius, style: .continuous).fill(color))
+            .shadow(color: .black.opacity(0.05), radius: 10, y: 3)
     }
 }
 
 extension View {
     func card(padding: CGFloat = 16, color: Color = .paper, radius: CGFloat = 22) -> some View {
-        modifier(StickerCard(padding: padding, color: color, radius: radius))
+        modifier(SoftCard(padding: padding, color: color, radius: radius))
     }
 
-    func outlined(_ radius: CGFloat = 14, width: CGFloat = 2.5) -> some View {
-        overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).stroke(Color.ink, lineWidth: width))
+    func outlined(_ radius: CGFloat = 14, width: CGFloat = 1) -> some View {
+        overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).stroke(Color.black.opacity(0.06), lineWidth: width))
     }
 }
 
@@ -45,31 +45,28 @@ struct ChunkyButtonStyle: ButtonStyle {
     var padV: CGFloat = 9
 
     func makeBody(configuration: Configuration) -> some View {
-        ChunkyBody(configuration: configuration, color: color, text: text, radius: radius, padH: padH, padV: padV)
+        SoftBody(configuration: configuration, color: color, text: text, radius: radius, padH: padH, padV: padV)
     }
 
-    private struct ChunkyBody: View {
+    private struct SoftBody: View {
         @Environment(\.isEnabled) private var enabled
         let configuration: Configuration
         let color: Color, text: Color, radius: CGFloat, padH: CGFloat, padV: CGFloat
 
         var body: some View {
-            let pressed = configuration.isPressed
-            let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+            let plain = color == .paper
             configuration.label
-                .font(.game(15))
-                .foregroundStyle(enabled ? text : Color.inkSoft)
+                .font(.game(15, .bold))
+                .foregroundStyle(enabled ? text : Color.inkSoft.opacity(0.7))
                 .padding(.horizontal, padH)
                 .padding(.vertical, padV)
-                .background(shape.fill(enabled ? color : Color(hex: 0xEDE6D6)))
-                .overlay(alignment: .top) {
-                    shape.fill(.white.opacity(enabled ? 0.28 : 0)).frame(height: 6).padding(.horizontal, 6).padding(.top, 3)
-                }
-                .overlay(shape.stroke(Color.ink.opacity(enabled ? 1 : 0.35), lineWidth: 2.5))
-                .background(shape.fill(Color.ink.opacity(enabled ? 1 : 0.25)).offset(y: pressed ? 1 : 4))
-                .offset(y: pressed ? 3 : 0)
-                .scaleEffect(pressed ? 0.97 : 1)
-                .animation(.spring(response: 0.2, dampingFraction: 0.5), value: pressed)
+                .background(RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .fill(enabled ? color : Color.black.opacity(0.05)))
+                .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .stroke(Color.black.opacity(plain && enabled ? 0.07 : 0), lineWidth: 1))
+                .scaleEffect(configuration.isPressed ? 0.96 : 1)
+                .opacity(configuration.isPressed ? 0.85 : 1)
+                .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
         }
     }
 }
@@ -99,13 +96,12 @@ struct Pill: View {
     var body: some View {
         HStack(spacing: 5) {
             ArtView(id: art, size: 22, line: 1.8)
-            Text(text).font(.game(15)).monospacedDigit().contentTransition(.numericText())
+            Text(text).font(.game(15, .bold)).monospacedDigit().contentTransition(.numericText())
         }
         .foregroundStyle(Color.ink)
-        .padding(.leading, 5).padding(.trailing, 11).padding(.vertical, 4)
+        .padding(.leading, 6).padding(.trailing, 11).padding(.vertical, 5)
         .background(Capsule().fill(Color.paper))
-        .overlay(Capsule().stroke(Color.ink, lineWidth: 2.5))
-        .background(Capsule().fill(Color.ink).offset(y: 3))
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
         .animation(.spring, value: text)
     }
 }
@@ -113,25 +109,17 @@ struct Pill: View {
 struct ProgressBar: View {
     let value: Double
     var color: Color = .grass
-    var height: CGFloat = 14
+    var height: CGFloat = 10
 
     var body: some View {
         GeometryReader { g in
-            let w = g.size.width * min(1, max(0, value))
             ZStack(alignment: .leading) {
-                Capsule().fill(Color(hex: 0xEDE6D6))
-                if value > 0 {
-                    Capsule().fill(color).frame(width: max(height, w))
-                        .overlay(alignment: .top) {
-                            Capsule().fill(.white.opacity(0.35)).frame(height: height * 0.28)
-                                .padding(.horizontal, height * 0.4).padding(.top, height * 0.18)
-                        }
-                }
-                Capsule().stroke(Color.ink, lineWidth: max(2, height / 6))
+                Capsule().fill(Color.grassLight.opacity(0.6))
+                Capsule().fill(color).frame(width: g.size.width * min(1, max(0, value)))
             }
         }
         .frame(height: height)
-        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: value)
+        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: value)
     }
 }
 
@@ -141,12 +129,11 @@ struct Tag: View {
     var textColor: Color = .white
 
     var body: some View {
-        Text(text.uppercased())
-            .font(.game(10, .black))
-            .foregroundStyle(textColor)
-            .padding(.horizontal, 7).padding(.vertical, 3)
-            .background(Capsule().fill(color))
-            .overlay(Capsule().stroke(Color.ink, lineWidth: 2))
+        Text(text)
+            .font(.game(11, .bold))
+            .foregroundStyle(textColor == .white ? color.darker(0.15) : textColor)
+            .padding(.horizontal, 8).padding(.vertical, 3)
+            .background(Capsule().fill(color.opacity(0.2)))
     }
 }
 
@@ -170,43 +157,39 @@ struct ItemCell: View {
         let locked = !owned && item.event != nil
         Button(action: action) {
             VStack(spacing: 6) {
-                ZStack(alignment: .topTrailing) {
-                    ItemArt(item: item, size: 54)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 70)
-                        .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(wearing ? Color.grassLight : Color.cream))
-                        .opacity(locked ? 0.45 : 1)
-                    if wearing {
-                        Image(systemName: "checkmark").font(.game(11, .black)).foregroundStyle(.white)
-                            .frame(width: 22, height: 22)
-                            .background(Circle().fill(Color.grass)).overlay(Circle().stroke(Color.ink, lineWidth: 2))
-                            .offset(x: 5, y: -5)
-                    } else if locked {
-                        Image(systemName: "lock.fill").font(.game(10, .black)).foregroundStyle(.white)
-                            .frame(width: 22, height: 22)
-                            .background(Circle().fill(Color.grape)).overlay(Circle().stroke(Color.ink, lineWidth: 2))
-                            .offset(x: 5, y: -5)
+                ItemArt(item: item, size: 58)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 74)
+                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(wearing ? Color.grassLight : Color.cream))
+                    .opacity(locked ? 0.45 : 1)
+                    .overlay(alignment: .topTrailing) {
+                        if locked {
+                            Image(systemName: "lock.fill").font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(Color.grape).padding(6)
+                        }
+                    }
+                Text(item.name).font(.game(13, .bold)).lineLimit(1).foregroundStyle(Color.ink)
+                Group {
+                    if owned {
+                        Text(wearing ? "Wearing" : "Owned")
+                            .foregroundStyle(wearing ? Color.grassDark : Color.inkSoft)
+                    } else if let ev = item.event {
+                        Text(state.content.events.first { $0.id == ev }?.name ?? "Event").foregroundStyle(Color.grape)
+                    } else {
+                        HStack(spacing: 3) {
+                            ArtView(id: item.currency == .coin ? "coin" : "gem", size: 14, line: 1.2)
+                            Text("\(item.price)").foregroundStyle(Color.ink)
+                        }
                     }
                 }
-                Text(item.name).font(.game(12, .bold)).lineLimit(1).foregroundStyle(Color.ink)
-                if owned {
-                    Text(wearing ? "Wearing" : "Owned").font(.game(11, .bold))
-                        .foregroundStyle(wearing ? Color.grassDark : Color.inkSoft)
-                } else if let ev = item.event {
-                    Text(state.content.events.first { $0.id == ev }?.name ?? "Event")
-                        .font(.game(11, .bold)).foregroundStyle(Color.grape).lineLimit(1)
-                } else {
-                    HStack(spacing: 3) {
-                        ArtView(id: item.currency == .coin ? "coin" : "gem", size: 14, line: 1.2)
-                        Text("\(item.price)").font(.game(12)).foregroundStyle(Color.ink)
-                    }
-                }
+                .font(.game(12, .semibold))
+                .lineLimit(1)
             }
             .padding(8)
-            .card(padding: 0, color: .paper, radius: 18)
+            .card(padding: 0, radius: 18)
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(wearing ? Color.grass : .clear, lineWidth: 3).padding(3))
+                .stroke(wearing ? Color.grass : .clear, lineWidth: 2))
         }
         .buttonStyle(SquishStyle())
     }
@@ -219,7 +202,7 @@ struct ScreenHeader<Trailing: View>: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            Text(title).font(.game(34, .black)).foregroundStyle(Color.ink)
+            Text(title).font(.system(size: 32, weight: .bold, design: .rounded)).foregroundStyle(Color.ink)
             Spacer()
             trailing
         }
@@ -273,16 +256,15 @@ struct ToastView: View {
     var body: some View {
         HStack(spacing: 10) {
             if let art = toast.art {
-                ArtView(id: art, size: 30, line: 2)
+                ArtView(id: art, size: 28, line: 2)
             } else {
-                GameIcon(symbol: "pawprint.fill", tint: .grass, size: 28)
+                Image(systemName: "pawprint.fill").foregroundStyle(Color.grass)
             }
-            Text(toast.text).font(.game(16)).foregroundStyle(Color.ink).lineLimit(2)
+            Text(toast.text).font(.game(15, .bold)).foregroundStyle(Color.ink).lineLimit(2)
         }
-        .padding(.leading, 10).padding(.trailing, 16).padding(.vertical, 8)
+        .padding(.horizontal, 16).padding(.vertical, 10)
         .background(Capsule().fill(Color.paper))
-        .overlay(Capsule().stroke(Color.ink, lineWidth: 3))
-        .background(Capsule().fill(Color.ink).offset(y: 4))
+        .shadow(color: .black.opacity(0.12), radius: 14, y: 6)
     }
 }
 
@@ -348,7 +330,6 @@ struct FXLayer: View {
                     ArtView(id: art, size: bit.size, line: 2)
                 } else {
                     RoundedRectangle(cornerRadius: 2).fill(bit.color).frame(width: bit.size, height: bit.size * 0.55)
-                        .overlay(RoundedRectangle(cornerRadius: 2).stroke(Color.ink, lineWidth: 1.2))
                 }
             }
             .rotationEffect(.degrees(go ? bit.spin : 0))
@@ -359,61 +340,5 @@ struct FXLayer: View {
                 withAnimation(.easeOut(duration: bit.art == nil ? 1.5 : 0.9).delay(bit.delay)) { go = true }
             }
         }
-    }
-}
-
-// MARK: - Tab bar
-
-struct GameTabBar: View {
-    @Binding var selection: Int
-    var badge: Int
-
-    private let tabs: [(String, String, Color)] = [
-        ("Home", "house.fill", .tomato), ("Journey", "map.fill", .sky), ("Shop", "bag.fill", .sun),
-        ("Social", "person.2.fill", .grape), ("Stats", "chart.bar.fill", .grass),
-    ]
-
-    var body: some View {
-        HStack(spacing: 4) {
-            ForEach(Array(tabs.enumerated()), id: \.offset) { i, t in
-                let on = selection == i
-                Button {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { selection = i }
-                } label: {
-                    VStack(spacing: 2) {
-                        Image(systemName: t.1)
-                            .font(.system(size: on ? 20 : 18, weight: .black))
-                            .foregroundStyle(on ? .white : Color.inkSoft)
-                            .frame(width: 44, height: 34)
-                            .background {
-                                if on {
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous).fill(t.2)
-                                        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.ink, lineWidth: 2.5))
-                                }
-                            }
-                            .overlay(alignment: .topTrailing) {
-                                if i == 0 && badge > 0 {
-                                    Text("\(badge)").font(.game(10, .black)).foregroundStyle(.white)
-                                        .frame(minWidth: 18, minHeight: 18)
-                                        .background(Circle().fill(Color.tomato))
-                                        .overlay(Circle().stroke(Color.ink, lineWidth: 2))
-                                        .offset(x: 6, y: -6)
-                                }
-                            }
-                            .offset(y: on ? -2 : 0)
-                        Text(t.0).font(.game(11, on ? .black : .bold))
-                            .foregroundStyle(on ? Color.ink : Color.inkSoft)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(SquishStyle())
-            }
-        }
-        .padding(.horizontal, 8).padding(.vertical, 8)
-        .background(RoundedRectangle(cornerRadius: 26, style: .continuous).fill(Color.paper))
-        .overlay(RoundedRectangle(cornerRadius: 26, style: .continuous).stroke(Color.ink, lineWidth: 3))
-        .background(RoundedRectangle(cornerRadius: 26, style: .continuous).fill(Color.ink).offset(y: 5))
-        .padding(.horizontal, 14)
-        .sensoryFeedback(.selection, trigger: selection)
     }
 }

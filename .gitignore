@@ -4,3 +4,7 @@ xcuserdata/
 *.xcuserstate
 .DS_Store
 node_modules/
+ArtSource/.venv/
+ArtSource/cache/
+server/node_modules/
+server/.wrangler/
