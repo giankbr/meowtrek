@@ -19,17 +19,13 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 PetScene(showCloset: $showCloset, showSettings: $showSettings,
                          showInbox: $showInbox, showFeed: $showFeed, showCoach: $showCoach)
-                Button { showTrek = true } label: {
-                    Label("Start a walk, run or hike", systemImage: "location.north.circle.fill")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.chunky(.grass, text: .white, radius: 20, padV: 13))
-                .padding(.horizontal, 16)
-                .padding(.top, -18)
-                .padding(.bottom, 10)
-                .zIndex(1)
                 VStack(alignment: .leading, spacing: 14) {
                     stepsCard
+                    Button { showTrek = true } label: {
+                        Label("Start a walk, run or hike", systemImage: "location.north.circle.fill")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.chunky(.grass, text: .white, radius: 18, padV: 13))
                     HStack {
                         VStack(alignment: .leading, spacing: 0) {
                             Text("Today").font(.game(24, .black))
@@ -95,10 +91,10 @@ struct HomeView: View {
                 Text("Water").font(.game(17, .bold))
                 HStack(spacing: 3) {
                     ForEach(0..<state.waterGoal, id: \.self) { i in
-                        Capsule().fill(i < state.waterToday ? Color.sky : Color.sky.opacity(0.18)).frame(width: 14, height: 18)
+                        Capsule().fill(i < state.waterToday ? Color.sky : Color.sky.opacity(0.18)).frame(width: 10, height: 16)
                     }
                 }
-                Text("\(state.waterToday) of \(state.waterGoal) glasses").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                Text("\(state.waterToday) of \(state.waterGoal) glasses").font(.game(12, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1).fixedSize()
             }
             Spacer()
             Button { withAnimation(.spring) { state.removeWater() } } label: { Image(systemName: "minus") }
@@ -178,7 +174,9 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(spacing: 6) {
                         Text(a.event.name).font(.game(18, .black))
-                        Tag(text: loc("Event"), color: .sun, textColor: .ink)
+                        Text("Event").font(.game(11, .bold)).foregroundStyle(Color.night)
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(Capsule().fill(Color.sun))
                     }
                     HStack(spacing: 4) {
                         ArtView(id: a.event.tokenArt, size: 18, line: 1.4)
@@ -344,7 +342,7 @@ private struct PetScene: View {
                     Circle().fill(Color(hex: 0xEAD9A0)).frame(width: 12).offset(x: -8, y: 6)
                     Circle().fill(Color(hex: 0xEAD9A0)).frame(width: 8).offset(x: 10, y: -8)
                 }
-                .frame(width: 54).offset(x: 130, y: -120)
+                .frame(width: 54).offset(x: 135, y: -88)
             } else {
                 ZStack {
                     ForEach(0..<8, id: \.self) { i in
@@ -353,7 +351,7 @@ private struct PetScene: View {
                     }
                     Circle().sticker(phase == .sunset ? Color(hex: 0xFF8A5B) : .sun, 3).frame(width: 60)
                 }
-                .offset(x: 130, y: -118)
+                .offset(x: 135, y: -86)
                 .rotationEffect(.degrees(drift ? 8 : -8), anchor: .center)
             }
 
@@ -407,41 +405,36 @@ private struct PetScene: View {
 
             HeartBurst(trigger: hearts).offset(y: 10)
 
-            SpeechBubble(text: state.bubble).offset(y: -52)
+            SpeechBubble(text: state.bubble).offset(y: -22)
 
             topBar.frame(maxHeight: .infinity, alignment: .top)
 
-            HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    Text(state.petName).font(.game(15, .black))
-                    Text(L(state.mood)).font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                    Text(state.petName).font(.game(17, .bold)).lineLimit(1)
+                    Text("Lv \(state.level)").font(.game(11, .bold))
+                        .padding(.horizontal, 7).padding(.vertical, 2)
+                        .background(Capsule().fill(Color.sun))
                 }
-                .padding(.horizontal, 12).padding(.vertical, 7)
-                .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
-                Text("Lv \(state.level)").font(.game(13, .black))
-                    .padding(.horizontal, 9).padding(.vertical, 7)
-                    .background(Capsule().fill(Color.sun)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
-                Spacer()
-                Button { showFeed = true } label: {
-                    HStack(spacing: 4) {
-                        ArtView(id: "fish", size: 20, line: 1.5)
-                        Text("\(Int(state.fullness))%").monospacedDigit()
-                    }
-                }
-                .buttonStyle(.chunky(state.fullness < 20 ? .tomato : .paper, text: state.fullness < 20 ? .white : .ink,
-                                     radius: 20, padH: 10, padV: 6))
-                Button { showCoach = true } label: {
-                    Image(systemName: "bubble.left.and.bubble.right.fill").font(.game(14, .black))
-                }
-                .buttonStyle(.chunky(.sun, text: .ink, radius: 20, padH: 10, padV: 7))
-                Button { showCloset = true } label: {
-                    Image(systemName: "tshirt.fill").font(.game(15, .black))
-                }
-                .buttonStyle(.chunky(.grape, text: .white, radius: 20, padH: 11, padV: 7))
+                Text("\(L(state.mood)) · \(state.daysTogether) days together")
+                    .font(.game(12, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1)
             }
+            .fixedSize()
+            .padding(.horizontal, 14).padding(.vertical, 9)
+            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.paper))
+            .shadow(color: .black.opacity(0.08), radius: 8, y: 2)
             .foregroundStyle(Color.ink)
-            .padding(.horizontal, 16).padding(.bottom, 44)
-            .frame(maxHeight: .infinity, alignment: .bottom)
+            .padding(.leading, 16).padding(.top, 112)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+
+            VStack(spacing: 10) {
+                SceneButton(symbol: "tshirt.fill", tint: .grape) { showCloset = true }
+                SceneButton(symbol: "bubble.left.and.bubble.right.fill", tint: .sunDark) { showCoach = true }
+                SceneButton(art: "fish", tint: state.fullness < 20 ? .tomato : .sky,
+                            badge: "\(Int(state.fullness))%") { showFeed = true }
+            }
+            .padding(.trailing, 16).padding(.bottom, 44)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
         }
         .frame(height: 440)
         .clipped()
@@ -456,13 +449,6 @@ private struct PetScene: View {
                 Image(systemName: "line.3.horizontal").font(.game(16, .black))
             }
             .buttonStyle(.chunky(.paper, radius: 20, padH: 10, padV: 8))
-            HStack(spacing: 4) {
-                Image(systemName: "heart.fill").foregroundStyle(Color.tomato)
-                Text("\(state.daysTogether)d")
-            }
-            .font(.game(13, .black))
-            .padding(.horizontal, 9).padding(.vertical, 6)
-            .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
             Spacer(minLength: 4)
             Pill(art: "coin", text: state.coins.formatted())
             Pill(art: "gem", text: "\(state.gems)")
@@ -498,13 +484,11 @@ private struct SpeechBubble: View {
                 .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.paper))
                 .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.black.opacity(0.06), lineWidth: 1))
             Triangle().fill(Color.paper)
-                .overlay(UPath { p, pt in
-                    p.move(to: pt(0, 0)); p.addLine(to: pt(50, 100)); p.addLine(to: pt(100, 0))
-                }.line(2.5))
                 .rotationEffect(.degrees(180))
-                .frame(width: 18, height: 11)
+                .frame(width: 16, height: 9)
         }
         .frame(maxWidth: 260)
+        .shadow(color: .black.opacity(0.08), radius: 8, y: 2)
         .id(text)
         .transition(.scale.combined(with: .opacity))
         .animation(.spring(response: 0.35, dampingFraction: 0.55), value: text)
@@ -861,5 +845,34 @@ struct SettingsView: View {
             state.save()
             Notifier.reschedule(state)
         }
+    }
+}
+
+private struct SceneButton: View {
+    var symbol: String? = nil
+    var art: String? = nil
+    let tint: Color
+    var badge: String? = nil
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 2) {
+                Group {
+                    if let art { ArtView(id: art, size: 24, line: 1.6) } else {
+                        Image(systemName: symbol ?? "circle").font(.system(size: 18, weight: .bold)).foregroundStyle(tint)
+                    }
+                }
+                .frame(width: 46, height: 46)
+                .background(Circle().fill(Color.paper))
+                .shadow(color: .black.opacity(0.1), radius: 6, y: 2)
+                if let badge {
+                    Text(badge).font(.game(11, .bold)).monospacedDigit().foregroundStyle(tint == .tomato ? Color.tomato : Color.ink)
+                        .padding(.horizontal, 6).padding(.vertical, 1)
+                        .background(Capsule().fill(Color.paper))
+                }
+            }
+        }
+        .buttonStyle(SquishStyle())
     }
 }

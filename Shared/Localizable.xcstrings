@@ -322,6 +322,16 @@
     "%@ · %@ /km · %@": {
       "shouldTranslate": false
     },
+    "%@ · %lld days together": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %lld hari bersama"
+          }
+        }
+      }
+    },
     "%@ · +%lld coins": {
       "localizations": {
         "id": {
