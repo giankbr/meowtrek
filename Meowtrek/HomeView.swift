@@ -318,6 +318,16 @@ private struct PetScene: View {
 
     private enum Phase { case morning, day, sunset, night }
 
+    private var pace: Double { state.motion.pace }
+
+    private var movingLine: String? {
+        switch state.motion.activity {
+        case .walking: loc("Walking together! Keep going")
+        case .running: loc("Run run run! I can keep up!")
+        case .still: nil
+        }
+    }
+
     private var phase: Phase {
         switch UserDefaults.standard.string(forKey: "phase") {
         case "morning": return .morning
@@ -394,8 +404,8 @@ private struct PetScene: View {
             oval(50, 50, 100, 100).sticker(farHill, 3)
                 .frame(width: 380, height: 240).offset(x: 170, y: 110)
 
-            ArtView(id: "deco_tree", size: 110, line: 3).offset(x: -140, y: 50)
-            ArtView(id: "deco_lamp", size: 80, line: 3).offset(x: 150, y: 50)
+            ArtView(id: "deco_tree", size: 110, line: 3).modifier(Drift(x: -140, y: 50, pace: pace, speed: 18))
+            ArtView(id: "deco_lamp", size: 80, line: 3).modifier(Drift(x: 150, y: 50, pace: pace, speed: 18))
                 .shadow(color: night ? Color.sun.opacity(0.8) : .clear, radius: 18)
 
             UPath { p, pt in
@@ -417,16 +427,16 @@ private struct PetScene: View {
             .frame(height: 170)
             .frame(maxHeight: .infinity, alignment: .bottom)
 
-            ArtView(id: decor[0], size: 62, line: 3).offset(x: 130, y: 140)
-            ArtView(id: decor[1 % decor.count], size: 54, line: 3).offset(x: -150, y: 150)
-            ArtView(id: decor[2 % decor.count], size: 42, line: 3).offset(x: 160, y: 85)
+            ArtView(id: decor[0], size: 62, line: 3).modifier(Drift(x: 130, y: 140, pace: pace, speed: 34))
+            ArtView(id: decor[1 % decor.count], size: 54, line: 3).modifier(Drift(x: -150, y: 150, pace: pace, speed: 34))
+            ArtView(id: decor[2 % decor.count], size: 42, line: 3).modifier(Drift(x: 160, y: 85, pace: pace, speed: 26))
 
             Ellipse().fill(Color.ink.opacity(0.18)).frame(width: 110, height: 18).offset(y: 168)
             Button {
                 hop += 1
                 hearts += 1
             } label: {
-                CatView(outfit: state.outfit, size: 150, mood: CatMood(state.mood), hop: hop)
+                CatView(outfit: state.outfit, size: 150, mood: pace > 0 ? .happy : CatMood(state.mood), hop: hop, pace: pace)
             }
             .buttonStyle(.plain)
             .offset(y: 86)
@@ -434,7 +444,7 @@ private struct PetScene: View {
 
             HeartBurst(trigger: hearts).offset(y: 10)
 
-            SpeechBubble(text: state.bubble).offset(y: -22)
+            SpeechBubble(text: movingLine ?? state.bubble).offset(y: -22)
 
             topBar.frame(maxHeight: .infinity, alignment: .top)
 
@@ -1022,5 +1032,26 @@ struct GoalEditor: View {
 
     private func set(_ g: Int) {
         withAnimation(.snappy) { state.goal = min(30000, max(1000, g)) }
+    }
+}
+
+/// Slides a scene prop backwards while the user is moving, wrapping around the scene width.
+private struct Drift: ViewModifier {
+    let x: CGFloat
+    let y: CGFloat
+    let pace: Double
+    let speed: CGFloat
+
+    func body(content: Content) -> some View {
+        if pace > 0 {
+            TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
+                let span: CGFloat = 560
+                let dx = CGFloat(ctx.date.timeIntervalSinceReferenceDate) * speed * CGFloat(pace)
+                let raw = (x + span / 2 - dx).truncatingRemainder(dividingBy: span)
+                content.offset(x: (raw < 0 ? raw + span : raw) - span / 2, y: y)
+            }
+        } else {
+            content.offset(x: x, y: y)
+        }
     }
 }

@@ -42,6 +42,7 @@ final class AppState {
     @ObservationIgnored let store = Store()
     @ObservationIgnored let treks = TrekStore()
     @ObservationIgnored let meals = MealStore()
+    @ObservationIgnored let motion = MotionMonitor()
     @ObservationIgnored let content = GameContent.shared
     @ObservationIgnored let cal = Calendar.current
     static let demo = ProcessInfo.processInfo.arguments.contains("-demo")

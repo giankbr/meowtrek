@@ -20,6 +20,7 @@ struct MeowtrekApp: App {
                     switch phase {
                     case .active where state.onboarded:
                         Telemetry.shared.start()
+                        state.motion.start()
                         Task {
                             await state.steps.load()
                             await Devices.refreshAll(state)
@@ -29,6 +30,7 @@ struct MeowtrekApp: App {
                             await CloudBackup.autoBackupIfDue(state)
                         }
                     case .background:
+                        state.motion.stop()
                         Telemetry.shared.flush()
                         state.save()
                         Notifier.reschedule(state)

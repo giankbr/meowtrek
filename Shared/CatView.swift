@@ -31,13 +31,26 @@ struct CatView: View {
     var mood: CatMood = .normal
     var hop = 0
     var animated = true
+    /// 0 still, ~1 walking, ~2 running. Drives a step cycle only while moving.
+    var pace: Double = 0
 
     @State private var bob = false
     @State private var blink = false
     @State private var lift: CGFloat = 0
 
     var body: some View {
-        CatCanvas(outfit: outfit, mood: mood, blink: blink)
+        Group {
+            if pace > 0 && animated {
+                TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
+                    let t = ctx.date.timeIntervalSinceReferenceDate * (pace > 1.5 ? 10 : 6.5)
+                    CatCanvas(outfit: outfit, mood: mood, blink: blink, stride: sin(t))
+                        .offset(y: -abs(cos(t)) * (pace > 1.5 ? 6 : 3))
+                        .rotationEffect(.degrees(pace > 1.5 ? 4 : 1.5), anchor: .bottom)
+                }
+            } else {
+                CatCanvas(outfit: outfit, mood: mood, blink: blink, stride: 0)
+            }
+        }
             .frame(width: 200, height: 250)
             .scaleEffect(x: 1, y: bob ? 1.025 : 0.985, anchor: .bottom)
             .offset(y: lift)
@@ -80,6 +93,7 @@ private struct CatCanvas: View {
     let outfit: [Slot: Item]
     let mood: CatMood
     let blink: Bool
+    var stride: Double = 0
 
     var body: some View {
         let fur = outfit[.fur]?.id ?? "fur_ginger"
@@ -88,7 +102,7 @@ private struct CatCanvas: View {
            let base = UIImage(named: suit.map { "cat_\(fur)_\($0)" } ?? "cat_\(fur)") ?? UIImage(named: "cat_\(fur)") {
             IllustratedCat(base: base, outfit: outfit, a: anchors)
         } else {
-            VectorCat(outfit: outfit, mood: mood, blink: blink)
+            VectorCat(outfit: outfit, mood: mood, blink: blink, stride: stride)
         }
     }
 }
@@ -130,6 +144,10 @@ private struct VectorCat: View {
     let outfit: [Slot: Item]
     let mood: CatMood
     let blink: Bool
+    var stride: Double = 0
+
+    /// Lift for the left/right foot during the step cycle.
+    private func lift(_ left: Bool) -> CGFloat { CGFloat(max(0, left ? stride : -stride)) * 7 }
 
     private let line: CGFloat = 3.5
     private let cream = Color(hex: 0xFFF3DE)
@@ -174,8 +192,8 @@ private struct VectorCat: View {
 
     @ViewBuilder private var feet: some View {
         if let shoes = outfit[.shoes] {
-            ArtView(id: shoes.id, size: 46, line: line).scaleEffect(x: -1).position(x: 76, y: 232)
-            ArtView(id: shoes.id, size: 46, line: line).position(x: 124, y: 232)
+            ArtView(id: shoes.id, size: 46, line: line).scaleEffect(x: -1).position(x: 76, y: 232 - lift(true))
+            ArtView(id: shoes.id, size: 46, line: line).position(x: 124, y: 232 - lift(false))
         } else {
             ForEach([78.0, 122.0], id: \.self) { x in
                 ZStack {
@@ -183,7 +201,7 @@ private struct VectorCat: View {
                     HStack(spacing: 5) { ForEach(0..<2) { _ in Capsule().fill(Color.ink).frame(width: 2.5, height: 7) } }
                         .offset(y: 3)
                 }
-                .position(x: x, y: 234)
+                .position(x: x, y: 234 - lift(x < 100))
             }
         }
     }
@@ -218,7 +236,7 @@ private struct VectorCat: View {
                 Capsule().sticker(suitColor, line).frame(width: 24, height: 44)
                 Circle().sticker(fur, line).frame(width: 22).offset(y: 4)
             }
-            .rotationEffect(.degrees(rot))
+            .rotationEffect(.degrees(rot + stride * (x < 100 ? 14 : -14)))
             .position(x: x, y: 182)
         }
     }

@@ -4179,6 +4179,16 @@
         }
       }
     },
+    "Run run run! I can keep up!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lari lari lari! Aku bisa ngejar!"
+          }
+        }
+      }
+    },
     "Save": {
       "localizations": {
         "id": {
@@ -5445,6 +5455,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Koin jalan"
+          }
+        }
+      }
+    },
+    "Walking together! Keep going": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jalan bareng! Ayo terus"
           }
         }
       }
