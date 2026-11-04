@@ -491,6 +491,16 @@
         }
       }
     },
+    "%lld found": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ditemukan"
+          }
+        }
+      }
+    },
     "%lld hours with %lld+ steps": {
       "localizations": {
         "id": {
@@ -686,6 +696,16 @@
         }
       }
     },
+    "1 snack every %@ steps · %lld/%lld today": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 camilan tiap %@ langkah · %lld/%lld hari ini"
+          }
+        }
+      }
+    },
     "1.5× coins": {
       "localizations": {
         "id": {
@@ -852,6 +872,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tambah teman"
+          }
+        }
+      }
+    },
+    "All 5 found today. More tomorrow!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kelima camilan sudah ketemu hari ini. Besok lagi!"
           }
         }
       }
@@ -1546,6 +1576,26 @@
         }
       }
     },
+    "Collect": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambil"
+          }
+        }
+      }
+    },
+    "Collect %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambil %lld"
+          }
+        }
+      }
+    },
     "Collect your last %@ and claim your rewards.": {
       "localizations": {
         "id": {
@@ -2136,12 +2186,32 @@
         }
       }
     },
+    "Found %lld snacks on your walk": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menemukan %lld camilan saat jalan"
+          }
+        }
+      }
+    },
     "Found a ring of mushrooms between the pines.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Menemukan lingkaran jamur di antara pohon pinus."
+          }
+        }
+      }
+    },
+    "Found a snack on your walk": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menemukan camilan saat jalan"
           }
         }
       }
@@ -2202,6 +2272,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dibekukan"
+          }
+        }
+      }
+    },
+    "Full": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kenyang"
           }
         }
       }
@@ -4295,6 +4375,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Abu-abu"
+          }
+        }
+      }
+    },
+    "Snacks from your walk": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camilan dari jalanmu"
           }
         }
       }

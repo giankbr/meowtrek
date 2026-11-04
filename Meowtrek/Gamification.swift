@@ -75,6 +75,37 @@ extension AppState {
         save()
     }
 
+    // Foraging: snacks found while walking
+
+    static let forageSteps = 2000
+    static let forageMax = 5
+
+    var forageFound: Int { min(Self.forageMax, today / Self.forageSteps) }
+    var forageReady: Int { max(0, forageFound - (forageDay == dayKey ? forageClaimed : 0)) }
+    var forageNextProgress: Double {
+        forageFound >= Self.forageMax ? 1 : Double(today % Self.forageSteps) / Double(Self.forageSteps)
+    }
+
+    func collectForage() {
+        let n = forageReady
+        guard n > 0 else { return }
+        if forageDay != dayKey { forageDay = dayKey; forageClaimed = 0 }
+        var rng = SeededRNG(state: UInt64(max(0, Date().timeIntervalSince1970)))
+        var found: [String: Int] = [:]
+        for _ in 0..<n {
+            let r = Double.random(in: 0..<1, using: &rng)
+            let id = r < 0.5 ? "milk" : r < 0.85 ? "fish" : "sushi"
+            found[id, default: 0] += 1
+            inventory[id, default: 0] += 1
+        }
+        forageClaimed += n
+        Telemetry.track("forage_collected")
+        let best = ["sushi", "fish", "milk"].first { found[$0] != nil } ?? "fish"
+        show(n == 1 ? loc("Found a snack on your walk") : loc("Found \(n) snacks on your walk"), art: best)
+        celebrate(.coins)
+        save()
+    }
+
     // Expeditions
 
     var expeditionDef: ExpeditionDef? { expedition.flatMap { e in content.expeditions.first { $0.id == e.id } } }
@@ -302,7 +333,7 @@ extension AppState {
     }()
 
     var gameInboxCount: Int {
-        (loginClaimedToday ? 0 : 1) + (expeditionDone ? 1 : 0) + (passClaimable > 0 ? 1 : 0)
+        (loginClaimedToday ? 0 : 1) + (forageReady > 0 ? 1 : 0) + (expeditionDone ? 1 : 0) + (passClaimable > 0 ? 1 : 0)
             + content.sets.filter { setComplete($0) && !setClaimed($0) }.count
             + duels.filter { duelReady($0) && !$0.claimed }.count
     }

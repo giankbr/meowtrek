@@ -85,6 +85,8 @@ final class AppState {
     var loginLast = ""
     var duels: [Duel] = []
     var title: String?
+    var forageDay = ""
+    var forageClaimed = 0
     let waterGoal = 8
 
     var toast: Toast?
@@ -311,8 +313,10 @@ final class AppState {
         }
     }
 
+    var isFull: Bool { fullness >= 95 }
+
     func feed(_ c: Consumable) {
-        guard inventory[c.id, default: 0] > 0, c.food > 0 else { return }
+        guard inventory[c.id, default: 0] > 0, c.food > 0, !isFull else { return }
         inventory[c.id, default: 0] -= 1
         storedFullness = min(100, fullness + Double(c.food))
         fullnessAt = .now
@@ -691,6 +695,8 @@ final class AppState {
         var loginLast: String?
         var duels: [Duel]?
         var title: String?
+        var forageDay: String?
+        var forageClaimed: Int?
     }
 
     private static let storeKey = "meowtrek.v2"
@@ -707,7 +713,7 @@ final class AppState {
             firstDay: demo ? Calendar.current.date(byAdding: .day, value: -19, to: .now)! : .now, fullnessAt: .now,
             looks: [], friends: [], onboarded: demo, remindersOn: false, useMiles: false,
             creditedTx: nil, freezeWeek: nil, aiQuestsDay: nil, chatDay: nil, aiEngine: nil, aiQuests: nil, chatCount: nil,
-            waterDay: nil, water: nil, expedition: nil, postcards: nil, loginDay: nil, loginLast: nil, duels: nil, title: nil)
+            waterDay: nil, water: nil, expedition: nil, postcards: nil, loginDay: nil, loginLast: nil, duels: nil, title: nil, forageDay: nil, forageClaimed: nil)
     }
 
     private static func loadSnapshot() -> Snapshot? {
@@ -731,6 +737,7 @@ final class AppState {
         waterDay = s.waterDay ?? ""; water = s.water ?? 0
         expedition = s.expedition; postcards = s.postcards ?? []; loginDay = s.loginDay ?? 0
         loginLast = s.loginLast ?? ""; duels = s.duels ?? []; title = s.title
+        forageDay = s.forageDay ?? ""; forageClaimed = s.forageClaimed ?? 0
     }
 
     func backupData() -> Data { (try? JSONEncoder().encode(snapshot())) ?? Data() }
@@ -754,7 +761,8 @@ final class AppState {
             looks: looks, friends: friends, onboarded: onboarded, remindersOn: remindersOn, useMiles: useMiles,
             creditedTx: Array(creditedTx), freezeWeek: freezeWeek, aiQuestsDay: aiQuestsDay, chatDay: chatDay,
             aiEngine: aiEngine, aiQuests: aiQuests, chatCount: chatCount, waterDay: waterDay, water: water,
-            expedition: expedition, postcards: postcards, loginDay: loginDay, loginLast: loginLast, duels: duels, title: title)
+            expedition: expedition, postcards: postcards, loginDay: loginDay, loginLast: loginLast, duels: duels, title: title,
+            forageDay: forageDay, forageClaimed: forageClaimed)
     }
 
     func save() {

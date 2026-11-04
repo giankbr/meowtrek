@@ -80,7 +80,7 @@ struct HomeView: View {
         .navigationDestination(isPresented: $showCloset) { ClosetView() }
         .sheet(isPresented: $showSettings) { SettingsView() }
         .sheet(isPresented: $showInbox) { InboxView().presentationDetents([.medium, .large]) }
-        .sheet(isPresented: $showFeed) { FeedSheet().presentationDetents([.height(420)]) }
+        .sheet(isPresented: $showFeed) { FeedSheet().presentationDetents([.height(510), .large]) }
         .sheet(isPresented: $showEvent) { EventView().presentationDetents([.large]) }
         .sheet(isPresented: $showCoach) { CoachView() }
         .sheet(isPresented: $showShare) { ShareCardsView() }
@@ -459,6 +459,12 @@ private struct PetScene: View {
                 SceneButton(symbol: "bubble.left.and.bubble.right.fill", tint: .sunDark) { showCoach = true }
                 SceneButton(art: "fish", tint: state.fullness < 20 ? .tomato : .sky,
                             badge: "\(Int(state.fullness))%") { showFeed = true }
+                    .overlay(alignment: .topTrailing) {
+                        if state.forageReady > 0 {
+                            Circle().fill(Color.tomato).frame(width: 12, height: 12)
+                                .overlay(Circle().stroke(Color.paper, lineWidth: 2)).offset(x: 2, y: -2)
+                        }
+                    }
             }
             .padding(.trailing, 16).padding(.bottom, 44)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
@@ -576,6 +582,7 @@ struct FeedSheet: View {
                         .foregroundStyle(Color.inkSoft)
                 }
             }
+            forageCard
             ForEach(state.foods) { c in
                 let have = state.owns(c)
                 HStack(spacing: 12) {
@@ -586,8 +593,9 @@ struct FeedSheet: View {
                     }
                     Spacer()
                     if have > 0 {
-                        Button("Feed") { withAnimation { state.feed(c) } }
+                        Button(state.isFull ? loc("Full") : loc("Feed")) { withAnimation { state.feed(c) } }
                             .buttonStyle(.chunky(.grass, text: .white))
+                            .disabled(state.isFull)
                     } else {
                         Button { state.buy(c) } label: {
                             HStack(spacing: 4) {
@@ -608,6 +616,33 @@ struct FeedSheet: View {
         .background(Color.cream)
         .presentationBackground(Color.cream)
     }
+
+    private var forageCard: some View {
+        let ready = state.forageReady
+        let maxed = state.forageFound >= AppState.forageMax
+        return HStack(spacing: 12) {
+            ArtView(id: "basket", size: 44, line: 2.2)
+                .rotationEffect(.degrees(ready > 0 ? -6 : 0))
+                .animation(ready > 0 ? .easeInOut(duration: 0.3).repeatForever(autoreverses: true) : .default, value: ready)
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Snacks from your walk").font(.game(16, .bold))
+                if maxed && ready == 0 {
+                    Text("All 5 found today. More tomorrow!").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                } else {
+                    ProgressBar(value: state.forageNextProgress, color: .sunDark, height: 8)
+                    Text(loc("1 snack every \(AppState.forageSteps.formatted()) steps · \(state.forageFound)/\(AppState.forageMax) today"))
+                        .font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+                }
+            }
+            Spacer(minLength: 4)
+            Button { withAnimation(.spring) { state.collectForage() } } label: {
+                Text(ready > 0 ? loc("Collect \(ready)") : loc("Collect"))
+            }
+            .buttonStyle(.chunky(.sun, padH: 12, padV: 8))
+            .disabled(ready == 0)
+        }
+        .card(padding: 12, color: Color.chestBg)
+    }
 }
 
 struct InboxView: View {
@@ -622,6 +657,9 @@ struct InboxView: View {
                     }
                     ForEach(state.quests.filter { state.isDone($0) && !state.isClaimed($0) }) { q in
                         row(symbol: q.t.icon, tint: q.t.tint, q.t.title, loc("Daily quest"), loc("+\(q.t.reward)")) { state.claim(q) }
+                    }
+                    if state.forageReady > 0 {
+                        row(art: "basket", loc("Snacks from your walk"), loc("\(state.forageReady) found"), loc("Collect")) { state.collectForage() }
                     }
                     if !state.loginClaimedToday {
                         row(art: AppState.dailyRewards[state.loginNextDay - 1].art, loc("Daily rewards"), loc("Day \(state.loginNextDay) of 7"), loc("Claim")) { state.claimLogin() }
