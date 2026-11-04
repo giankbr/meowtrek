@@ -199,21 +199,40 @@ struct OnboardingView: View {
                     }
                 case 1:
                     VStack(spacing: 14) {
-                        Text("Name & fur").font(.title2.weight(.bold))
-                        TextField("Name", text: $name)
-                            .font(.title3.weight(.semibold))
-                            .multilineTextAlignment(.center)
-                            .padding(12)
-                            .background(.white, in: RoundedRectangle(cornerRadius: 14))
-                        HStack(spacing: 14) {
-                            ForEach(starters, id: \.self) { id in
-                                Button { withAnimation(.spring) { fur = id } } label: {
-                                    Circle().fill(Color(hex: Catalog.item(id)?.hex ?? 0))
-                                        .frame(width: 44, height: 44)
-                                        .overlay(Circle().stroke(fur == id ? Color.leafDark : .clear, lineWidth: 3).padding(-4))
+                        Text("Make it yours").font(.title2.weight(.bold))
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Your cat's name").font(.subheadline.weight(.semibold)).foregroundStyle(Color.inkSoft)
+                            TextField("e.g. Gohan", text: $name)
+                                .font(.title3.weight(.semibold))
+                                .multilineTextAlignment(.center)
+                                .padding(12)
+                                .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                        }
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Fur color").font(.subheadline.weight(.semibold)).foregroundStyle(Color.inkSoft)
+                            HStack(spacing: 10) {
+                                ForEach(starters, id: \.self) { id in
+                                    let item = Catalog.item(id)
+                                    Button { withAnimation(.spring) { fur = id } } label: {
+                                        VStack(spacing: 6) {
+                                            Circle().fill(Color(hex: item?.hex ?? 0))
+                                                .overlay(Circle().stroke(.black.opacity(0.08)))
+                                                .frame(width: 40, height: 40)
+                                            Text(item?.name ?? "").font(.caption.weight(.semibold))
+                                                .foregroundStyle(fur == id ? Color.ink : Color.inkSoft)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                                        .overlay(RoundedRectangle(cornerRadius: 14)
+                                            .stroke(fur == id ? Color.leaf : .clear, lineWidth: 2))
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
+                        Text("You can rename them and unlock more colors later.")
+                            .font(.caption).foregroundStyle(Color.inkSoft)
                     }
                 default:
                     VStack(spacing: 14) {
