@@ -238,6 +238,8 @@ struct OnboardingView: View {
     @State private var fur = "fur_ginger"
     @State private var goal = 8000
     @State private var hop = 0
+    @State private var backup: CloudBackup.Info?
+    @State private var restoring = false
 
     private let starters = ["fur_ginger", "fur_snow", "fur_smoke", "fur_cocoa"]
 
@@ -258,6 +260,28 @@ struct OnboardingView: View {
                         Text("Meet your walking buddy").font(.game(22, .black))
                         Text("Every step you take, your cat walks too. Earn coins, dress them up and explore together.")
                             .font(.game(15, .bold)).multilineTextAlignment(.center).foregroundStyle(Color.inkSoft)
+                        if let backup {
+                            Button {
+                                restoring = true
+                                Task {
+                                    do {
+                                        try await CloudBackup.restore(state)
+                                        state.show(loc("Restored from iCloud"), art: "deco_cloud")
+                                        await state.steps.load()
+                                        state.refresh()
+                                    } catch { state.show(error.localizedDescription) }
+                                    restoring = false
+                                }
+                            } label: {
+                                HStack(spacing: 6) {
+                                    if restoring { ProgressView() } else { Image(systemName: "icloud.and.arrow.down") }
+                                    Text("Restore backup from \(backup.savedAt.formatted(date: .abbreviated, time: .omitted))")
+                                }
+                            }
+                            .buttonStyle(.chunky(.paper, radius: 18))
+                            .disabled(restoring)
+                            .padding(.top, 6)
+                        }
                     }
                 case 1:
                     VStack(spacing: 14) {
@@ -340,5 +364,6 @@ struct OnboardingView: View {
         .foregroundStyle(Color.ink)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(LinearGradient(colors: [Color(hex: 0xD8F1FF), Color.cream], startPoint: .top, endPoint: .bottom))
+        .task { backup = await CloudBackup.latest() }
     }
 }

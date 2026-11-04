@@ -866,6 +866,26 @@
         }
       }
     },
+    "Back up now": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup sekarang"
+          }
+        }
+      }
+    },
+    "Backed up to iCloud": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sudah di-backup ke iCloud"
+          }
+        }
+      }
+    },
     "Backpack": {
       "localizations": {
         "id": {
@@ -2206,6 +2226,16 @@
         }
       }
     },
+    "Last backup": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup terakhir"
+          }
+        }
+      }
+    },
     "Leaderboard · 7 days": {
       "localizations": {
         "id": {
@@ -2639,6 +2669,16 @@
         }
       }
     },
+    "Never": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum pernah"
+          }
+        }
+      }
+    },
     "No event right now": {
       "localizations": {
         "id": {
@@ -2665,6 +2705,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Belum ada teman. Bagikan kartumu untuk mulai bikin geng!"
+          }
+        }
+      }
+    },
+    "No iCloud backup found.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup iCloud tidak ditemukan."
           }
         }
       }
@@ -2959,6 +3009,16 @@
         }
       }
     },
+    "Plus backs up your progress and treks to your private iCloud once a day. Meal photos stay on this iPhone.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus mem-backup progres dan trek-mu ke iCloud pribadimu sekali sehari. Foto makanan tetap di iPhone ini."
+          }
+        }
+      }
+    },
     "Plus badge": {
       "localizations": {
         "id": {
@@ -3185,6 +3245,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pulihkan"
+          }
+        }
+      }
+    },
+    "Restore backup from %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulihkan backup dari %@"
+          }
+        }
+      }
+    },
+    "Restore from iCloud": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulihkan dari iCloud"
+          }
+        }
+      }
+    },
+    "Restore from iCloud?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulihkan dari iCloud?"
+          }
+        }
+      }
+    },
+    "Restored from iCloud": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dipulihkan dari iCloud"
           }
         }
       }
@@ -3445,6 +3545,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Menampilkan data demo"
+          }
+        }
+      }
+    },
+    "Sign in to iCloud in Settings to use backups.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masuk ke iCloud di Pengaturan untuk memakai backup."
           }
         }
       }
@@ -4379,6 +4489,16 @@
         }
       }
     },
+    "Your coins, items, looks, friends, treks and quests on this iPhone will be replaced by the backup.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koin, item, gaya, teman, trek, dan quest di iPhone ini akan diganti dengan isi backup."
+          }
+        }
+      }
+    },
     "Your streak is %lld days. Let's keep it going!": {
       "localizations": {
         "id": {
@@ -4505,6 +4625,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "target"
+          }
+        }
+      }
+    },
+    "iCloud backup": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup iCloud"
           }
         }
       }

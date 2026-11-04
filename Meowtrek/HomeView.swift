@@ -782,6 +782,13 @@ struct SettingsView: View {
                 } footer: {
                     Text("Automatic uses Apple Intelligence on supported iPhones and falls back to the cloud coach.")
                 }
+                Section {
+                    BackupSection()
+                } header: {
+                    Text("iCloud backup")
+                } footer: {
+                    Text("Plus backs up your progress and treks to your private iCloud once a day. Meal photos stay on this iPhone.")
+                }
                 Section("Connected devices") {
                     DevicesSection()
                 }

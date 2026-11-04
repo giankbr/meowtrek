@@ -692,8 +692,18 @@ final class AppState {
         waterDay = s.waterDay ?? ""; water = s.water ?? 0
     }
 
-    func save() {
-        let s = Snapshot(
+    func backupData() -> Data { (try? JSONEncoder().encode(snapshot())) ?? Data() }
+
+    func restoreBackup(_ data: Data) throws {
+        let s = try JSONDecoder().decode(Snapshot.self, from: data)
+        apply(s)
+        onboarded = true
+        save()
+        refresh()
+    }
+
+    private func snapshot() -> Snapshot {
+        Snapshot(
             coins: coins, gems: gems, goal: goal, claimedSteps: claimedSteps, rewardedLevel: rewardedLevel,
             streakFreezes: streakFreezes, reminderHour: reminderHour, petName: petName, claimedDay: claimedDay,
             profileID: profileID, owned: Array(owned), claimed: Array(claimed), claimedForever: Array(claimedForever),
@@ -703,6 +713,10 @@ final class AppState {
             looks: looks, friends: friends, onboarded: onboarded, remindersOn: remindersOn, useMiles: useMiles,
             creditedTx: Array(creditedTx), freezeWeek: freezeWeek, aiQuestsDay: aiQuestsDay, chatDay: chatDay,
             aiEngine: aiEngine, aiQuests: aiQuests, chatCount: chatCount, waterDay: waterDay, water: water)
+    }
+
+    func save() {
+        let s = snapshot()
         UserDefaults.standard.set(try? JSONEncoder().encode(s), forKey: Self.storeKey)
         pushWidget()
     }

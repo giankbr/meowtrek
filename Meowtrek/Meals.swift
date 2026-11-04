@@ -32,6 +32,15 @@ final class MealStore {
         return e
     }
 
+    func exportData() -> Data { (try? JSONEncoder().encode(meals)) ?? Data() }
+
+    /// Photos aren't backed up; restored entries keep their text and score.
+    func replace(with data: Data) {
+        guard let m = try? JSONDecoder().decode([MealEntry].self, from: data) else { return }
+        meals = m
+        try? JSONEncoder().encode(meals).write(to: index, options: .atomic)
+    }
+
     func image(_ e: MealEntry) -> UIImage? { UIImage(contentsOfFile: dir.appending(path: e.photo).path) }
 }
 

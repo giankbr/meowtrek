@@ -95,6 +95,14 @@ final class TrekStore {
         try? JSONEncoder().encode(treks).write(to: url, options: .atomic)
     }
 
+    func exportData() -> Data { (try? JSONEncoder().encode(treks)) ?? Data() }
+
+    func replace(with data: Data) {
+        guard let t = try? JSONDecoder().decode([Trek].self, from: data) else { return }
+        treks = t
+        save()
+    }
+
     var totalKm: Double { treks.reduce(0) { $0 + $1.km } }
     func longest(_ kind: TrekKind) -> Double { treks.filter { $0.kind == kind }.map(\.km).max() ?? 0 }
 }
