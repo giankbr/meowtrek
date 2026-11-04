@@ -8,9 +8,9 @@ Needed for HealthKit, App Groups, iCloud, in-app purchases and installing on a r
 
 1. Enrol at <https://developer.apple.com/programs/>.
 2. In Xcode › Meowtrek target › Signing & Capabilities, pick your **Team** for all three targets (Meowtrek, MeowtrekWidget, MeowtrekWatch). Xcode registers the IDs and capabilities below automatically:
-   - Bundle IDs: `id.gian.meowtrek`, `id.gian.meowtrek.widget`, `id.gian.meowtrek.watchkitapp`
+   - Bundle IDs: `id.gian.meowtrek`, `id.gian.meowtrek.widget`, `id.gian.meowtrek.watchkitapp`, `id.gian.meowtrek.watchkitapp.complication`
    - HealthKit (app + watch)
-   - App Group `group.id.gian.meowtrek` (app + widget)
+   - App Group `group.id.gian.meowtrek` (app, widget, watch app, watch complication)
    - iCloud › CloudKit, container `iCloud.id.gian.meowtrek` (app)
 3. After the first run with iCloud, open <https://icloud.developer.apple.com>, select the container, and **Deploy Schema Changes** to Production (record type `Backup` is created automatically in Development).
 
@@ -85,3 +85,11 @@ Without it, the button falls back to the normal share sheet.
    - OAuth redirect: `https://<your-worker>/v1/garmin/callback`
    - Push notifications for **Dailies** and **Deregistrations**: `https://<your-worker>/v1/garmin/webhook/<GARMIN_WEBHOOK_SECRET>`
 4. Check the webhook payload field names against Garmin's Health API spec (they were taken from third-party docs; see `server/src/garmin.ts`).
+
+## 7. Ready-made Apple Watch faces (optional)
+
+Apps can't design their own watch faces, but they can offer Apple faces pre-set with their complications.
+
+1. On a real Apple Watch with Meowtrek installed, set up a face (e.g. Modular, Infograph, Photos with a Meowtrek wallpaper) and add the Meowtrek complications.
+2. In the Watch app on iPhone › My Faces › the face › Share › save the `.watchface` file.
+3. Drop the files into `Meowtrek/` (e.g. `Meowtrek/Cozy Modular.watchface`). They appear automatically in Settings › Wallpapers › Watch faces, ready to share and add.

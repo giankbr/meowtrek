@@ -2,6 +2,7 @@ import HealthKit
 import Observation
 import SwiftUI
 import WatchConnectivity
+import WidgetKit
 
 @main
 struct MeowtrekWatchApp: App {
@@ -44,6 +45,13 @@ final class WatchModel: NSObject, WCSessionDelegate {
         }
     }
 
+    /// Shares today's numbers with the watch complications.
+    func pushComplication() {
+        WidgetBridge.write(WidgetSnapshot(petName: petName, steps: steps, goal: goal, streak: streak, mood: mood,
+                                          equipped: equipped, updated: .now))
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
     private func apply(_ ctx: [String: Any]) {
         if let v = ctx["petName"] as? String { petName = v }
         if let v = ctx["goal"] as? Int { goal = v }
@@ -66,6 +74,7 @@ final class WatchModel: NSObject, WCSessionDelegate {
         guard !ctx.isEmpty else { return }
         UserDefaults.standard.set(ctx, forKey: "context")
         apply(ctx)
+        pushComplication()
     }
 
     @MainActor
@@ -83,6 +92,7 @@ final class WatchModel: NSObject, WCSessionDelegate {
                                                           options: .cumulativeSum).result(for: health) {
             meters = d.sumQuantity()?.doubleValue(for: .meter()) ?? meters
         }
+        pushComplication()
     }
 }
 

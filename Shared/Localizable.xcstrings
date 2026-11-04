@@ -276,6 +276,16 @@
         }
       }
     },
+    "%@ steps · %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ langkah · %@"
+          }
+        }
+      }
+    },
     "%@ steps · %@ · %lld kcal": {
       "localizations": {
         "id": {

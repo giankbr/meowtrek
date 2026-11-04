@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B1000000000000000000000B /* MeowtrekWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* MeowtrekWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C1000000000000000000000B /* MeowtrekWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = C10000000000000000000001 /* MeowtrekWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D1000000000000000000000B /* MeowtrekWatchWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D10000000000000000000001 /* MeowtrekWatchWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,6 +26,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = C10000000000000000000004;
 			remoteInfo = MeowtrekWatch;
+		};
+		D1000000000000000000000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1000000000000000000000A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D10000000000000000000004;
+			remoteInfo = MeowtrekWatchWidget;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -51,6 +59,17 @@
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D1000000000000000000000C /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D1000000000000000000000B /* MeowtrekWatchWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +77,7 @@
 		A10000000000000000000001 /* Meowtrek.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meowtrek.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000010 /* Meowtrek.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Meowtrek.entitlements; sourceTree = "<group>"; };
 		C10000000000000000000001 /* MeowtrekWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeowtrekWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D10000000000000000000001 /* MeowtrekWatchWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeowtrekWatchWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -65,6 +85,7 @@
 		B10000000000000000000002 /* Shared */ = {isa = PBXFileSystemSynchronizedRootGroup; path = Shared; sourceTree = "<group>"; };
 		B10000000000000000000003 /* MeowtrekWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; path = MeowtrekWidget; sourceTree = "<group>"; };
 		C10000000000000000000003 /* MeowtrekWatch */ = {isa = PBXFileSystemSynchronizedRootGroup; path = MeowtrekWatch; sourceTree = "<group>"; };
+		D10000000000000000000003 /* MeowtrekWatchWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; path = MeowtrekWatchWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +110,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D10000000000000000000009 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -100,6 +128,7 @@
 				B10000000000000000000002 /* Shared */,
 				B10000000000000000000003 /* MeowtrekWidget */,
 				C10000000000000000000003 /* MeowtrekWatch */,
+				D10000000000000000000003 /* MeowtrekWatchWidget */,
 				A10000000000000000000005 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -110,6 +139,7 @@
 				A10000000000000000000001 /* Meowtrek.app */,
 				B10000000000000000000001 /* MeowtrekWidget.appex */,
 				C10000000000000000000001 /* MeowtrekWatch.app */,
+				D10000000000000000000001 /* MeowtrekWatchWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -174,10 +204,12 @@
 				C10000000000000000000008 /* Sources */,
 				C10000000000000000000009 /* Frameworks */,
 				C1000000000000000000000A /* Resources */,
+				D1000000000000000000000C /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D1000000000000000000000E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				C10000000000000000000003 /* MeowtrekWatch */,
@@ -189,6 +221,29 @@
 			productName = MeowtrekWatch;
 			productReference = C10000000000000000000001 /* MeowtrekWatch.app */;
 			productType = "com.apple.product-type.application";
+		};
+		D10000000000000000000004 /* MeowtrekWatchWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D10000000000000000000005 /* Build configuration list for PBXNativeTarget "MeowtrekWatchWidget" */;
+			buildPhases = (
+				D10000000000000000000008 /* Sources */,
+				D10000000000000000000009 /* Frameworks */,
+				D1000000000000000000000A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D10000000000000000000003 /* MeowtrekWatchWidget */,
+				B10000000000000000000002 /* Shared */,
+			);
+			name = MeowtrekWatchWidget;
+			packageProductDependencies = (
+			);
+			productName = MeowtrekWatchWidget;
+			productReference = D10000000000000000000001 /* MeowtrekWatchWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -207,6 +262,9 @@
 						CreatedOnToolsVersion = 26.0;
 					};
 					C10000000000000000000004 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					D10000000000000000000004 = {
 						CreatedOnToolsVersion = 26.0;
 					};
 				};
@@ -229,6 +287,7 @@
 				A10000000000000000000006 /* Meowtrek */,
 				B10000000000000000000004 /* MeowtrekWidget */,
 				C10000000000000000000004 /* MeowtrekWatch */,
+				D10000000000000000000004 /* MeowtrekWatchWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -249,6 +308,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C1000000000000000000000A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1000000000000000000000A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -279,6 +345,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D10000000000000000000008 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -291,6 +364,11 @@
 			isa = PBXTargetDependency;
 			target = C10000000000000000000004 /* MeowtrekWatch */;
 			targetProxy = C1000000000000000000000D /* PBXContainerItemProxy */;
+		};
+		D1000000000000000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D10000000000000000000004 /* MeowtrekWatchWidget */;
+			targetProxy = D1000000000000000000000D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -497,6 +575,58 @@
 			};
 			name = Release;
 		};
+		D10000000000000000000006 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MeowtrekWatchWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MeowtrekWatchWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Meowtrek;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = id.gian.meowtrek.watchkitapp.complication;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		D10000000000000000000007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MeowtrekWatchWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MeowtrekWatchWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Meowtrek;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = id.gian.meowtrek.watchkitapp.complication;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -532,6 +662,15 @@
 			buildConfigurations = (
 				C10000000000000000000006 /* Debug */,
 				C10000000000000000000007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D10000000000000000000005 /* Build configuration list for PBXNativeTarget "MeowtrekWatchWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D10000000000000000000006 /* Debug */,
+				D10000000000000000000007 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
