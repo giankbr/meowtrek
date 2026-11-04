@@ -3,6 +3,8 @@ import UIKit
 
 struct JourneyView: View {
     @Environment(AppState.self) private var state
+    @State private var recording = false
+    @State private var opened: Trek?
 
     var body: some View {
         let walked = state.journeySteps
@@ -30,6 +32,27 @@ struct JourneyView: View {
                 }
                 .card()
 
+                HStack {
+                    Text("Treks").font(.game(22, .bold))
+                    Spacer()
+                    Button { recording = true } label: { Label("Record", systemImage: "location.north.circle.fill") }
+                        .buttonStyle(.chunky(.grass, text: .white, radius: 18, padH: 12, padV: 7))
+                }
+                if state.treks.treks.isEmpty {
+                    Text("Record a walk, run or hike to see your routes here.")
+                        .font(.game(13, .medium)).foregroundStyle(Color.inkSoft)
+                } else {
+                    HStack {
+                        statPill("\(state.treks.treks.count)", "treks")
+                        statPill(state.distanceText(state.treks.totalKm * 1000), "total")
+                        statPill(String(format: "%.1f km", state.treks.longest(.run)), "longest run")
+                    }
+                    ForEach(state.treks.treks.prefix(5)) { t in
+                        Button { opened = t } label: { TrekRow(trek: t) }.buttonStyle(SquishStyle())
+                    }
+                }
+
+                Text("Landmarks").font(.game(22, .bold)).padding(.top, 6)
                 VStack(spacing: 0) {
                     ForEach(Array(landmarks.enumerated()), id: \.element.id) { i, l in
                         landmarkRow(l, index: i, walked: walked, prev: i == 0 ? 0 : landmarks[i - 1].steps,
@@ -46,6 +69,17 @@ struct JourneyView: View {
         .foregroundStyle(Color.ink)
         .background(Color.cream)
         .toolbar(.hidden, for: .navigationBar)
+        .fullScreenCover(isPresented: $recording) { TrekRecordView() }
+        .sheet(item: $opened) { TrekSummaryView(trek: $0) }
+    }
+
+    private func statPill(_ v: String, _ l: String) -> some View {
+        VStack(spacing: 1) {
+            Text(v).font(.game(16, .bold)).lineLimit(1).minimumScaleFactor(0.7)
+            Text(l).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+        }
+        .frame(maxWidth: .infinity)
+        .card(padding: 10, radius: 16)
     }
 
     private func trail(from i: Int, reached: Bool) -> some View {

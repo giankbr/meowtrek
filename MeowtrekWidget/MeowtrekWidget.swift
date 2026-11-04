@@ -95,7 +95,72 @@ struct MeowtrekWidget: Widget {
 
 @main
 struct MeowtrekWidgetBundle: WidgetBundle {
-    var body: some Widget { MeowtrekWidget() }
+    var body: some Widget {
+        MeowtrekWidget()
+        TrekLiveActivity()
+    }
+}
+
+struct TrekLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: TrekActivityAttributes.self) { ctx in
+            HStack(spacing: 12) {
+                CatView(outfit: outfit(ctx.attributes), size: 54, mood: .happy, animated: false)
+                VStack(alignment: .leading, spacing: 2) {
+                    Label(ctx.attributes.kind, systemImage: ctx.attributes.symbol).font(.caption.weight(.bold)).foregroundStyle(Color.grassDark)
+                    Text(String(format: "%.2f km", ctx.state.meters / 1000)).font(.system(size: 28, weight: .bold, design: .rounded))
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    timer(ctx.state).font(.system(size: 20, weight: .bold, design: .rounded))
+                    Text("\(pace(ctx.state.pace)) /km").font(.caption.weight(.semibold)).foregroundStyle(Color.inkSoft)
+                }
+            }
+            .padding(14)
+            .foregroundStyle(Color.ink)
+            .activityBackgroundTint(Color.cream)
+        } dynamicIsland: { ctx in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    Label(String(format: "%.2f km", ctx.state.meters / 1000), systemImage: ctx.attributes.symbol)
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    timer(ctx.state).font(.system(size: 17, weight: .bold, design: .rounded))
+                }
+                DynamicIslandExpandedRegion(.bottom) {
+                    Text("\(ctx.attributes.petName) is walking with you · \(pace(ctx.state.pace)) /km")
+                        .font(.caption.weight(.semibold))
+                }
+            } compactLeading: {
+                Image(systemName: ctx.attributes.symbol).foregroundStyle(Color.grass)
+            } compactTrailing: {
+                Text(String(format: "%.1f", ctx.state.meters / 1000)).font(.caption.weight(.bold)).monospacedDigit()
+            } minimal: {
+                Image(systemName: ctx.attributes.symbol).foregroundStyle(Color.grass)
+            }
+        }
+    }
+
+    private func outfit(_ a: TrekActivityAttributes) -> [Slot: Item] {
+        Dictionary(uniqueKeysWithValues: a.equipped.compactMap { k, v in
+            guard let s = Slot(rawValue: k), let it = Catalog.item(v) else { return nil }
+            return (s, it)
+        })
+    }
+
+    @ViewBuilder private func timer(_ s: TrekActivityAttributes.ContentState) -> some View {
+        if let start = s.timerStart {
+            Text(timerInterval: start...Date.distantFuture, countsDown: false).monospacedDigit()
+        } else {
+            Text(Duration.seconds(s.elapsed).formatted(.time(pattern: .minuteSecond))).monospacedDigit()
+        }
+    }
+
+    private func pace(_ p: TimeInterval) -> String {
+        guard p > 0, p < 3600 else { return "–" }
+        return String(format: "%d'%02d\"", Int(p) / 60, Int(p) % 60)
+    }
 }
 
 private func shortSteps(_ n: Int) -> String {

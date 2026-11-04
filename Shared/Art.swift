@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 typealias UnitPoint2 = (CGFloat, CGFloat) -> CGPoint
 
@@ -85,8 +86,21 @@ struct ArtView: View {
     var tint: Color? = nil
 
     var body: some View {
-        Art.draw(id, w: line ?? max(1.6, size / 20), s: size, tint: tint)
-            .frame(width: size, height: size)
+        if let img = ArtImages.image(id) {
+            Image(uiImage: img).resizable().interpolation(.high).scaledToFit()
+                .frame(width: size, height: size)
+        } else {
+            Art.draw(id, w: line ?? max(1.6, size / 20), s: size, tint: tint)
+                .frame(width: size, height: size)
+        }
+    }
+}
+
+/// Illustrated PNGs from Shared/Art.xcassets win over the vector fallback when present.
+enum ArtImages {
+    static func image(_ id: String) -> UIImage? {
+        let name = id.hasPrefix("fur_") ? "cat_\(id)" : id
+        return UIImage(named: name)
     }
 }
 
@@ -487,6 +501,13 @@ enum Art {
                 rrect(14, 44, 72, 44, 10).sticker(.bubble, w)
                 rrect(14, 40, 72, 16, 8).sticker(.white, w)
                 ForEach([28.0, 50.0, 72.0], id: \.self) { x in oval(x, 70, 7, 7).fill(Color.tomato) }
+            })
+        case "water":
+            return AnyView(ZStack {
+                poly([(24, 14), (76, 14), (68, 90), (32, 90)]).sticker(.white.opacity(0.9), w)
+                poly([(28, 40), (72, 40), (68, 88), (32, 88)]).fill(Color.sky.opacity(0.8))
+                arc((28, 40), (72, 40), via: (50, 46)).line(w * 0.7, .white)
+                rrect(36, 22, 6, 50, 3).fill(.white.opacity(0.6))
             })
         case "streak_freeze":
             return AnyView(ZStack {

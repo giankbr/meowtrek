@@ -63,7 +63,70 @@ struct CatView: View {
     }
 }
 
+/// Anchor points (0–1) of the illustrated cat images, measured once on the base pose.
+struct CatAnchors: Codable {
+    struct P: Codable { let x: Double; let y: Double }
+    let headTop: P, headWidth: Double, eyesCenter: P, neck: P, leftPaw: P, rightHip: P, leftFoot: P, rightFoot: P, back: P
+
+    static let shared: CatAnchors? = {
+        guard let url = Bundle.main.url(forResource: "cat_anchors", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(CatAnchors.self, from: data)
+    }()
+}
+
+/// Uses the illustrated cat when its PNG and anchors are bundled, otherwise the vector cat.
 private struct CatCanvas: View {
+    let outfit: [Slot: Item]
+    let mood: CatMood
+    let blink: Bool
+
+    var body: some View {
+        let fur = outfit[.fur]?.id ?? "fur_ginger"
+        let suit = outfit[.body]?.id
+        if let anchors = CatAnchors.shared,
+           let base = UIImage(named: suit.map { "cat_\(fur)_\($0)" } ?? "cat_\(fur)") ?? UIImage(named: "cat_\(fur)") {
+            IllustratedCat(base: base, outfit: outfit, a: anchors)
+        } else {
+            VectorCat(outfit: outfit, mood: mood, blink: blink)
+        }
+    }
+}
+
+private struct IllustratedCat: View {
+    let base: UIImage
+    let outfit: [Slot: Item]
+    let a: CatAnchors
+    private static let backBags: Set<String> = ["bat_wings", "butterfly"]
+
+    private func pt(_ p: CatAnchors.P) -> CGPoint { CGPoint(x: p.x * 200, y: p.y * 250) }
+
+    var body: some View {
+        let head = a.headWidth * 200
+        ZStack {
+            if let bag = outfit[.bag], Self.backBags.contains(bag.id) {
+                ArtView(id: bag.id, size: head * 1.5).position(pt(a.back))
+            }
+            Image(uiImage: base).resizable().interpolation(.high).frame(width: 200, height: 250)
+            if let shoes = outfit[.shoes] {
+                ArtView(id: shoes.id, size: head * 0.36).scaleEffect(x: -1).position(pt(a.leftFoot))
+                ArtView(id: shoes.id, size: head * 0.36).position(pt(a.rightFoot))
+            }
+            if let neck = outfit[.neck] { ArtView(id: neck.id, size: head * 0.62).position(pt(a.neck)) }
+            if let bag = outfit[.bag], !Self.backBags.contains(bag.id) {
+                ArtView(id: bag.id, size: head * 0.45).position(pt(a.rightHip))
+            }
+            if let eyes = outfit[.eyes] { ArtView(id: eyes.id, size: head * 0.82).position(pt(a.eyesCenter)) }
+            if let hat = outfit[.hat] {
+                ArtView(id: hat.id, size: head * 0.78)
+                    .position(x: a.headTop.x * 200, y: a.headTop.y * 250 + head * 0.12)
+            }
+            if let hand = outfit[.hand] { ArtView(id: hand.id, size: head * 0.5).position(pt(a.leftPaw)) }
+        }
+    }
+}
+
+private struct VectorCat: View {
     let outfit: [Slot: Item]
     let mood: CatMood
     let blink: Bool

@@ -26,6 +26,20 @@
 	<string></string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save your Meowtrek cards to Photos.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Meowtrek draws your route while you walk, run or hike.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Meowtrek keeps recording your route when the screen is off during a trek.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Meowtrek saves your treks and water to Apple Health.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Snap your meal so your cat can react to it.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Meowtrek counts your steps live so your cat can cheer you on.</string>
 </dict>

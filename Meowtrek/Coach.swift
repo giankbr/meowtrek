@@ -182,6 +182,8 @@ struct OnDeviceCoach: CoachEngine {
 
 // MARK: - Cloud (Meowtrek server → Claude)
 
+private struct ServerError: Decodable { let error: String }
+
 struct CloudCoach: CoachEngine {
     let device: String
     let plusJWS: String?
@@ -205,18 +207,19 @@ struct CloudCoach: CoachEngine {
         let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
         if code == 429 { throw CoachError.limit }
         guard (200..<300).contains(code) else {
-            let msg = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? "Server error \(code)"
-            throw CoachError.server(msg)
+            let msg = (try? JSONDecoder().decode(ServerError.self, from: data))?.error ?? "server_\(code)"
+            throw CoachError.server(msg == "ai_busy" ? "The coach is napping, try again in a moment."
+                                    : msg == "ai_not_configured" ? CoachError.unavailable.localizedDescription
+                                    : "AI coach error (\(msg))")
         }
         return try JSONDecoder().decode(T.self, from: data)
     }
 
     private struct ChatBody: Encodable { let messages: [ChatMessage]; let context: CoachContext }
     private struct ChatReply: Decodable { let reply: String }
-    private struct InsightBody: Encodable { let context: CoachContext; let days: [Int] }
-    private struct QuestsBody: Encodable { let context: CoachContext }
+    private struct InsightBody: Encodable { let context: CoachContext; let last28Days: [Int] }
+    private struct QuestsBody: Encodable { let context: CoachContext; let localHour: Int }
     private struct WireQuest: Decodable { let title: String; let detail: String; let kind: String; let target: Int; let hour: Int?; let reward: Int }
-    private struct QuestsReply: Decodable { let quests: [WireQuest] }
 
     func chat(_ messages: [ChatMessage], _ ctx: CoachContext) async throws -> String {
         let r: ChatReply = try await post("v1/coach/chat", ChatBody(messages: Array(messages.suffix(12)), context: ctx))
@@ -224,12 +227,13 @@ struct CloudCoach: CoachEngine {
     }
 
     func insight(_ ctx: CoachContext, days: [Int]) async throws -> CoachInsight {
-        try await post("v1/coach/insight", InsightBody(context: ctx, days: days))
+        try await post("v1/coach/insight", InsightBody(context: ctx, last28Days: days))
     }
 
     func quests(_ ctx: CoachContext) async throws -> [QuestTemplate] {
-        let r: QuestsReply = try await post("v1/coach/quests", QuestsBody(context: ctx))
-        return r.quests.prefix(3).enumerated().map { i, q in
+        let hour = Calendar.current.component(.hour, from: .now)
+        let r: [WireQuest] = try await post("v1/coach/quests", QuestsBody(context: ctx, localHour: hour))
+        return r.prefix(3).enumerated().map { i, q in
             Coach.clampQuest(title: q.title, detail: q.detail, kind: q.kind, target: q.target, hour: q.hour, reward: q.reward, index: i, goal: ctx.goal)
         }
     }

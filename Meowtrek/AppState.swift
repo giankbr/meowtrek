@@ -6,13 +6,14 @@ struct DailyQuest: Identifiable {
     let t: QuestTemplate
     let target: Int
     var id: String { t.id }
-    var unit: String { t.kind == .activeHours ? "active hours" : "steps" }
+    var unit: String { t.kind == .activeHours ? "active hours" : t.kind == .water ? "glasses" : "steps" }
     var detail: String {
         switch t.kind {
         case .steps: "Walk \(target.formatted()) steps"
         case .before: "\(target.formatted()) steps before \(t.hour):00"
         case .after: "\(target.formatted()) steps after \(t.hour):00"
         case .activeHours: "\(target) hours with \(t.steps)+ steps"
+        case .water: "Drink \(target) glasses of water"
         }
     }
 }
@@ -39,6 +40,8 @@ struct ActiveEvent {
 final class AppState {
     @ObservationIgnored let steps = StepStore()
     @ObservationIgnored let store = Store()
+    @ObservationIgnored let treks = TrekStore()
+    @ObservationIgnored let meals = MealStore()
     @ObservationIgnored let content = GameContent.shared
     @ObservationIgnored private let cal = Calendar.current
     static let demo = ProcessInfo.processInfo.arguments.contains("-demo")
@@ -74,6 +77,9 @@ final class AppState {
     var chatDay = ""
     var chatCount = 0
     var aiEngine = "auto"
+    var waterDay = ""
+    var water = 0
+    let waterGoal = 8
 
     var toast: Toast?
     var fx = FX()
@@ -381,7 +387,7 @@ final class AppState {
         if aiQuestsDay == dayKey, !aiQuests.isEmpty {
             return aiQuests.prefix(3).map { t in
                 DailyQuest(t: t, target: t.kind == .steps ? Int((Double(goal) * t.fraction / 100).rounded()) * 100
-                           : t.kind == .activeHours ? t.count : t.steps)
+                           : t.kind == .activeHours || t.kind == .water ? t.count : t.steps)
             }
         }
         var rng = SeededRNG(state: dayNumber &* 2654435761 &+ 7)
@@ -392,7 +398,7 @@ final class AppState {
             let target: Int
             switch t.kind {
             case .steps: target = Int((Double(goal) * t.fraction / 100).rounded()) * 100
-            case .activeHours: target = t.count
+            case .activeHours, .water: target = t.count
             default: target = t.steps
             }
             return DailyQuest(t: t, target: target)
@@ -406,6 +412,7 @@ final class AppState {
         case .before: return h.prefix(q.t.hour).reduce(0, +)
         case .after: return h.dropFirst(q.t.hour).reduce(0, +)
         case .activeHours: return h.filter { $0 >= q.t.steps }.count
+        case .water: return waterToday
         }
     }
 
@@ -506,6 +513,9 @@ final class AppState {
         case .goalDays: return past.values.filter { $0 >= goal }.count
         case .items: return owned.count
         case .level: return level
+        case .longestRun: return Int(treks.longest(.run))
+        case .treks: return treks.treks.count
+        case .trekKm: return Int(treks.totalKm)
         }
     }
 
@@ -589,6 +599,40 @@ final class AppState {
         save()
     }
 
+    // MARK: Treks & water
+
+    func rewardTrek(_ t: Trek) {
+        let c = isPlus ? t.coins * 3 / 2 : t.coins
+        guard c > 0 else { return }
+        coins += c
+        show("\(t.kind.title) done · +\(c) coins", art: "coin")
+        celebrate(.confetti)
+        save()
+    }
+
+    func shareMeal() {
+        storedFullness = min(100, fullness + 15)
+        fullnessAt = .now
+        show("\(petName) shared your meal · +15% food", art: "fish")
+        save()
+    }
+
+    var waterToday: Int { waterDay == dayKey ? water : 0 }
+
+    func addWater() {
+        if waterDay != dayKey { waterDay = dayKey; water = 0 }
+        water += 1
+        if water == waterGoal { show("Water goal reached!", art: "water"); celebrate(.confetti) }
+        save()
+        Task { await WaterHealth.log() }
+    }
+
+    func removeWater() {
+        guard waterToday > 0 else { return }
+        water -= 1
+        save()
+    }
+
     // MARK: Persistence
 
     private struct Snapshot: Codable {
@@ -606,6 +650,8 @@ final class AppState {
         var freezeWeek, aiQuestsDay, chatDay, aiEngine: String?
         var aiQuests: [QuestTemplate]?
         var chatCount: Int?
+        var waterDay: String?
+        var water: Int?
     }
 
     private static let storeKey = "meowtrek.v2"
@@ -621,7 +667,8 @@ final class AppState {
             inventory: ["fish": 2, "milk": 1], storedFullness: 70,
             firstDay: demo ? Calendar.current.date(byAdding: .day, value: -19, to: .now)! : .now, fullnessAt: .now,
             looks: [], friends: [], onboarded: demo, remindersOn: false, useMiles: false,
-            creditedTx: nil, freezeWeek: nil, aiQuestsDay: nil, chatDay: nil, aiEngine: nil, aiQuests: nil, chatCount: nil)
+            creditedTx: nil, freezeWeek: nil, aiQuestsDay: nil, chatDay: nil, aiEngine: nil, aiQuests: nil, chatCount: nil,
+            waterDay: nil, water: nil)
     }
 
     private static func loadSnapshot() -> Snapshot? {
@@ -642,6 +689,7 @@ final class AppState {
         creditedTx = Set(s.creditedTx ?? []); freezeWeek = s.freezeWeek ?? ""
         aiQuestsDay = s.aiQuestsDay ?? ""; aiQuests = s.aiQuests ?? []
         chatDay = s.chatDay ?? ""; chatCount = s.chatCount ?? 0; aiEngine = s.aiEngine ?? "auto"
+        waterDay = s.waterDay ?? ""; water = s.water ?? 0
     }
 
     func save() {
@@ -654,7 +702,7 @@ final class AppState {
             inventory: inventory, storedFullness: storedFullness, firstDay: firstDay, fullnessAt: fullnessAt,
             looks: looks, friends: friends, onboarded: onboarded, remindersOn: remindersOn, useMiles: useMiles,
             creditedTx: Array(creditedTx), freezeWeek: freezeWeek, aiQuestsDay: aiQuestsDay, chatDay: chatDay,
-            aiEngine: aiEngine, aiQuests: aiQuests, chatCount: chatCount)
+            aiEngine: aiEngine, aiQuests: aiQuests, chatCount: chatCount, waterDay: waterDay, water: water)
         UserDefaults.standard.set(try? JSONEncoder().encode(s), forKey: Self.storeKey)
         pushWidget()
     }
@@ -665,6 +713,10 @@ final class AppState {
             equipped: Dictionary(uniqueKeysWithValues: equipped.map { ($0.key.rawValue, $0.value) }),
             updated: .now))
         WidgetCenter.shared.reloadAllTimelines()
+        WatchLink.shared.send([
+            "petName": petName, "goal": goal, "streak": streak, "mood": mood, "steps": today,
+            "equipped": Dictionary(uniqueKeysWithValues: equipped.map { ($0.key.rawValue, $0.value) }),
+        ])
     }
 
     func resetAll() {

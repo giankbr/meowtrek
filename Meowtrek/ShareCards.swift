@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 enum ShareKind: String, CaseIterable, Identifiable {
-    case today, streak, outfit, journey
+    case today, streak, outfit, journey, trek
     var id: String { rawValue }
     var title: String {
         switch self {
@@ -10,6 +10,7 @@ enum ShareKind: String, CaseIterable, Identifiable {
         case .streak: "Streak"
         case .outfit: "Outfit"
         case .journey: "Journey"
+        case .trek: "Trek"
         }
     }
 }
@@ -27,9 +28,13 @@ struct ShareData {
     let days: Int
     let nextStop: String?
     let km: String
+    var trek: Trek?
+    var trekDistance = ""
 
     @MainActor
-    init(_ s: AppState) {
+    init(_ s: AppState, trek: Trek? = nil) {
+        self.trek = trek
+        trekDistance = trek.map { s.distanceText($0.meters) } ?? ""
         petName = s.petName
         outfit = s.outfit
         mood = CatMood(s.mood)
@@ -54,6 +59,7 @@ struct ShareCard: View {
         case .streak: [Color(hex: 0xFFD6B0), Color(hex: 0xF7B5A0)]
         case .outfit: [Color(hex: 0xE9E1FA), Color(hex: 0xFCE3EC)]
         case .journey: [Color(hex: 0xD6ECF7), Color(hex: 0xDDEBCF)]
+        case .trek: [Color(hex: 0xFFE3D3), Color(hex: 0xD6ECF7)]
         }
     }
 
@@ -69,8 +75,20 @@ struct ShareCard: View {
                     .padding(.top, 34)
                 Spacer(minLength: 0)
                 headline
+                if kind == .trek, let t = data.trek {
+                    RouteShape(points: t.route)
+                        .stroke(t.kind.tint, style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round))
+                        .padding(22)
+                        .frame(height: 220)
+                        .background(RoundedRectangle(cornerRadius: 26, style: .continuous).fill(.white.opacity(0.75)))
+                        .overlay(alignment: .bottomTrailing) {
+                            CatView(outfit: data.outfit, size: 70, mood: .happy, animated: false).offset(x: 10, y: 20)
+                        }
+                }
+                if kind != .trek {
                 CatView(outfit: data.outfit, size: kind == .outfit ? 210 : 170, mood: kind == .streak ? .happy : data.mood, animated: false)
                     .background(Ellipse().fill(.black.opacity(0.07)).frame(width: 150, height: 22).offset(y: kind == .outfit ? 125 : 100))
+                }
                 detail
                 Spacer(minLength: 0)
                 Text("walking with \(data.petName) · day \(data.days)")
@@ -102,6 +120,12 @@ struct ShareCard: View {
             VStack(spacing: 2) {
                 Text("\(data.petName)'s look").font(.system(size: 34, weight: .bold, design: .rounded))
                 Text("of the day").font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
+            }
+        case .trek:
+            VStack(spacing: 2) {
+                Text(data.trekDistance).font(.system(size: 54, weight: .bold, design: .rounded))
+                Text(data.trek.map { "\($0.kind.title.lowercased()) · \(durationText($0.moving))" } ?? "")
+                    .font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.6))
             }
         case .journey:
             VStack(spacing: 2) {
@@ -136,6 +160,14 @@ struct ShareCard: View {
                     ItemArt(item: item, size: 40)
                         .frame(width: 54, height: 54)
                         .background(Circle().fill(.white.opacity(0.7)))
+                }
+            }
+        case .trek:
+            if let t = data.trek {
+                HStack(spacing: 22) {
+                    VStack { Text(paceText(t.pace)).font(.system(size: 22, weight: .bold, design: .rounded)); Text("avg pace").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.55)) }
+                    VStack { Text("\(Int(t.climb))m").font(.system(size: 22, weight: .bold, design: .rounded)); Text("climb").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.55)) }
+                    VStack { Text("\(t.kcal)").font(.system(size: 22, weight: .bold, design: .rounded)); Text("kcal").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Color.ink.opacity(0.55)) }
                 }
             }
         case .journey:
@@ -176,15 +208,17 @@ struct ShareCardsView: View {
     @Environment(AppState.self) private var state
     @Environment(\.dismiss) private var dismiss
     @State var kind: ShareKind = .today
+    var trek: Trek? = nil
     @State private var image: UIImage?
     @State private var saved = false
 
     var body: some View {
-        let data = ShareData(state)
+        let data = ShareData(state, trek: trek)
+        let kinds = ShareKind.allCases.filter { $0 != .trek || trek != nil }
         NavigationStack {
             VStack(spacing: 16) {
                 TabView(selection: $kind) {
-                    ForEach(ShareKind.allCases) { k in
+                    ForEach(kinds) { k in
                         ShareCard(kind: k, data: data)
                             .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
                             .scaleEffect(0.78)
@@ -195,8 +229,8 @@ struct ShareCardsView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: 520)
 
-                HStack(spacing: 8) {
-                    ForEach(ShareKind.allCases) { k in
+                HStack(spacing: 6) {
+                    ForEach(kinds) { k in
                         Button(k.title) { withAnimation(.snappy) { kind = k } }
                             .buttonStyle(.chunky(kind == k ? .grass : .paper, text: kind == k ? .white : .ink, radius: 20, padH: 12, padV: 7))
                     }

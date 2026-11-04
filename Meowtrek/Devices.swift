@@ -147,18 +147,32 @@ enum Fitbit {
 enum Garmin {
     static var linked: Bool { UserDefaults.standard.bool(forKey: "garmin.linked") }
 
+    private static func request(_ path: String, device: String, method: String = "GET") throws -> URLRequest {
+        guard let base = AppConfig.apiBase else { throw LinkError.notConfigured("Garmin sync") }
+        var req = URLRequest(url: base.appending(path: path))
+        req.httpMethod = method
+        req.setValue(device, forHTTPHeaderField: "X-Meowtrek-Device")
+        return req
+    }
+
     @MainActor
     static func connect(device: String) async throws {
-        guard let base = AppConfig.apiBase else { throw LinkError.notConfigured("Garmin sync") }
-        var c = URLComponents(url: base.appending(path: "v1/garmin/connect"), resolvingAgainstBaseURL: false)!
-        c.queryItems = [.init(name: "device", value: device)]
-        let callback = try await WebAuth.shared.start(c.url!)
+        let (data, resp) = try await URLSession.shared.data(for: try request("v1/garmin/authorize", device: device))
+        if (resp as? HTTPURLResponse)?.statusCode == 503 { throw LinkError.notConfigured("Garmin") }
+        struct Auth: Decodable { let url: URL }
+        guard let auth = try? JSONDecoder().decode(Auth.self, from: data) else { throw LinkError.failed("Garmin login unavailable") }
+        let callback = try await WebAuth.shared.start(auth.url)
         let status = URLComponents(url: callback, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "status" }?.value
         guard status == "linked" else { throw LinkError.failed("Garmin wasn't linked") }
         UserDefaults.standard.set(true, forKey: "garmin.linked")
     }
 
-    static func disconnect() { UserDefaults.standard.set(false, forKey: "garmin.linked") }
+    static func disconnect(device: String) {
+        UserDefaults.standard.set(false, forKey: "garmin.linked")
+        if let req = try? request("v1/garmin/link", device: device, method: "DELETE") {
+            Task { _ = try? await URLSession.shared.data(for: req) }
+        }
+    }
 
     static func steps(device: String) async throws -> [Date: Int] {
         guard let base = AppConfig.apiBase else { throw LinkError.notConfigured("Garmin sync") }
@@ -210,7 +224,7 @@ struct DevicesSection: View {
         }
         row("location.north.circle.fill", .grassDark, "Garmin", garmin ? "Connected" : "Sign in to sync steps", connected: garmin) {
             if garmin {
-                Garmin.disconnect(); state.steps.removeExternal("garmin"); garmin = false
+                Garmin.disconnect(device: state.profileID); state.steps.removeExternal("garmin"); garmin = false
             } else {
                 link("garmin") {
                     try await Garmin.connect(device: state.profileID)

@@ -736,6 +736,30 @@
    "hour": 0,
    "steps": 250,
    "count": 8
+  },
+  {
+   "id": "hydrate",
+   "title": "Hydrate",
+   "icon": "drop.fill",
+   "tint": "4F93B8",
+   "kind": "water",
+   "reward": 20,
+   "fraction": 0,
+   "hour": 0,
+   "steps": 0,
+   "count": 6
+  },
+  {
+   "id": "hydrate8",
+   "title": "Full bowl",
+   "icon": "waterbottle.fill",
+   "tint": "4F93B8",
+   "kind": "water",
+   "reward": 30,
+   "fraction": 0,
+   "hour": 0,
+   "steps": 0,
+   "count": 8
   }
  ],
  "landmarks": [
@@ -946,6 +970,39 @@
    "value": 10,
    "coins": 400,
    "gems": 5
+  },
+  {
+   "id": "run5k",
+   "title": "First 5K",
+   "icon": "figure.run",
+   "tint": "E5707A",
+   "detail": "Run 5 km in one trek",
+   "kind": "longestRun",
+   "value": 5,
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "treks10",
+   "title": "Explorer",
+   "icon": "map.fill",
+   "tint": "4F93B8",
+   "detail": "Record 10 treks",
+   "kind": "treks",
+   "value": 10,
+   "coins": 150,
+   "gems": 1
+  },
+  {
+   "id": "trek100",
+   "title": "Century",
+   "icon": "mountain.2.fill",
+   "tint": "8B7BC8",
+   "detail": "Trek 100 km in total",
+   "kind": "trekKm",
+   "value": 100,
+   "coins": 400,
+   "gems": 4
   }
  ]
 }

@@ -11,12 +11,23 @@ struct HomeView: View {
     @State private var showShare = false
     @State private var showPaywall = false
     @State private var personalizing = false
+    @State private var showTrek = false
+    @State private var showMeal = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
                 PetScene(showCloset: $showCloset, showSettings: $showSettings,
                          showInbox: $showInbox, showFeed: $showFeed, showCoach: $showCoach)
+                Button { showTrek = true } label: {
+                    Label("Start a walk, run or hike", systemImage: "location.north.circle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.chunky(.grass, text: .white, radius: 20, padV: 13))
+                .padding(.horizontal, 16)
+                .padding(.top, -18)
+                .padding(.bottom, 10)
+                .zIndex(1)
                 VStack(alignment: .leading, spacing: 14) {
                     stepsCard
                     HStack {
@@ -38,6 +49,20 @@ struct HomeView: View {
                     .padding(.top, 4)
                     if let a = state.activeEvent { eventCard(a) }
                     chestCard
+                    waterCard
+                    Button { showMeal = true } label: {
+                        HStack(spacing: 12) {
+                            GameIcon(symbol: "camera.fill", tint: .pumpkin, size: 44)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Snap your meal").font(.game(17, .bold))
+                                Text("\(state.petName) reacts · no calorie counting").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                            }
+                            Spacer()
+                            if !state.isPlus { Tag(text: "Plus", color: .sun, textColor: .ink) }
+                        }
+                        .card()
+                    }
+                    .buttonStyle(SquishStyle())
                     ForEach(state.quests) { QuestRow(q: $0) }
                 }
                 .foregroundStyle(Color.ink)
@@ -59,6 +84,30 @@ struct HomeView: View {
         .sheet(isPresented: $showCoach) { CoachView() }
         .sheet(isPresented: $showShare) { ShareCardsView() }
         .sheet(isPresented: $showPaywall) { PaywallView() }
+        .fullScreenCover(isPresented: $showTrek) { TrekRecordView() }
+        .sheet(isPresented: $showMeal) { MealView() }
+    }
+
+    private var waterCard: some View {
+        HStack(spacing: 12) {
+            ArtView(id: "water", size: 44)
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Water").font(.game(17, .bold))
+                HStack(spacing: 3) {
+                    ForEach(0..<state.waterGoal, id: \.self) { i in
+                        Capsule().fill(i < state.waterToday ? Color.sky : Color.sky.opacity(0.18)).frame(width: 14, height: 18)
+                    }
+                }
+                Text("\(state.waterToday) of \(state.waterGoal) glasses").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+            }
+            Spacer()
+            Button { withAnimation(.spring) { state.removeWater() } } label: { Image(systemName: "minus") }
+                .buttonStyle(.chunky(.paper, radius: 14, padH: 10, padV: 8))
+                .disabled(state.waterToday == 0)
+            Button { withAnimation(.spring) { state.addWater() } } label: { Image(systemName: "plus") }
+                .buttonStyle(.chunky(.sky, text: .white, radius: 14, padH: 10, padV: 8))
+        }
+        .card()
     }
 
     private func personalize() {

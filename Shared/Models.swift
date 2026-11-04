@@ -73,7 +73,7 @@ struct GameEvent: Codable, Identifiable {
 }
 
 struct QuestTemplate: Codable, Identifiable {
-    enum Kind: String, Codable { case steps, before, after, activeHours }
+    enum Kind: String, Codable { case steps, before, after, activeHours, water }
     let id: String
     let title: String
     let icon: String
@@ -97,7 +97,7 @@ struct Landmark: Codable, Identifiable {
 }
 
 struct Achievement: Codable, Identifiable {
-    enum Kind: String, Codable { case bestDay, streak, lifetime, goalDays, items, level }
+    enum Kind: String, Codable { case bestDay, streak, lifetime, goalDays, items, level, longestRun, treks, trekKm }
     let id: String
     let title: String
     let icon: String
