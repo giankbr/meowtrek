@@ -936,12 +936,32 @@
         }
       }
     },
+    "App icon & wallpapers": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ikon app & wallpaper"
+          }
+        }
+      }
+    },
     "Apple Health connected": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Apple Health tersambung"
+          }
+        }
+      }
+    },
+    "Apple Watch": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
           }
         }
       }
@@ -2986,6 +3006,16 @@
         }
       }
     },
+    "Meadow": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Padang"
+          }
+        }
+      }
+    },
     "Meal diary": {
       "localizations": {
         "id": {
@@ -3085,6 +3115,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jutawan"
+          }
+        }
+      }
+    },
+    "Minimal": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minimalis"
           }
         }
       }
@@ -3289,6 +3329,26 @@
         }
       }
     },
+    "Night sky": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langit malam"
+          }
+        }
+      }
+    },
+    "Night walk": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jalan malam"
+          }
+        }
+      }
+    },
     "No event right now": {
       "localizations": {
         "id": {
@@ -3429,6 +3489,16 @@
         }
       }
     },
+    "On your iPhone open Watch › Face Gallery › Photos, then choose this image.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di iPhone, buka Watch › Galeri Wajah › Foto, lalu pilih gambar ini."
+          }
+        }
+      }
+    },
     "On-device AI": {
       "localizations": {
         "id": {
@@ -3459,12 +3529,32 @@
         }
       }
     },
+    "Open Photos, pick the image, tap Share › Use as Wallpaper.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buka Foto, pilih gambarnya, ketuk Bagikan › Gunakan sebagai Wallpaper."
+          }
+        }
+      }
+    },
     "Opened · see you tomorrow": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Sudah dibuka · sampai besok"
+          }
+        }
+      }
+    },
+    "Opens the Watch app to add the face with Meowtrek complications.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Membuka app Watch untuk menambahkan wajah jam dengan komplikasi Meowtrek."
           }
         }
       }
@@ -3545,6 +3635,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tempel link kartu mereka"
+          }
+        }
+      }
+    },
+    "Pastel": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pastel"
           }
         }
       }
@@ -3725,6 +3825,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bangga"
+          }
+        }
+      }
+    },
+    "Pumpkin": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Labu"
           }
         }
       }
@@ -4089,6 +4199,16 @@
         }
       }
     },
+    "Save to Photos": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simpan ke Foto"
+          }
+        }
+      }
+    },
     "Saved": {
       "localizations": {
         "id": {
@@ -4155,6 +4275,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pelajar"
+          }
+        }
+      }
+    },
+    "Seasonal": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Musiman"
           }
         }
       }
@@ -4479,6 +4609,16 @@
         }
       }
     },
+    "Snow day": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hari bersalju"
+          }
+        }
+      }
+    },
     "Social": {
       "localizations": {
         "id": {
@@ -4775,6 +4915,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jejak Cerah"
+          }
+        }
+      }
+    },
+    "Sunset": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senja"
           }
         }
       }
@@ -5289,6 +5439,26 @@
         }
       }
     },
+    "Wallpapers": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wallpaper"
+          }
+        }
+      }
+    },
+    "Wallpapers for Apple Watch & iPhone": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wallpaper untuk Apple Watch & iPhone"
+          }
+        }
+      }
+    },
     "Wand": {
       "localizations": {
         "id": {
@@ -5315,6 +5485,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pemanasan"
+          }
+        }
+      }
+    },
+    "Watch faces": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wajah jam"
           }
         }
       }
@@ -5735,6 +5915,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Backup iCloud"
+          }
+        }
+      }
+    },
+    "iPhone": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone"
           }
         }
       }

@@ -14,6 +14,7 @@ struct HomeView: View {
     @State private var showTrek = false
     @State private var showMeal = false
     @State private var waterPulse = false
+    @State private var devWallpapers = ProcessInfo.processInfo.arguments.contains("-wallpapers")
 
     var body: some View {
         ScrollView {
@@ -87,6 +88,7 @@ struct HomeView: View {
         .sheet(isPresented: $showPaywall) { PaywallView() }
         .fullScreenCover(isPresented: $showTrek) { TrekRecordView() }
         .sheet(isPresented: $showMeal) { MealView() }
+        .sheet(isPresented: $devWallpapers) { WallpapersView() }
     }
 
     private var waterCard: some View {
@@ -824,6 +826,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var confirmReset = false
     @State private var showPaywall = false
+    @State private var showWallpapers = false
 
     var body: some View {
         @Bindable var s = state
@@ -891,6 +894,12 @@ struct SettingsView: View {
                 } footer: {
                     Text("Meowtrek nudges you if you're short of your goal, and before events end.")
                 }
+                Section("App icon & wallpapers") {
+                    AppIconPicker()
+                    Button { showWallpapers = true } label: {
+                        Label("Wallpapers for Apple Watch & iPhone", systemImage: "photo.on.rectangle.angled")
+                    }
+                }
                 Section("Units") {
                     Toggle("Share anonymous usage and crash reports", isOn: Binding(get: { Telemetry.enabled }, set: { Telemetry.enabled = $0 }))
                     Picker("Distance", selection: $s.useMiles) {
@@ -920,6 +929,7 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { Button("Done") { dismiss() }.font(.game(15, .black)) }
             .sheet(isPresented: $showPaywall) { PaywallView() }
+            .sheet(isPresented: $showWallpapers) { WallpapersView() }
             .confirmationDialog("Reset everything?", isPresented: $confirmReset, titleVisibility: .visible) {
                 Button("Reset", role: .destructive) { state.resetAll(); dismiss() }
             } message: {
