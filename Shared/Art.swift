@@ -636,7 +636,7 @@ enum Art {
                 rrect(20, 58, 64, 18, 9).fill(.white)
             })
         default:
-            return AnyView(star(50, 50, 40).sticker(.sun, w))
+            return WardrobeArt.draw(id, w: w, s: s, tint: tint) ?? AnyView(star(50, 50, 40).sticker(.sun, w))
         }
     }
 }

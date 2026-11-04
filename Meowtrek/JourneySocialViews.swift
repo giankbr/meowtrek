@@ -240,7 +240,7 @@ struct SocialView: View {
 struct OnboardingView: View {
     @Environment(AppState.self) private var state
     @State private var page = 0
-    @State private var name = "Gohan"
+    @State private var name = "Miso"
     @State private var fur = "fur_ginger"
     @State private var goal = 8000
     @State private var hop = 0
@@ -294,7 +294,7 @@ struct OnboardingView: View {
                         Text("Make it yours").font(.game(26, .black))
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Your cat's name").font(.game(13, .black)).foregroundStyle(Color.inkSoft)
-                            TextField("e.g. Gohan", text: $name)
+                            TextField("e.g. Miso", text: $name)
                                 .font(.game(20, .black))
                                 .multilineTextAlignment(.center)
                                 .padding(12)

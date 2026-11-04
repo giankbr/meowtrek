@@ -9,9 +9,6 @@ struct ClosetView: View {
     @State private var hop = 0
     @State private var showShare = false
 
-    private let left: [Slot] = [.fur, .hat, .eyes, .neck]
-    private let right: [Slot] = [.body, .hand, .bag, .shoes]
-
     var body: some View {
         VStack(spacing: 0) {
             header
@@ -19,7 +16,7 @@ struct ClosetView: View {
             picker
         }
         .foregroundStyle(Color.ink)
-        .background(Color.cream)
+        .paperBackground()
         .toolbar(.hidden, for: .navigationBar)
         .overlay(alignment: .bottom) {
             if let item = trying { TryOnBar(item: item) { trying = nil }.transition(.move(edge: .bottom).combined(with: .opacity)) }
@@ -32,57 +29,91 @@ struct ClosetView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             RoundIconButton(symbol: "chevron.left", size: 38) { dismiss() }
-            VStack(alignment: .leading, spacing: -2) {
-                Text("Closet").font(.game(26, .black)).lineLimit(1)
-                Text("Tap to wear").font(.game(12, .bold)).foregroundStyle(Color.inkSoft).lineLimit(1)
+            VStack(alignment: .leading, spacing: 4) {
+                StoryHeading(text: loc("Wardrobe"), size: 26)
+                Text("Dress up \(state.petName)").font(.game(12, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1)
             }
             .layoutPriority(-1)
             Spacer(minLength: 4)
             RoundIconButton(symbol: "square.and.arrow.up", size: 38) { showShare = true }
-            Button { showLooks = true } label: { Label("Looks", systemImage: "sparkles").lineLimit(1).fixedSize() }
-                .buttonStyle(.chunky(.bubble, padH: 10, padV: 8))
-            NavigationLink { ShopView(filter: slot) } label: { Label("Shop", systemImage: "bag.fill").lineLimit(1).fixedSize() }
-                .buttonStyle(.chunky(.sun, padH: 10, padV: 8))
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.top, 8).padding(.bottom, 12)
     }
 
     private var stage: some View {
-        ZStack {
-            LinearGradient(colors: [Color(hex: 0xD8F1FF), Color(hex: 0xF3FBE8)], startPoint: .top, endPoint: .bottom)
-            Ellipse().sticker(Color.grassLight, 3).frame(width: 220, height: 46).offset(y: 124)
-            HStack(alignment: .center) {
-                VStack(spacing: 8) { ForEach(left) { slotButton($0) } }
-                Spacer()
-                VStack(spacing: 8) { ForEach(right) { slotButton($0) } }
+        ZStack(alignment: .bottom) {
+            ZStack {
+                LinearGradient(colors: [Color(hex: 0xE6F2EC), Color(hex: 0xFBF3E1)], startPoint: .top, endPoint: .bottom)
+                Circle().fill(Color.sun.opacity(0.18)).frame(width: 220).offset(x: 110, y: -90)
+                Circle().fill(Color.bubble.opacity(0.14)).frame(width: 180).offset(x: -130, y: 30)
+                Ellipse().fill(Color.grass.opacity(0.22)).frame(width: 210, height: 34).offset(y: 92)
+                CatView(outfit: previewOutfit, size: 170, mood: .happy, hop: hop)
+                    .offset(y: -6)
+                    .onTapGesture { hop += 1 }
+                VStack {
+                    HStack(alignment: .top) {
+                        Button { showLooks = true } label: { tagLabel(loc("Outfits"), "sparkles", tilt: -4, color: .bubble) }
+                            .buttonStyle(SquishStyle())
+                        Spacer()
+                        NavigationLink { ShopView(filter: slot) } label: { tagLabel(loc("Shop"), "bag.fill", tilt: 4, color: .sun) }
+                            .buttonStyle(SquishStyle())
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 16).padding(.top, 18)
             }
-            .padding(.horizontal, 14)
-            CatView(outfit: previewOutfit, size: 176, mood: .happy, hop: hop)
-                .offset(y: 4)
-                .onTapGesture { hop += 1 }
+            .padding(.bottom, 30)
+            bookmarks
         }
-        .frame(height: 340)
+        .frame(height: 360)
+        .clipped()
     }
 
-    private func slotButton(_ s: Slot) -> some View {
+    private func tagLabel(_ title: String, _ symbol: String, tilt: Double, color: Color) -> some View {
+        Label(title, systemImage: symbol)
+            .font(.story(14, .semibold))
+            .foregroundStyle(Color.ink)
+            .padding(.horizontal, 12).padding(.top, 10).padding(.bottom, 7)
+            .background(PaperShape(radius: 4, seed: title.count).fill(Color.paper))
+            .shadow(color: .black.opacity(0.1), radius: 2, y: 1.5)
+            .taped(.top, angle: -tilt * 1.5, color: color, width: 36)
+            .rotationEffect(.degrees(tilt))
+    }
+
+    /// Slots as bookmark tabs poking up from the page below; the open one joins the page.
+    private var bookmarks: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(alignment: .bottom, spacing: 5) {
+                ForEach(Slot.allCases) { s in bookmark(s) }
+            }
+            .padding(.horizontal, 12)
+        }
+        .scrollClipDisabled()
+    }
+
+    private func bookmark(_ s: Slot) -> some View {
         let on = slot == s
-        return Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { slot = s } } label: {
-            VStack(spacing: 3) {
+        let shape = UnevenRoundedRectangle(topLeadingRadius: 10, topTrailingRadius: 10, style: .continuous)
+        return Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { slot = s } } label: {
+            VStack(spacing: 2) {
                 Group {
                     if let item = state.outfit[s] {
-                        ItemArt(item: item, size: 38)
+                        ItemArt(item: item, size: 28)
                     } else {
-                        Image(systemName: s.icon).font(.system(size: 18, weight: .black)).foregroundStyle(Color.inkSoft.opacity(0.5))
+                        Image(systemName: s.icon).font(.system(size: 15, weight: .semibold)).foregroundStyle(Color.inkSoft.opacity(0.55))
                     }
                 }
-                .frame(width: 52, height: 52)
-                .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(on ? Color.sun : Color.paper))
-                .overlay(RoundedRectangle(cornerRadius: 15, style: .continuous).stroke(Color.black.opacity(0.06), lineWidth: 1))
-                .offset(y: on ? 2 : 0)
-                Text(s.title).font(.game(11, on ? .black : .bold)).foregroundStyle(on ? Color.ink : Color.inkSoft)
+                .frame(height: 30)
+                Text(s.title).font(.game(11, on ? .bold : .medium)).foregroundStyle(on ? Color.ink : Color.inkSoft).lineLimit(1)
+            }
+            .frame(width: 56)
+            .padding(.top, 7).padding(.bottom, on ? 12 : 6)
+            .background(shape.fill(on ? Color.cream : Color(hex: 0xEAE0CB)))
+            .overlay(alignment: .top) {
+                if on { Capsule().fill(Color.sunDark.opacity(0.7)).frame(width: 22, height: 3).padding(.top, 3) }
             }
         }
         .buttonStyle(SquishStyle())
@@ -100,11 +131,14 @@ struct ClosetView: View {
         return ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .firstTextBaseline) {
-                    Text(slot.title).font(.game(22, .black))
-                    Text(trying.map { loc("Trying on \($0.name)") } ?? state.outfit[slot]?.name ?? loc("nothing on"))
-                        .font(.game(13, .bold)).foregroundStyle(trying == nil ? Color.inkSoft : Color.sunDark).lineLimit(1)
+                    VStack(alignment: .leading, spacing: 8) {
+                        StoryHeading(text: loc("\(slot.title) drawer"), size: 22, color: .grass)
+                        Text(trying.map { loc("Trying on \($0.name)") } ?? state.outfit[slot].map { loc("Wearing \($0.name)") } ?? loc("Nothing on yet"))
+                            .font(.game(12, .medium)).foregroundStyle(trying == nil ? Color.inkSoft : Color.sunDark).lineLimit(1)
+                    }
                     Spacer()
-                    Tag(text: loc("\(items.filter { state.owned.contains($0.id) }.count) yours"), color: .grass)
+                    Text("\(items.filter { state.owned.contains($0.id) }.count) of \(items.count) collected")
+                        .font(.story(13, .semibold)).italic().foregroundStyle(Color.inkSoft)
                 }
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 14) {
                     if slot != .fur { noneCell }
@@ -120,8 +154,7 @@ struct ClosetView: View {
                                 hop += 1
                             }
                         }
-                        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .stroke(trying == item ? Color.sun : .clear, lineWidth: 3))
+                        .overlay(PaperShape(radius: 8).stroke(trying == item ? Color.sunDark : .clear, lineWidth: 2.5))
                     }
                 }
             }
@@ -136,19 +169,18 @@ struct ClosetView: View {
             trying = nil
             withAnimation(.spring) { state.unequip(slot) }
         } label: {
-            VStack(spacing: 6) {
+            VStack(spacing: 5) {
                 Image(systemName: "circle.slash")
-                    .font(.system(size: 30, weight: .medium))
+                    .font(.system(size: 28, weight: .regular))
                     .foregroundStyle(on ? Color.grassDark : Color.inkSoft.opacity(0.6))
                     .frame(maxWidth: .infinity).frame(height: 74)
-                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(on ? Color.grassLight : Color.cream))
-                Text("None").font(.game(13, .bold)).foregroundStyle(Color.ink)
+                    .background(SketchSquare(on: on))
+                Text("Nothing").font(.story(13, .semibold)).foregroundStyle(Color.ink)
                 Text(on ? loc("Wearing") : loc("Take off")).font(.game(12, .semibold))
                     .foregroundStyle(on ? Color.grassDark : Color.inkSoft)
             }
-            .padding(8)
-            .card(padding: 0, radius: 18)
-            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(on ? Color.grass : .clear, lineWidth: 2))
+            .padding(7)
+            .card(padding: 0, radius: 8)
         }
         .buttonStyle(SquishStyle())
     }
@@ -256,11 +288,11 @@ struct LooksView: View {
                             .buttonStyle(.chunky(.paper))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("Sets").font(.game(20, .black)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 4)
+                    Text("Sets").font(.story(20, .bold)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 4)
                     SetsSection()
-                    Text("Saved looks").font(.game(20, .black)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 4)
+                    Text("Saved outfits").font(.story(20, .bold)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 4)
                     if state.looks.isEmpty {
-                        Text("No looks yet. Dress up, then save it here.")
+                        Text("No outfits yet. Dress up, then save it here.")
                             .font(.game(14, .bold)).foregroundStyle(Color.inkSoft).padding(.top, 20)
                     }
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 14) {
@@ -289,10 +321,10 @@ struct LooksView: View {
                 .padding(16)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream)
-            .navigationTitle("Looks")
+            .paperBackground()
+            .navigationTitle("Outfits")
             .navigationBarTitleDisplayMode(.inline)
-            .alert("Name this look", isPresented: $naming) {
+            .alert("Name this outfit", isPresented: $naming) {
                 TextField("Spooky stroll", text: $name)
                 Button("Save") { state.saveLook(name); name = "" }
                 Button("Cancel", role: .cancel) { name = "" }

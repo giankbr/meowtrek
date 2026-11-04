@@ -20,10 +20,13 @@ private struct SoftCard: ViewModifier {
     var radius: CGFloat
 
     func body(content: Content) -> some View {
+        let shape = PaperShape(radius: min(radius, 14))
         content
             .padding(padding)
-            .background(RoundedRectangle(cornerRadius: radius, style: .continuous).fill(color))
-            .shadow(color: .black.opacity(0.05), radius: 10, y: 3)
+            .background(shape.fill(color)
+                .shadow(color: Color.choco.opacity(0.12), radius: 0.5, y: 1)
+                .shadow(color: .black.opacity(0.05), radius: 8, y: 4))
+            .overlay(shape.stroke(Color.ink.opacity(0.06), lineWidth: 1))
     }
 }
 
@@ -34,6 +37,233 @@ extension View {
 
     func outlined(_ radius: CGFloat = 14, width: CGFloat = 1) -> some View {
         overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).stroke(Color.black.opacity(0.06), lineWidth: width))
+    }
+
+    /// Cream paper with a faint, fixed grain behind the whole screen.
+    func paperBackground() -> some View {
+        background { ZStack { Color.cream; PaperGrain() }.ignoresSafeArea() }
+    }
+
+    /// A strip of washi tape stuck over the top edge.
+    func taped(_ alignment: Alignment = .top, angle: Double = -4, color: Color = .sun, x: CGFloat = 0, width: CGFloat = 58) -> some View {
+        overlay(alignment: alignment) {
+            Tape(color: color, width: width).rotationEffect(.degrees(angle)).offset(x: x, y: -9)
+        }
+    }
+}
+
+// MARK: - Storybook paper
+
+extension Font {
+    /// Bookish display type for headings and big numbers.
+    static func story(_ size: CGFloat, _ weight: Font.Weight = .semibold) -> Font {
+        .system(size: size, weight: weight, design: .serif)
+    }
+}
+
+/// Deterministic noise so paper edges and grain never shimmer between renders.
+struct Noise {
+    private var state: UInt64
+    init(_ seed: Int) { state = UInt64(truncatingIfNeeded: seed &* 2_654_435_761 &+ 1_013_904_223) | 1 }
+    mutating func next() -> CGFloat {
+        state = state &* 6_364_136_223_846_793_005 &+ 1_442_695_040_888_963_407
+        return CGFloat((state >> 33) % 10_000) / 10_000
+    }
+}
+
+/// Rounded rectangle with gently uneven edges, like paper cut with scissors.
+struct PaperShape: Shape {
+    var radius: CGFloat = 14
+    var wobble: CGFloat = 1.3
+    var seed = 7
+
+    func path(in r: CGRect) -> Path {
+        var n = Noise(seed)
+        let rad = max(0, min(radius, min(r.width, r.height) / 2))
+        var pts: [CGPoint] = []
+        func edge(_ a: CGPoint, _ b: CGPoint, _ nx: CGFloat, _ ny: CGFloat) {
+            let steps = max(1, Int(hypot(b.x - a.x, b.y - a.y) / 16))
+            for i in 0..<steps {
+                let t = CGFloat(i) / CGFloat(steps)
+                let j = i == 0 ? 0 : (n.next() - 0.5) * 2 * wobble
+                pts.append(CGPoint(x: a.x + (b.x - a.x) * t + nx * j, y: a.y + (b.y - a.y) * t + ny * j))
+            }
+        }
+        func corner(_ c: CGPoint, _ from: Double) {
+            for k in 0..<3 {
+                let a = (from + Double(k) * 30) * .pi / 180
+                pts.append(CGPoint(x: c.x + CGFloat(cos(a)) * rad, y: c.y + CGFloat(sin(a)) * rad))
+            }
+        }
+        edge(CGPoint(x: r.minX + rad, y: r.minY), CGPoint(x: r.maxX - rad, y: r.minY), 0, -1)
+        corner(CGPoint(x: r.maxX - rad, y: r.minY + rad), -90)
+        edge(CGPoint(x: r.maxX, y: r.minY + rad), CGPoint(x: r.maxX, y: r.maxY - rad), 1, 0)
+        corner(CGPoint(x: r.maxX - rad, y: r.maxY - rad), 0)
+        edge(CGPoint(x: r.maxX - rad, y: r.maxY), CGPoint(x: r.minX + rad, y: r.maxY), 0, 1)
+        corner(CGPoint(x: r.minX + rad, y: r.maxY - rad), 90)
+        edge(CGPoint(x: r.minX, y: r.maxY - rad), CGPoint(x: r.minX, y: r.minY + rad), -1, 0)
+        corner(CGPoint(x: r.minX + rad, y: r.minY + rad), 180)
+
+        var p = Path()
+        guard pts.count > 2 else { return Path(r) }
+        let mid = { (a: CGPoint, b: CGPoint) in CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2) }
+        p.move(to: mid(pts[pts.count - 1], pts[0]))
+        for i in 0..<pts.count {
+            p.addQuadCurve(to: mid(pts[i], pts[(i + 1) % pts.count]), control: pts[i])
+        }
+        p.closeSubpath()
+        return p
+    }
+}
+
+/// Jagged top edge of a torn page; fill it with the colour of the page below.
+struct TornEdge: Shape {
+    var seed = 11
+
+    func path(in r: CGRect) -> Path {
+        var n = Noise(seed)
+        var p = Path()
+        p.move(to: CGPoint(x: r.minX, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX, y: r.minY + r.height * 0.5))
+        var x = r.minX
+        while x < r.maxX {
+            x = min(r.maxX, x + 5 + n.next() * 9)
+            p.addLine(to: CGPoint(x: x, y: r.minY + r.height * (0.2 + n.next() * 0.55)))
+        }
+        p.addLine(to: CGPoint(x: r.maxX, y: r.maxY))
+        p.closeSubpath()
+        return p
+    }
+}
+
+struct PaperGrain: View {
+    var body: some View {
+        Canvas { ctx, size in
+            var n = Noise(42)
+            let count = Int(size.width * size.height / 700)
+            for _ in 0..<count {
+                let s = 0.6 + n.next() * 1.3
+                let rect = CGRect(x: n.next() * size.width, y: n.next() * size.height, width: s, height: s)
+                ctx.fill(Path(ellipseIn: rect), with: .color(Color.choco.opacity(0.04 + Double(n.next()) * 0.06)))
+            }
+            for _ in 0..<(count / 10) {
+                let a = CGPoint(x: n.next() * size.width, y: n.next() * size.height)
+                let ang = n.next() * .pi * 2, len = 5 + n.next() * 10
+                var f = Path()
+                f.move(to: a)
+                f.addQuadCurve(to: CGPoint(x: a.x + cos(ang) * len, y: a.y + sin(ang) * len),
+                               control: CGPoint(x: a.x + cos(ang + 0.6) * len / 2, y: a.y + sin(ang + 0.6) * len / 2))
+                ctx.stroke(f, with: .color(Color.choco.opacity(0.06)), lineWidth: 0.6)
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+/// Washi tape with pinked ends.
+struct Tape: View {
+    var color: Color = .sun
+    var width: CGFloat = 58
+
+    var body: some View {
+        TapeShape().fill(color.opacity(0.55))
+            .overlay(TapeShape().stroke(color.darker(0.1).opacity(0.25), lineWidth: 0.6))
+            .frame(width: width, height: 18)
+            .allowsHitTesting(false)
+    }
+
+    private struct TapeShape: Shape {
+        func path(in r: CGRect) -> Path {
+            var p = Path()
+            let teeth = 4, h = r.height / CGFloat(teeth), d: CGFloat = 3
+            p.move(to: CGPoint(x: r.minX, y: r.minY))
+            p.addLine(to: CGPoint(x: r.maxX, y: r.minY))
+            for i in 0..<teeth {
+                p.addLine(to: CGPoint(x: r.maxX - d, y: r.minY + h * (CGFloat(i) + 0.5)))
+                p.addLine(to: CGPoint(x: r.maxX, y: r.minY + h * CGFloat(i + 1)))
+            }
+            p.addLine(to: CGPoint(x: r.minX, y: r.maxY))
+            for i in (0..<teeth).reversed() {
+                p.addLine(to: CGPoint(x: r.minX + d, y: r.minY + h * (CGFloat(i) + 0.5)))
+                p.addLine(to: CGPoint(x: r.minX, y: r.minY + h * CGFloat(i)))
+            }
+            p.closeSubpath()
+            return p
+        }
+    }
+}
+
+/// Wavy pen line for underlining headings.
+struct Squiggle: Shape {
+    func path(in r: CGRect) -> Path {
+        var p = Path()
+        let waves = max(2, Int(r.width / 16))
+        p.move(to: CGPoint(x: r.minX, y: r.midY))
+        for i in 0..<waves {
+            let x0 = r.minX + r.width * CGFloat(i) / CGFloat(waves)
+            let x1 = r.minX + r.width * CGFloat(i + 1) / CGFloat(waves)
+            p.addQuadCurve(to: CGPoint(x: x1, y: r.midY), control: CGPoint(x: (x0 + x1) / 2, y: i % 2 == 0 ? r.minY : r.maxY))
+        }
+        return p
+    }
+}
+
+struct StoryHeading: View {
+    let text: String
+    var size: CGFloat = 22
+    var color: Color = .sun
+
+    var body: some View {
+        Text(text)
+            .font(.story(size, .bold))
+            .lineLimit(1)
+            .background(alignment: .bottomLeading) {
+                Squiggle().stroke(color.opacity(0.85), style: StrokeStyle(lineWidth: max(2.5, size / 10), lineCap: .round))
+                    .frame(height: max(5, size / 5))
+                    .offset(y: max(4, size / 7))
+            }
+    }
+}
+
+/// Rubber stamp, slightly crooked, for things that are done.
+struct Stamp: View {
+    let text: String
+    var color: Color = .tomato
+    var size: CGFloat = 54
+    var angle: Double = -14
+
+    var body: some View {
+        ZStack {
+            Circle().stroke(color, lineWidth: max(1.5, size / 26))
+            Circle().inset(by: size * 0.09).stroke(color, style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+            Text(text.uppercased())
+                .font(.story(size * 0.22, .heavy))
+                .kerning(0.5)
+                .foregroundStyle(color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.4)
+                .padding(size * 0.16)
+        }
+        .frame(width: size, height: size)
+        .rotationEffect(.degrees(angle))
+        .opacity(0.88)
+    }
+}
+
+/// Diagonal crayon strokes laid over a fill.
+struct Hatch: Shape {
+    var gap: CGFloat = 5
+
+    func path(in r: CGRect) -> Path {
+        var p = Path()
+        var x = r.minX - r.height
+        while x < r.maxX {
+            p.move(to: CGPoint(x: x, y: r.maxY))
+            p.addLine(to: CGPoint(x: x + r.height, y: r.minY))
+            x += gap
+        }
+        return p
     }
 }
 
@@ -126,9 +356,16 @@ struct ProgressBar: View {
 
     var body: some View {
         GeometryReader { g in
+            let w = g.size.width * min(1, max(0, shown ? value : 0))
+            let fill = PaperShape(radius: height / 2, wobble: min(0.8, height / 14), seed: 5)
             ZStack(alignment: .leading) {
-                Capsule().fill(Color.grassLight.opacity(0.6))
-                Capsule().fill(color).frame(width: g.size.width * min(1, max(0, shown ? value : 0)))
+                PaperShape(radius: height / 2, wobble: min(0.6, height / 16), seed: 3)
+                    .fill(color.opacity(0.14))
+                    .overlay(PaperShape(radius: height / 2, wobble: min(0.6, height / 16), seed: 3).stroke(Color.ink.opacity(0.07), lineWidth: 1))
+                fill.fill(color)
+                    .overlay(Hatch(gap: 4).stroke(Color.white.opacity(0.3), lineWidth: 1.1))
+                    .clipShape(fill)
+                    .frame(width: w > 0 ? max(w, height) : 0)
             }
         }
         .frame(height: height)
@@ -225,12 +462,11 @@ struct ItemCell: View {
         let owned = state.owned.contains(item.id)
         let locked = !owned && item.event != nil
         Button(action: action) {
-            VStack(spacing: 6) {
-                ItemArt(item: item, size: 58)
+            VStack(spacing: 5) {
+                ItemArt(item: item, size: 56)
                     .frame(maxWidth: .infinity)
                     .frame(height: 74)
-                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(wearing ? Color.grassLight : Color.cream))
+                    .background(SketchSquare(on: wearing))
                     .opacity(locked ? 0.45 : 1)
                     .overlay(alignment: .topTrailing) {
                         if locked {
@@ -238,10 +474,10 @@ struct ItemCell: View {
                                 .foregroundStyle(Color.grape).padding(6)
                         }
                     }
-                Text(item.name).font(.game(13, .bold)).lineLimit(1).foregroundStyle(Color.ink)
+                Text(item.name).font(.story(13, .semibold)).lineLimit(1).minimumScaleFactor(0.8).foregroundStyle(Color.ink)
                 Group {
                     if owned {
-                        Text(wearing ? "Wearing" : "Owned")
+                        Text(wearing ? loc("Wearing") : loc("Yours"))
                             .foregroundStyle(wearing ? Color.grassDark : Color.inkSoft)
                     } else if let ev = item.event {
                         Text(state.content.events.first { $0.id == ev }?.name ?? "Event").foregroundStyle(Color.grape)
@@ -255,12 +491,25 @@ struct ItemCell: View {
                 .font(.game(12, .semibold))
                 .lineLimit(1)
             }
-            .padding(8)
-            .card(padding: 0, radius: 18)
-            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(wearing ? Color.grass : .clear, lineWidth: 2))
+            .padding(7)
+            .card(padding: 0, radius: 8)
+            .overlay(alignment: .topTrailing) {
+                if wearing { Stamp(text: loc("On"), color: .grassDark, size: 32, angle: 12).offset(x: 6, y: -8) }
+            }
         }
         .buttonStyle(SquishStyle())
+    }
+}
+
+/// Dotted pencil square that items are drawn on in the wardrobe and shop.
+struct SketchSquare: View {
+    var on = false
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 6, style: .continuous)
+            .fill(on ? Color.grassLight.opacity(0.7) : Color.cream.opacity(0.7))
+            .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .strokeBorder(on ? Color.grass : Color.inkSoft.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [3, 3])))
     }
 }
 
@@ -271,7 +520,7 @@ struct ScreenHeader<Trailing: View>: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            Text(title).font(.system(size: 32, weight: .bold, design: .rounded)).foregroundStyle(Color.ink)
+            StoryHeading(text: title, size: 32).foregroundStyle(Color.ink)
             Spacer()
             trailing
         }

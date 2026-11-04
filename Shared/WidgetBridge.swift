@@ -45,7 +45,7 @@ struct WidgetSnapshot: Codable {
     }
 
     static let sample = WidgetSnapshot(
-        petName: "Gohan", steps: 7240, goal: 8000, streak: 3, mood: "Restless",
+        petName: "Miso", steps: 7240, goal: 8000, streak: 3, mood: "Restless",
         equipped: ["fur": "fur_ginger", "hat": "witch_hat", "body": "witch_cloak"], updated: .now,
         coins: 1645, claimable: 72, water: 3, waterGoal: 8, fullness: 64, treats: 2,
         quests: [

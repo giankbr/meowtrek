@@ -306,11 +306,11 @@ final class AppState {
         switch mood {
         case "Hungry": return loc("My tummy's rumbling… a snack?")
         case "Proud": return loc("We did it! \(today.formatted()) steps!")
-        case "Sleepy": return remaining > 0 ? loc("\(left) to go… or tomorrow?") : loc("Zzz…")
+        case "Sleepy": return remaining > 0 ? loc("\(left) left… after a nap, maybe?") : loc("Zzz…")
         default:
-            if hour >= 16 { return loc("\(left) to go. The light won't wait.") }
+            if hour >= 16 { return loc("Sunset stroll? \(left) steps left.") }
             if hour < 11 { return loc("Morning! \(left) steps today?") }
-            return loc("\(left) to go. Walk with me?")
+            return loc("\(left) more steps. Shall we?")
         }
     }
 
@@ -706,7 +706,7 @@ final class AppState {
         let demo = Self.demo
         return Snapshot(
             coins: demo ? 1645 : 300, gems: 3, goal: 8000, claimedSteps: 0, rewardedLevel: 0, streakFreezes: 1,
-            reminderHour: 19, petName: "Gohan", claimedDay: "", profileID: UUID().uuidString,
+            reminderHour: 19, petName: "Miso", claimedDay: "", profileID: UUID().uuidString,
             owned: ["fur_ginger", "witch_hat", "witch_cloak", "bow", "scarf", "sneakers", "wand"],
             claimed: [], claimedForever: [], frozenDays: [],
             equipped: ["fur": "fur_ginger", "hat": "witch_hat", "body": "witch_cloak", "hand": "wand", "shoes": "sneakers"],
@@ -818,7 +818,7 @@ final class AppState {
     }
 
     func finishOnboarding(name: String, fur: String, goal: Int) {
-        petName = name.trimmingCharacters(in: .whitespaces).isEmpty ? "Gohan" : name
+        petName = name.trimmingCharacters(in: .whitespaces).isEmpty ? "Miso" : name
         owned.insert(fur)
         equipped[.fur] = fur
         self.goal = goal

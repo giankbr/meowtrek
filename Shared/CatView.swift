@@ -140,6 +140,52 @@ private struct IllustratedCat: View {
     }
 }
 
+/// Nudges curve control points by a fixed, seeded amount so outlines read as hand-inked rather than geometric.
+private struct Wobble<S: Shape>: Shape {
+    let base: S
+    var seed: Double = 1
+
+    func path(in r: CGRect) -> Path {
+        let amt = max(0.5, min(r.width, r.height) * 0.014)
+        var out = Path()
+        var i = 0.0
+        func j(_ p: CGPoint) -> CGPoint {
+            i += 1
+            return CGPoint(x: p.x + CGFloat(sin(i * 12.9898 + seed * 78.233)) * amt,
+                           y: p.y + CGFloat(cos(i * 4.1414 + seed * 3.719)) * amt)
+        }
+        base.path(in: r).forEach { e in
+            switch e {
+            case .move(let p): out.move(to: p)
+            case .line(let p): out.addLine(to: p)
+            case .quadCurve(let p, let c): out.addQuadCurve(to: p, control: j(c))
+            case .curve(let p, let c1, let c2): out.addCurve(to: p, control1: j(c1), control2: j(c2))
+            case .closeSubpath: out.closeSubpath()
+            }
+        }
+        return out
+    }
+}
+
+/// A shape drawn in the cat's 200×250 canvas coordinates.
+private func canvas(_ seed: Double = 1, _ b: @escaping @Sendable (inout Path, UnitPoint2) -> Void) -> Wobble<UPath> {
+    Wobble(base: UPath { p, pt in b(&p) { x, y in pt(x / 2, y / 2.5) } }, seed: seed)
+}
+
+fileprivate extension Shape {
+    /// Fill with a soft lower-right shade, then a doubled, slightly offset outline so the line weight varies like a pen.
+    func inked(_ color: Color, _ w: CGFloat = 3.5, shade: Bool = true) -> some View {
+        let ink = color.darker(0.42).opacity(0.85)
+        let style = StrokeStyle(lineWidth: w * 0.6, lineCap: .round, lineJoin: .round)
+        return ZStack {
+            fill(shade ? color.darker(0.09) : color)
+            if shade { fill(color).offset(x: -3, y: -5).clipShape(self) }
+            stroke(ink, style: style)
+            stroke(ink, style: style).offset(x: 0.6, y: 0.9)
+        }
+    }
+}
+
 private struct VectorCat: View {
     let outfit: [Slot: Item]
     let mood: CatMood
@@ -150,8 +196,9 @@ private struct VectorCat: View {
     private func lift(_ left: Bool) -> CGFloat { CGFloat(max(0, left ? stride : -stride)) * 7 }
 
     private let line: CGFloat = 3.5
-    private let cream = Color(hex: 0xFFF3DE)
-    private let pink = Color(hex: 0xFF9FB2)
+    private let cream = Color(hex: 0xFFF4E2)
+    private let pink = Color(hex: 0xF4A3AF)
+    private let ink = Color(hex: 0x3A2B26)
     private var fur: Color { outfit[.fur]?.hex.map { Color(hex: $0) } ?? Color(hex: 0xF7A453) }
     private var suit: Item? { outfit[.body] }
     private var suitColor: Color { suit?.hex.map { Color(hex: $0) } ?? fur }
@@ -171,7 +218,7 @@ private struct VectorCat: View {
             if let bag = outfit[.bag], !Self.backBags.contains(bag.id) {
                 ArtView(id: bag.id, size: 62, line: line).position(x: 160, y: 204)
             }
-            if hooded { hood } else { ears }
+            if hooded { hood } else { ear(false); ear(true) }
             head
             face
             if let eyes = outfit[.eyes] { ArtView(id: eyes.id, size: 124, line: line).position(x: 100, y: 104) }
@@ -181,13 +228,18 @@ private struct VectorCat: View {
     }
 
     private var tail: some View {
-        UPath { p, pt in
-            p.move(to: pt(8, 92))
-            p.addCurve(to: pt(70, 14), control1: pt(80, 96), control2: pt(96, 40))
+        let t = canvas(3) { p, q in
+            p.move(to: q(132, 212))
+            p.addCurve(to: q(180, 168), control1: q(166, 218), control2: q(186, 194))
+            p.addCurve(to: q(160, 126), control1: q(176, 146), control2: q(160, 142))
         }
-        .tube(suit?.suit == .frog || suit?.suit == .bear ? suitColor : fur, 13)
-        .frame(width: 64, height: 90)
-        .position(x: 166, y: 178)
+        let c = hooded ? suitColor : fur
+        return ZStack {
+            t.tube(c, 15)
+            t.trim(from: 0.56, to: 0.63).stroke(c.darker(0.2), style: StrokeStyle(lineWidth: 14.5, lineCap: .butt))
+            t.trim(from: 0.84, to: 1).stroke(c.darker(0.22), style: StrokeStyle(lineWidth: 14.5, lineCap: .round))
+        }
+        .rotationEffect(.degrees(stride * 5), anchor: UnitPoint(x: 0.66, y: 0.85))
     }
 
     @ViewBuilder private var feet: some View {
@@ -195,28 +247,28 @@ private struct VectorCat: View {
             ArtView(id: shoes.id, size: 46, line: line).scaleEffect(x: -1).position(x: 76, y: 232 - lift(true))
             ArtView(id: shoes.id, size: 46, line: line).position(x: 124, y: 232 - lift(false))
         } else {
-            ForEach([78.0, 122.0], id: \.self) { x in
+            ForEach([80.0, 120.0], id: \.self) { x in
                 ZStack {
-                    Ellipse().sticker(fur, line).frame(width: 38, height: 24)
-                    HStack(spacing: 5) { ForEach(0..<2) { _ in Capsule().fill(Color.ink).frame(width: 2.5, height: 7) } }
-                        .offset(y: 3)
+                    Wobble(base: Ellipse(), seed: x).inked(fur, line, shade: false).frame(width: 36, height: 22)
+                    HStack(spacing: 4) {
+                        ForEach(0..<3) { i in Capsule().fill(fur.darker(0.42)).frame(width: 1.8, height: i == 1 ? 6 : 5) }
+                    }
+                    .offset(y: 4)
                 }
-                .position(x: x, y: 234 - lift(x < 100))
+                .position(x: x, y: 235 - lift(x < 100))
             }
         }
     }
 
     @ViewBuilder private var torso: some View {
-        UPath { p, pt in
-            p.move(to: pt(50, 0))
-            p.addCurve(to: pt(100, 70), control1: pt(86, 0), control2: pt(100, 36))
-            p.addCurve(to: pt(50, 100), control1: pt(100, 92), control2: pt(78, 100))
-            p.addCurve(to: pt(0, 70), control1: pt(22, 100), control2: pt(0, 92))
-            p.addCurve(to: pt(50, 0), control1: pt(0, 36), control2: pt(14, 0))
+        canvas(5) { p, q in
+            p.move(to: q(100, 136))
+            p.addCurve(to: q(150, 198), control1: q(128, 136), control2: q(146, 168))
+            p.addCurve(to: q(100, 232), control1: q(154, 224), control2: q(130, 232))
+            p.addCurve(to: q(50, 198), control1: q(70, 232), control2: q(46, 224))
+            p.addCurve(to: q(100, 136), control1: q(54, 168), control2: q(72, 136))
         }
-        .sticker(suitColor, line)
-        .frame(width: 104, height: 100)
-        .position(x: 100, y: 186)
+        .inked(suitColor, line)
         if suit?.suit == .cloak {
             ZStack {
                 poly([(30, 0), (50, 40), (70, 0)]).sticker(.sun, line * 0.8)
@@ -226,56 +278,85 @@ private struct VectorCat: View {
             }
             .frame(width: 80, height: 70).position(x: 100, y: 180)
         } else {
-            Ellipse().fill(hooded ? Color.white.opacity(0.7) : cream).frame(width: 58, height: 54).position(x: 100, y: 198)
+            canvas(7) { p, q in
+                p.move(to: q(80, 170))
+                p.addQuadCurve(to: q(90, 167), control: q(84, 160))
+                p.addQuadCurve(to: q(100, 170), control: q(95, 158))
+                p.addQuadCurve(to: q(110, 167), control: q(105, 159))
+                p.addQuadCurve(to: q(120, 170), control: q(116, 160))
+                p.addCurve(to: q(100, 222), control1: q(126, 192), control2: q(118, 222))
+                p.addCurve(to: q(80, 170), control1: q(82, 222), control2: q(74, 192))
+            }
+            .fill(hooded ? Color.white.opacity(0.7) : cream)
+            if let id = suit?.id { SuitOverlay(id: id).frame(width: 104, height: 100).position(x: 100, y: 186) }
         }
+        Ellipse().fill(Color.black.opacity(0.07)).frame(width: 84, height: 16).position(x: 100, y: 160)
     }
 
     @ViewBuilder private var arms: some View {
-        ForEach([(54.0, 22.0), (146.0, -22.0)], id: \.0) { x, rot in
+        ForEach([(56.0, 22.0), (144.0, -22.0)], id: \.0) { x, rot in
             ZStack(alignment: .bottom) {
-                Capsule().sticker(suitColor, line).frame(width: 24, height: 44)
-                Circle().sticker(fur, line).frame(width: 22).offset(y: 4)
+                Wobble(base: UPath { p, pt in
+                    p.move(to: pt(0, 26)); p.addCurve(to: pt(50, 0), control1: pt(0, 11), control2: pt(22, 0))
+                    p.addCurve(to: pt(100, 26), control1: pt(78, 0), control2: pt(100, 11)); p.addLine(to: pt(100, 74))
+                    p.addCurve(to: pt(50, 100), control1: pt(100, 89), control2: pt(78, 100))
+                    p.addCurve(to: pt(0, 74), control1: pt(22, 100), control2: pt(0, 89)); p.closeSubpath()
+                }, seed: x).inked(suitColor, line, shade: false).frame(width: 24, height: 46)
+                ZStack {
+                    Wobble(base: Circle(), seed: x + 1).inked(fur, line, shade: false).frame(width: 22, height: 22)
+                    HStack(spacing: 3.5) {
+                        ForEach(0..<2) { _ in Capsule().fill(fur.darker(0.42)).frame(width: 1.6, height: 5) }
+                    }
+                    .offset(y: 5)
+                }
+                .offset(y: 4)
             }
             .rotationEffect(.degrees(rot + stride * (x < 100 ? 14 : -14)))
             .position(x: x, y: 182)
         }
     }
 
-    @ViewBuilder private var ears: some View {
-        ForEach([(58.0, -12.0), (142.0, 12.0)], id: \.0) { x, rot in
-            ZStack {
-                UPath { p, pt in
-                    p.move(to: pt(0, 100)); p.addLine(to: pt(38, 10))
-                    p.addQuadCurve(to: pt(62, 10), control: pt(50, -8))
-                    p.addLine(to: pt(100, 100)); p.closeSubpath()
-                }.sticker(fur, line)
-                UPath { p, pt in
-                    p.move(to: pt(22, 100)); p.addLine(to: pt(44, 34))
-                    p.addQuadCurve(to: pt(56, 34), control: pt(50, 24))
-                    p.addLine(to: pt(78, 100)); p.closeSubpath()
-                }.fill(pink)
-            }
-            .frame(width: 46, height: 54)
-            .rotationEffect(.degrees(rot))
-            .position(x: x, y: 54)
+    /// Wide, soft-tipped ears; the left one carries a small notch, Meowtrek's signature.
+    @ViewBuilder private func ear(_ right: Bool) -> some View {
+        let m: @Sendable (CGFloat) -> CGFloat = { right ? 200 - $0 : $0 }
+        canvas(right ? 11 : 13) { p, q in
+            p.move(to: q(m(34), 92))
+            p.addCurve(to: q(m(40), 46), control1: q(m(30), 74), control2: q(m(34), 58))
+            if !right { p.addLine(to: q(m(47), 43)); p.addLine(to: q(m(45), 35)) }
+            p.addCurve(to: q(m(58), 20), control1: q(m(46), 28), control2: q(m(52), 20))
+            p.addCurve(to: q(m(96), 66), control1: q(m(68), 22), control2: q(m(84), 44))
+            p.closeSubpath()
         }
+        .inked(fur, line)
+        canvas(right ? 21 : 23) { p, q in
+            p.move(to: q(m(48), 80))
+            p.addCurve(to: q(m(57), 38), control1: q(m(45), 62), control2: q(m(49), 45))
+            p.addCurve(to: q(m(84), 70), control1: q(m(65), 40), control2: q(m(78), 52))
+            p.closeSubpath()
+        }
+        .fill(pink.opacity(0.85))
+        canvas(right ? 31 : 33) { p, q in
+            p.move(to: q(m(55), 78)); p.addQuadCurve(to: q(m(59), 56), control: q(m(53), 66))
+            p.move(to: q(m(63), 80)); p.addQuadCurve(to: q(m(67), 61), control: q(m(63), 70))
+        }
+        .line(2, cream)
     }
 
     @ViewBuilder private var hood: some View {
-        Circle().sticker(suitColor, line).frame(width: 172).position(x: 100, y: 100)
+        Wobble(base: Circle(), seed: 41).inked(suitColor, line).frame(width: 172, height: 172).position(x: 100, y: 100)
         if suit?.suit == .frog {
             ForEach([62.0, 138.0], id: \.self) { x in
                 ZStack {
-                    Circle().sticker(suitColor, line).frame(width: 50)
-                    Circle().sticker(.white, line * 0.8).frame(width: 32)
-                    Circle().fill(Color.ink).frame(width: 14).offset(y: 2)
+                    Wobble(base: Circle(), seed: x).inked(suitColor, line, shade: false).frame(width: 50, height: 50)
+                    Wobble(base: Circle(), seed: x + 2).inked(.white, line * 0.8, shade: false).frame(width: 32, height: 32)
+                    Circle().fill(ink).frame(width: 13).offset(x: x < 100 ? 2 : -2, y: 3)
                 }
                 .position(x: x, y: 30)
             }
         } else {
             ForEach([42.0, 158.0], id: \.self) { x in
                 ZStack {
-                    Circle().sticker(suitColor, line).frame(width: 44)
+                    Wobble(base: Circle(), seed: x).inked(suitColor, line, shade: false).frame(width: 44, height: 44)
                     Circle().fill(Color.black.opacity(0.15)).frame(width: 22)
                 }
                 .position(x: x, y: 40)
@@ -284,74 +365,138 @@ private struct VectorCat: View {
     }
 
     @ViewBuilder private var head: some View {
-        UPath { p, pt in
-            p.move(to: pt(50, 0))
-            p.addCurve(to: pt(100, 52), control1: pt(84, 0), control2: pt(100, 22))
-            p.addCurve(to: pt(50, 100), control1: pt(100, 86), control2: pt(80, 100))
-            p.addCurve(to: pt(0, 52), control1: pt(20, 100), control2: pt(0, 86))
-            p.addCurve(to: pt(50, 0), control1: pt(0, 22), control2: pt(16, 0))
+        let tufts = !hooded
+        canvas(17) { p, q in
+            p.move(to: q(100, 46))
+            p.addCurve(to: q(166, 80), control1: q(134, 44), control2: q(156, 58))
+            p.addCurve(to: q(176, 120), control1: q(174, 94), control2: q(176, 108))
+            if tufts {
+                p.addQuadCurve(to: q(186, 132), control: q(180, 128))
+                p.addQuadCurve(to: q(174, 136), control: q(180, 134))
+                p.addQuadCurve(to: q(180, 146), control: q(178, 140))
+                p.addQuadCurve(to: q(160, 150), control: q(170, 150))
+            } else {
+                p.addQuadCurve(to: q(160, 150), control: q(176, 142))
+            }
+            p.addCurve(to: q(100, 160), control1: q(146, 158), control2: q(124, 160))
+            p.addCurve(to: q(40, 150), control1: q(76, 160), control2: q(54, 158))
+            if tufts {
+                p.addQuadCurve(to: q(20, 146), control: q(30, 150))
+                p.addQuadCurve(to: q(26, 136), control: q(22, 140))
+                p.addQuadCurve(to: q(14, 132), control: q(20, 134))
+                p.addQuadCurve(to: q(24, 120), control: q(20, 128))
+            } else {
+                p.addQuadCurve(to: q(24, 120), control: q(24, 142))
+            }
+            p.addCurve(to: q(34, 80), control1: q(24, 108), control2: q(26, 94))
+            p.addCurve(to: q(100, 46), control1: q(44, 58), control2: q(66, 44))
         }
-        .sticker(fur, line)
-        .frame(width: 152, height: 124)
-        .position(x: 100, y: 104)
-        ForEach([86.0, 100.0, 114.0], id: \.self) { x in
-            Capsule().fill(Color.black.opacity(0.13)).frame(width: 6, height: x == 100 ? 18 : 13)
-                .position(x: x, y: x == 100 ? 55 : 58)
+        .inked(fur, line)
+        canvas(19) { p, q in
+            p.move(to: q(89, 57)); p.addQuadCurve(to: q(91, 71), control: q(87, 64))
+            p.move(to: q(100, 53)); p.addQuadCurve(to: q(100, 74), control: q(102, 63))
+            p.move(to: q(111, 57)); p.addQuadCurve(to: q(109, 71), control: q(113, 64))
+            p.move(to: q(28, 100)); p.addQuadCurve(to: q(42, 101), control: q(35, 97))
+            p.move(to: q(28, 109)); p.addQuadCurve(to: q(40, 111), control: q(34, 107))
+            p.move(to: q(172, 100)); p.addQuadCurve(to: q(158, 101), control: q(165, 97))
+            p.move(to: q(172, 109)); p.addQuadCurve(to: q(160, 111), control: q(166, 107))
         }
-        Ellipse().fill(cream).frame(width: 94, height: 58).position(x: 100, y: 130)
+        .line(4.5, fur.darker(0.16))
+        canvas(27) { p, q in
+            p.move(to: q(100, 117))
+            p.addCurve(to: q(132, 135), control1: q(118, 113), control2: q(132, 121))
+            p.addCurve(to: q(100, 153), control1: q(132, 149), control2: q(116, 155))
+            p.addCurve(to: q(68, 135), control1: q(84, 155), control2: q(68, 149))
+            p.addCurve(to: q(100, 117), control1: q(68, 121), control2: q(82, 113))
+        }
+        .fill(cream)
     }
 
     @ViewBuilder private var face: some View {
-        ForEach([72.0, 128.0], id: \.self) { x in eye.position(x: x, y: 106) }
-        Ellipse().fill(pink.opacity(0.75)).frame(width: 20, height: 11).position(x: 54, y: 128)
-        Ellipse().fill(pink.opacity(0.75)).frame(width: 20, height: 11).position(x: 146, y: 128)
-        UPath { p, pt in
-            p.move(to: pt(0, 0)); p.addLine(to: pt(100, 0))
-            p.addQuadCurve(to: pt(0, 0), control: pt(50, 160))
+        ForEach([(74.0, -1.0), (126.0, 1.0)], id: \.0) { x, side in eye(side).position(x: x, y: 108) }
+        ForEach([54.0, 146.0], id: \.self) { x in
+            ZStack {
+                Ellipse().fill(pink.opacity(0.5)).frame(width: 22, height: 11)
+                HStack(spacing: 3) {
+                    ForEach(0..<3) { _ in Capsule().fill(pink.darker(0.16)).frame(width: 1.5, height: 6).rotationEffect(.degrees(22)) }
+                }
+            }
+            .position(x: x, y: 128)
         }
-        .sticker(pink, 2).frame(width: 12, height: 8).position(x: 100, y: 122)
+        canvas(29) { p, q in
+            p.move(to: q(94, 121))
+            p.addQuadCurve(to: q(106, 121), control: q(100, 117.5))
+            p.addQuadCurve(to: q(100, 128), control: q(106, 125))
+            p.addQuadCurve(to: q(94, 121), control: q(94, 125))
+        }
+        .inked(Color(hex: 0xE58593), 2.2, shade: false)
         mouth
-        ForEach([(36.0, 132.0, -8.0), (36.0, 140.0, 6.0), (164.0, 132.0, 8.0), (164.0, 140.0, -6.0)], id: \.1) { x, y, r in
-            Capsule().fill(Color.ink.opacity(0.55)).frame(width: 16, height: 2).rotationEffect(.degrees(r)).position(x: x, y: y)
+        ForEach([false, true], id: \.self) { right in
+            let m: @Sendable (CGFloat) -> CGFloat = { right ? 200 - $0 : $0 }
+            canvas(right ? 37 : 39) { p, q in
+                p.move(to: q(m(42), 124)); p.addQuadCurve(to: q(m(16), 118), control: q(m(28), 119))
+                p.move(to: q(m(42), 130)); p.addQuadCurve(to: q(m(13), 131), control: q(m(28), 128.5))
+                p.move(to: q(m(44), 136)); p.addQuadCurve(to: q(m(20), 144), control: q(m(31), 137))
+            }
+            .line(1.6, ink.opacity(0.5))
         }
         if mood == .hungry {
             UPath { p, pt in
                 p.move(to: pt(50, 0)); p.addQuadCurve(to: pt(50, 100), control: pt(110, 80))
                 p.addQuadCurve(to: pt(50, 0), control: pt(-10, 80))
             }
-            .sticker(.sky, 2).frame(width: 12, height: 18).position(x: 156, y: 84)
+            .sticker(.sky, 2).frame(width: 12, height: 18).position(x: 158, y: 84)
         }
     }
 
-    @ViewBuilder private var eye: some View {
+    @ViewBuilder private func eye(_ side: Double) -> some View {
         switch mood {
         case .happy:
-            arc((0, 90), (100, 90), via: (50, -40)).line(4.5).frame(width: 24, height: 14)
+            arc((0, 85), (100, 85), via: (50, -35)).line(4, ink).frame(width: 20, height: 12)
         case .sleepy:
-            arc((0, 20), (100, 20), via: (50, 110)).line(4.5).frame(width: 24, height: 12)
-        default:
             ZStack {
-                Ellipse().fill(Color.ink).frame(width: mood == .hungry ? 30 : 25, height: mood == .hungry ? 34 : 29)
-                Circle().fill(.white).frame(width: mood == .hungry ? 12 : 10).offset(x: -5, y: -7)
-                Circle().fill(.white).frame(width: 5).offset(x: 5, y: 6)
+                arc((0, 20), (100, 20), via: (50, 100)).line(4, ink).frame(width: 20, height: 10)
+                Capsule().fill(ink).frame(width: 2, height: 5)
+                    .rotationEffect(.degrees(side * 30)).offset(x: side * 9, y: 5)
             }
+        default:
+            let big = mood == .hungry
+            ZStack {
+                Wobble(base: Ellipse(), seed: side + 50).fill(ink).frame(width: big ? 19 : 14, height: big ? 23 : 19)
+                Circle().fill(.white).frame(width: big ? 7.5 : 5).offset(x: -2.5, y: big ? -5 : -4.5)
+                if big { Circle().fill(.white).frame(width: 3.5).offset(x: 3.5, y: 5) }
+                Capsule().fill(ink).frame(width: 2.2, height: 6)
+                    .rotationEffect(.degrees(side * 55)).offset(x: side * (big ? 10.5 : 8.5), y: big ? -9 : -7.5)
+            }
+            .rotationEffect(.degrees(side * 6))
             .scaleEffect(x: 1, y: blink ? 0.08 : 1)
         }
     }
 
     @ViewBuilder private var mouth: some View {
-        if mood == .happy {
-            UPath { p, pt in
-                p.move(to: pt(0, 0)); p.addLine(to: pt(100, 0))
-                p.addQuadCurve(to: pt(0, 0), control: pt(50, 150))
+        canvas(43) { p, q in p.move(to: q(100, 128)); p.addLine(to: q(100, 131.5)) }.line(2, ink)
+        switch mood {
+        case .happy:
+            canvas(45) { p, q in
+                p.move(to: q(92, 132))
+                p.addQuadCurve(to: q(108, 132), control: q(100, 130.5))
+                p.addQuadCurve(to: q(92, 132), control: q(100, 149))
             }
-            .sticker(.tomato, 2.5).frame(width: 18, height: 12).position(x: 100, y: 134)
-        } else {
-            UPath { p, pt in
-                p.move(to: pt(0, 10)); p.addQuadCurve(to: pt(50, 10), control: pt(25, 100))
-                p.addQuadCurve(to: pt(100, 10), control: pt(75, 100))
+            .inked(Color(hex: 0xB9525E), 2, shade: false)
+            canvas(47) { p, q in
+                p.move(to: q(95, 140))
+                p.addQuadCurve(to: q(105, 140), control: q(100, 135.5))
+                p.addQuadCurve(to: q(95, 140), control: q(100, 143.5))
             }
-            .line(3).frame(width: 22, height: 10).position(x: 100, y: 132)
+            .fill(pink)
+        case .hungry:
+            Wobble(base: Ellipse(), seed: 49).inked(Color(hex: 0xB9525E), 2, shade: false).frame(width: 8, height: 9).position(x: 100, y: 137)
+        default:
+            canvas(51) { p, q in
+                p.move(to: q(91, 131)); p.addQuadCurve(to: q(100, 131.5), control: q(95, 137))
+                p.addQuadCurve(to: q(109, 131), control: q(105, 137))
+            }
+            .line(2.2, ink)
         }
     }
 }

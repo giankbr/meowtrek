@@ -55,6 +55,78 @@
    "color": "C9B6E4"
   },
   {
+   "id": "fur_butter",
+   "name": "Butter",
+   "slot": "fur",
+   "emoji": "",
+   "price": 250,
+   "currency": "coin",
+   "color": "F5DC9C"
+  },
+  {
+   "id": "fur_charcoal",
+   "name": "Charcoal",
+   "slot": "fur",
+   "emoji": "",
+   "price": 300,
+   "currency": "coin",
+   "color": "7A7480"
+  },
+  {
+   "id": "fur_rose",
+   "name": "Rose",
+   "slot": "fur",
+   "emoji": "",
+   "price": 300,
+   "currency": "coin",
+   "color": "F0B9C0"
+  },
+  {
+   "id": "fur_honey",
+   "name": "Honey",
+   "slot": "fur",
+   "emoji": "",
+   "price": 250,
+   "currency": "coin",
+   "color": "E7B45E"
+  },
+  {
+   "id": "fur_slate",
+   "name": "Slate",
+   "slot": "fur",
+   "emoji": "",
+   "price": 280,
+   "currency": "coin",
+   "color": "8E99A8"
+  },
+  {
+   "id": "fur_caramel",
+   "name": "Caramel",
+   "slot": "fur",
+   "emoji": "",
+   "price": 280,
+   "currency": "coin",
+   "color": "C98E5A"
+  },
+  {
+   "id": "fur_mint",
+   "name": "Mint",
+   "slot": "fur",
+   "emoji": "",
+   "price": 3,
+   "currency": "gem",
+   "color": "BFE3CF"
+  },
+  {
+   "id": "fur_sky",
+   "name": "Sky",
+   "slot": "fur",
+   "emoji": "",
+   "price": 3,
+   "currency": "gem",
+   "color": "B9D6EE"
+  },
+  {
    "id": "witch_hat",
    "name": "Witch Hat",
    "slot": "hat",
@@ -146,6 +218,96 @@
    "event": "bloom"
   },
   {
+   "id": "beret",
+   "name": "Painter's Beret",
+   "slot": "hat",
+   "emoji": "",
+   "price": 220,
+   "currency": "coin"
+  },
+  {
+   "id": "pom_beanie",
+   "name": "Pom-pom Beanie",
+   "slot": "hat",
+   "emoji": "",
+   "price": 160,
+   "currency": "coin"
+  },
+  {
+   "id": "sprout",
+   "name": "Sprout",
+   "slot": "hat",
+   "emoji": "",
+   "price": 90,
+   "currency": "coin"
+  },
+  {
+   "id": "tricorn",
+   "name": "Captain's Tricorn",
+   "slot": "hat",
+   "emoji": "",
+   "price": 380,
+   "currency": "coin"
+  },
+  {
+   "id": "headphones",
+   "name": "Headphones",
+   "slot": "hat",
+   "emoji": "",
+   "price": 320,
+   "currency": "coin"
+  },
+  {
+   "id": "halo",
+   "name": "Halo",
+   "slot": "hat",
+   "emoji": "",
+   "price": 5,
+   "currency": "gem"
+  },
+  {
+   "id": "bucket_hat",
+   "name": "Bucket Hat",
+   "slot": "hat",
+   "emoji": "",
+   "price": 180,
+   "currency": "coin"
+  },
+  {
+   "id": "party_hat",
+   "name": "Party Cone",
+   "slot": "hat",
+   "emoji": "",
+   "price": 140,
+   "currency": "coin"
+  },
+  {
+   "id": "ranch_hat",
+   "name": "Ranch Hat",
+   "slot": "hat",
+   "emoji": "",
+   "price": 300,
+   "currency": "coin"
+  },
+  {
+   "id": "straw_hat",
+   "name": "Straw Hat",
+   "slot": "hat",
+   "emoji": "",
+   "price": 0,
+   "currency": "coin",
+   "event": "sunny"
+  },
+  {
+   "id": "earmuffs",
+   "name": "Earmuffs",
+   "slot": "hat",
+   "emoji": "",
+   "price": 0,
+   "currency": "coin",
+   "event": "frost"
+  },
+  {
    "id": "glasses",
    "name": "Round Glasses",
    "slot": "eyes",
@@ -176,6 +338,70 @@
    "emoji": "🤿",
    "price": 300,
    "currency": "coin"
+  },
+  {
+   "id": "heart_shades",
+   "name": "Heart Shades",
+   "slot": "eyes",
+   "emoji": "",
+   "price": 240,
+   "currency": "coin"
+  },
+  {
+   "id": "star_specs",
+   "name": "Star Specs",
+   "slot": "eyes",
+   "emoji": "",
+   "price": 260,
+   "currency": "coin"
+  },
+  {
+   "id": "monocle",
+   "name": "Monocle",
+   "slot": "eyes",
+   "emoji": "",
+   "price": 280,
+   "currency": "coin"
+  },
+  {
+   "id": "eye_patch",
+   "name": "Eye Patch",
+   "slot": "eyes",
+   "emoji": "",
+   "price": 150,
+   "currency": "coin"
+  },
+  {
+   "id": "cat_eye",
+   "name": "Cat-eye Frames",
+   "slot": "eyes",
+   "emoji": "",
+   "price": 230,
+   "currency": "coin"
+  },
+  {
+   "id": "aviators",
+   "name": "Aviators",
+   "slot": "eyes",
+   "emoji": "",
+   "price": 300,
+   "currency": "coin"
+  },
+  {
+   "id": "sleep_mask",
+   "name": "Sleep Mask",
+   "slot": "eyes",
+   "emoji": "",
+   "price": 120,
+   "currency": "coin"
+  },
+  {
+   "id": "pixel_shades",
+   "name": "Pixel Shades",
+   "slot": "eyes",
+   "emoji": "",
+   "price": 4,
+   "currency": "gem"
   },
   {
    "id": "scarf",
@@ -219,6 +445,71 @@
    "event": "sunny"
   },
   {
+   "id": "bandana",
+   "name": "Bandana",
+   "slot": "neck",
+   "emoji": "",
+   "price": 140,
+   "currency": "coin"
+  },
+  {
+   "id": "bowtie",
+   "name": "Bow Tie",
+   "slot": "neck",
+   "emoji": "",
+   "price": 160,
+   "currency": "coin"
+  },
+  {
+   "id": "pearls",
+   "name": "Pearl Necklace",
+   "slot": "neck",
+   "emoji": "",
+   "price": 4,
+   "currency": "gem"
+  },
+  {
+   "id": "whistle",
+   "name": "Coach Whistle",
+   "slot": "neck",
+   "emoji": "",
+   "price": 180,
+   "currency": "coin"
+  },
+  {
+   "id": "clover_charm",
+   "name": "Clover Charm",
+   "slot": "neck",
+   "emoji": "",
+   "price": 200,
+   "currency": "coin"
+  },
+  {
+   "id": "name_tag",
+   "name": "Name Tag",
+   "slot": "neck",
+   "emoji": "",
+   "price": 120,
+   "currency": "coin"
+  },
+  {
+   "id": "frilly_collar",
+   "name": "Frilly Collar",
+   "slot": "neck",
+   "emoji": "",
+   "price": 220,
+   "currency": "coin"
+  },
+  {
+   "id": "flower_lei",
+   "name": "Flower Lei",
+   "slot": "neck",
+   "emoji": "",
+   "price": 0,
+   "currency": "coin",
+   "event": "sunny"
+  },
+  {
    "id": "frog_suit",
    "name": "Frog Suit",
    "slot": "body",
@@ -257,6 +548,81 @@
    "currency": "coin",
    "color": "F4F2F7",
    "suit": "cloak"
+  },
+  {
+   "id": "suit_hoodie",
+   "name": "Trail Hoodie",
+   "slot": "body",
+   "emoji": "",
+   "price": 400,
+   "currency": "coin",
+   "color": "8CC4DE"
+  },
+  {
+   "id": "suit_raincoat",
+   "name": "Raincoat",
+   "slot": "body",
+   "emoji": "",
+   "price": 380,
+   "currency": "coin",
+   "color": "F6C945"
+  },
+  {
+   "id": "suit_overalls",
+   "name": "Overalls",
+   "slot": "body",
+   "emoji": "",
+   "price": 420,
+   "currency": "coin",
+   "color": "F4EDE0"
+  },
+  {
+   "id": "suit_sweater",
+   "name": "Cable Sweater",
+   "slot": "body",
+   "emoji": "",
+   "price": 360,
+   "currency": "coin",
+   "color": "E5707A"
+  },
+  {
+   "id": "suit_tracksuit",
+   "name": "Tracksuit",
+   "slot": "body",
+   "emoji": "",
+   "price": 450,
+   "currency": "coin",
+   "color": "7FA86B"
+  },
+  {
+   "id": "suit_panda",
+   "name": "Panda Suit",
+   "slot": "body",
+   "emoji": "",
+   "price": 650,
+   "currency": "coin",
+   "color": "F4F2F0",
+   "suit": "bear"
+  },
+  {
+   "id": "suit_lamb",
+   "name": "Lamb Suit",
+   "slot": "body",
+   "emoji": "",
+   "price": 8,
+   "currency": "gem",
+   "color": "F3EBDD",
+   "suit": "bear"
+  },
+  {
+   "id": "suit_puffer",
+   "name": "Puffer Jacket",
+   "slot": "body",
+   "emoji": "",
+   "price": 0,
+   "currency": "coin",
+   "color": "B9D6EE",
+   "event": "frost"
   },
   {
    "id": "wand",
@@ -326,6 +692,72 @@
    "event": "bloom"
   },
   {
+   "id": "umbrella",
+   "name": "Umbrella",
+   "slot": "hand",
+   "emoji": "",
+   "price": 260,
+   "currency": "coin"
+  },
+  {
+   "id": "fishing_rod",
+   "name": "Fishing Rod",
+   "slot": "hand",
+   "emoji": "",
+   "price": 300,
+   "currency": "coin"
+  },
+  {
+   "id": "trail_map",
+   "name": "Trail Map",
+   "slot": "hand",
+   "emoji": "",
+   "price": 180,
+   "currency": "coin"
+  },
+  {
+   "id": "paper_fan",
+   "name": "Paper Fan",
+   "slot": "hand",
+   "emoji": "",
+   "price": 150,
+   "currency": "coin"
+  },
+  {
+   "id": "racket",
+   "name": "Tennis Racket",
+   "slot": "hand",
+   "emoji": "",
+   "price": 240,
+   "currency": "coin"
+  },
+  {
+   "id": "magnifier",
+   "name": "Magnifier",
+   "slot": "hand",
+   "emoji": "",
+   "price": 200,
+   "currency": "coin"
+  },
+  {
+   "id": "ice_cream",
+   "name": "Ice Cream",
+   "slot": "hand",
+   "emoji": "",
+   "price": 0,
+   "currency": "coin",
+   "event": "sunny"
+  },
+  {
+   "id": "cocoa_mug",
+   "name": "Cocoa Mug",
+   "slot": "hand",
+   "emoji": "",
+   "price": 0,
+   "currency": "coin",
+   "event": "frost"
+  },
+  {
    "id": "backpack",
    "name": "Backpack",
    "slot": "bag",
@@ -366,6 +798,62 @@
    "price": 0,
    "currency": "coin",
    "event": "bloom"
+  },
+  {
+   "id": "satchel",
+   "name": "Leather Satchel",
+   "slot": "bag",
+   "emoji": "",
+   "price": 280,
+   "currency": "coin"
+  },
+  {
+   "id": "belt_bag",
+   "name": "Belt Bag",
+   "slot": "bag",
+   "emoji": "",
+   "price": 200,
+   "currency": "coin"
+  },
+  {
+   "id": "tote",
+   "name": "Canvas Tote",
+   "slot": "bag",
+   "emoji": "",
+   "price": 160,
+   "currency": "coin"
+  },
+  {
+   "id": "bento",
+   "name": "Bento Box",
+   "slot": "bag",
+   "emoji": "",
+   "price": 220,
+   "currency": "coin"
+  },
+  {
+   "id": "camera",
+   "name": "Instant Camera",
+   "slot": "bag",
+   "emoji": "",
+   "price": 350,
+   "currency": "coin"
+  },
+  {
+   "id": "star_pouch",
+   "name": "Star Pouch",
+   "slot": "bag",
+   "emoji": "",
+   "price": 5,
+   "currency": "gem"
+  },
+  {
+   "id": "postie_bag",
+   "name": "Postie Bag",
+   "slot": "bag",
+   "emoji": "",
+   "price": 240,
+   "currency": "coin"
   },
   {
    "id": "sneakers",
@@ -416,6 +904,62 @@
    "price": 0,
    "currency": "coin",
    "event": "sunny"
+  },
+  {
+   "id": "rain_boots",
+   "name": "Rain Boots",
+   "slot": "shoes",
+   "emoji": "",
+   "price": 220,
+   "currency": "coin"
+  },
+  {
+   "id": "trail_boots",
+   "name": "Trail Boots",
+   "slot": "shoes",
+   "emoji": "",
+   "price": 320,
+   "currency": "coin"
+  },
+  {
+   "id": "cloud_slippers",
+   "name": "Cloud Slippers",
+   "slot": "shoes",
+   "emoji": "",
+   "price": 180,
+   "currency": "coin"
+  },
+  {
+   "id": "loafers",
+   "name": "Loafers",
+   "slot": "shoes",
+   "emoji": "",
+   "price": 240,
+   "currency": "coin"
+  },
+  {
+   "id": "high_tops",
+   "name": "High-tops",
+   "slot": "shoes",
+   "emoji": "",
+   "price": 280,
+   "currency": "coin"
+  },
+  {
+   "id": "garden_clogs",
+   "name": "Garden Clogs",
+   "slot": "shoes",
+   "emoji": "",
+   "price": 160,
+   "currency": "coin"
+  },
+  {
+   "id": "roller_skates",
+   "name": "Roller Skates",
+   "slot": "shoes",
+   "emoji": "",
+   "price": 5,
+   "currency": "gem"
   }
  ],
  "consumables": [
@@ -550,6 +1094,24 @@
      "coins": 0,
      "gems": 0,
      "item": "skates"
+    },
+    {
+     "tokens": 750,
+     "coins": 0,
+     "gems": 0,
+     "item": "earmuffs"
+    },
+    {
+     "tokens": 900,
+     "coins": 0,
+     "gems": 0,
+     "item": "cocoa_mug"
+    },
+    {
+     "tokens": 1100,
+     "coins": 0,
+     "gems": 0,
+     "item": "suit_puffer"
     }
    ]
   },
@@ -636,6 +1198,24 @@
      "coins": 0,
      "gems": 0,
      "item": "flipflops"
+    },
+    {
+     "tokens": 650,
+     "coins": 0,
+     "gems": 0,
+     "item": "straw_hat"
+    },
+    {
+     "tokens": 800,
+     "coins": 0,
+     "gems": 0,
+     "item": "flower_lei"
+    },
+    {
+     "tokens": 1000,
+     "coins": 0,
+     "gems": 0,
+     "item": "ice_cream"
     }
    ]
   }
@@ -1202,6 +1782,81 @@
    ],
    "coins": 200,
    "gems": 3
+  },
+  {
+   "id": "rainy",
+   "name": "Rainy Day",
+   "title": "the Puddle Jumper",
+   "icon": "cloud.rain.fill",
+   "tint": "4F93B8",
+   "items": [
+    "bucket_hat",
+    "suit_raincoat",
+    "umbrella",
+    "rain_boots"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "explorer",
+   "name": "Explorer",
+   "title": "the Explorer",
+   "icon": "map.fill",
+   "tint": "8C7A5B",
+   "items": [
+    "ranch_hat",
+    "satchel",
+    "magnifier",
+    "trail_boots"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "captain",
+   "name": "Sea Captain",
+   "title": "the Captain",
+   "icon": "sailboat.fill",
+   "tint": "45404F",
+   "items": [
+    "tricorn",
+    "eye_patch",
+    "bandana",
+    "trail_map"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "dapper",
+   "name": "Dapper",
+   "title": "the Dapper",
+   "icon": "theatermasks.fill",
+   "tint": "9A6B4F",
+   "items": [
+    "top_hat",
+    "monocle",
+    "bowtie",
+    "loafers"
+   ],
+   "coins": 150,
+   "gems": 2
+  },
+  {
+   "id": "artsy",
+   "name": "Artsy",
+   "title": "the Artsy",
+   "icon": "paintpalette.fill",
+   "tint": "E5707A",
+   "items": [
+    "beret",
+    "cat_eye",
+    "suit_sweater",
+    "paper_fan"
+   ],
+   "coins": 150,
+   "gems": 2
   }
  ]
 }

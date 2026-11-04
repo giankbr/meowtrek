@@ -21,41 +21,45 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 PetScene(showCloset: $showCloset, showSettings: $showSettings,
                          showInbox: $showInbox, showFeed: $showFeed, showCoach: $showCoach)
-                VStack(alignment: .leading, spacing: 14) {
-                    stepsCard
+                    .overlay(alignment: .bottom) {
+                        TornEdge().fill(Color.cream)
+                            .shadow(color: .black.opacity(0.08), radius: 1.5, y: -1)
+                            .frame(height: 30)
+                    }
+                VStack(alignment: .leading, spacing: 16) {
+                    stepsCard.padding(.top, 14)
                     Button { showTrek = true } label: {
-                        Label("Start a walk, run or hike", systemImage: "location.north.circle.fill")
+                        Label("Head out for a walk, run or hike", systemImage: "location.north.circle.fill")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.chunky(.grass, text: .white, radius: 18, padV: 13))
-                    HStack {
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text("Today").font(.game(24, .black))
-                            Text(Date.now.formatted(.dateTime.weekday(.wide).day().month()))
-                                .font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                    .buttonStyle(.chunky(.grass, text: .white, radius: 14, padV: 13))
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            StoryHeading(text: loc("\(state.petName)'s diary"), size: 24)
+                            Text("Little errands for today").font(.game(12, .semibold)).foregroundStyle(Color.inkSoft)
                         }
                         Spacer()
                         Button { personalize() } label: {
                             HStack(spacing: 5) {
                                 if personalizing { ProgressView().controlSize(.small) } else { Image(systemName: "wand.and.stars") }
-                                Text(state.aiQuestsDay == state.dayKey ? "AI quests" : "Personalize")
+                                Text(state.aiQuestsDay == state.dayKey ? "AI errands" : "Personalize")
                             }
                         }
-                        .buttonStyle(.chunky(.grape.opacity(0.18), text: .grapeDark, radius: 18, padH: 12, padV: 7))
+                        .buttonStyle(.chunky(.grape.opacity(0.18), text: .grapeDark, radius: 14, padH: 12, padV: 7))
                         .disabled(personalizing)
                     }
-                    .padding(.top, 4)
-                    DailyRewardCard().appearIn(0)
-                    ExpeditionCard().appearIn(0)
-                    TrailPassCard().appearIn(1)
-                    if let a = state.activeEvent { eventCard(a).appearIn(1) }
-                    chestCard.appearIn(1)
-                    waterCard.appearIn(2)
+                    .padding(.top, 6)
+                    diary.appearIn(0)
+                    DailyRewardCard().appearIn(1)
+                    ExpeditionCard().appearIn(1)
+                    TrailPassCard().appearIn(2)
+                    if let a = state.activeEvent { eventCard(a).appearIn(2) }
+                    waterCard.appearIn(3)
                     Button { showMeal = true } label: {
                         HStack(spacing: 12) {
                             GameIcon(symbol: "camera.fill", tint: .pumpkin, size: 44)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Snap your meal").font(.game(17, .bold))
+                                Text("Snap your meal").font(.story(17, .bold))
                                 Text("\(state.petName) reacts · no calorie counting").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                             }
                             Spacer()
@@ -64,17 +68,14 @@ struct HomeView: View {
                         .card()
                     }
                     .buttonStyle(SquishStyle())
-                    .appearIn(3)
-                    ForEach(Array(state.quests.enumerated()), id: \.element.id) { i, q in QuestRow(q: q).appearIn(i + 4) }
+                    .appearIn(4)
                 }
                 .foregroundStyle(Color.ink)
                 .padding(16)
                 .padding(.bottom, 20)
-                .background(Color.cream, in: UnevenRoundedRectangle(topLeadingRadius: 30, topTrailingRadius: 30))
-                .padding(.top, -30)
             }
         }
-        .background(Color.cream)
+        .paperBackground()
         .ignoresSafeArea(edges: .top)
         .toolbar(.hidden, for: .navigationBar)
         .refreshable { await state.steps.load(); state.refresh() }
@@ -97,7 +98,7 @@ struct HomeView: View {
             ArtView(id: "water", size: 44)
                 .scaleEffect(waterPulse ? 1.12 : 1, anchor: .bottom)
             VStack(alignment: .leading, spacing: 6) {
-                Text("Water").font(.game(17, .bold))
+                Text("Water").font(.story(17, .bold))
                 HStack(spacing: 4) {
                     ForEach(0..<goal, id: \.self) { i in
                         Capsule().fill(i < n ? Color.sky : Color.sky.opacity(0.18))
@@ -146,42 +147,66 @@ struct HomeView: View {
     }
 
     private var stepsCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Today's page").font(.story(15, .semibold)).italic().foregroundStyle(Color.inkSoft)
+                Spacer()
+                Text(Date.now.formatted(.dateTime.weekday(.wide).day().month()))
+                    .font(.game(12, .semibold)).foregroundStyle(Color.inkSoft)
+            }
             HStack(alignment: .center, spacing: 10) {
-                GameIcon(symbol: "shoeprints.fill", tint: .tomato, size: 40)
-                VStack(alignment: .leading, spacing: -2) {
+                VStack(alignment: .leading, spacing: -4) {
                     Text(state.today.formatted())
-                        .font(.game(38, .black))
+                        .font(.story(46, .bold))
                         .contentTransition(.numericText())
-                    Text("of \(state.goal.formatted()) steps").font(.game(13, .bold)).foregroundStyle(Color.inkSoft)
+                    Text("steps · goal \(state.goal.formatted())").font(.game(13, .semibold)).foregroundStyle(Color.inkSoft)
                 }
                 Spacer()
                 Button { withAnimation(.spring) { state.claimSteps() } } label: {
-                    HStack(spacing: 6) {
-                        ArtView(id: "coin", size: 24, line: 1.8)
-                        VStack(alignment: .leading, spacing: -2) {
-                            Text("+\(state.claimable)").font(.game(17, .black)).contentTransition(.numericText())
-                            Text("CLAIM").font(.game(10, .black))
+                    VStack(spacing: 1) {
+                        HStack(spacing: 4) {
+                            ArtView(id: "coin", size: 22, line: 1.6)
+                            Text("+\(state.claimable)").font(.game(17, .bold)).contentTransition(.numericText())
                         }
+                        Text("Collect").font(.game(11, .semibold))
                     }
                 }
-                .buttonStyle(.chunky(.sun, padH: 12, padV: 7))
+                .buttonStyle(.chunky(.sun, radius: 14, padH: 12, padV: 7))
                 .disabled(state.claimable == 0)
             }
-            ProgressBar(value: state.progress, height: 12)
-            HStack {
+            ProgressBar(value: state.progress, height: 14)
+            HStack(spacing: 8) {
                 Text(state.remaining == 0
                      ? "Goal reached — \(state.petName) is proud!"
-                     : "\(state.remaining.formatted()) to go · about \(max(1, state.remaining / 100)) min")
+                     : "\(state.remaining.formatted()) steps left · a \(max(1, state.remaining / 100))-minute stroll")
+                    .lineLimit(1).minimumScaleFactor(0.8)
                 Spacer()
-                Text("\(Int(state.progress * 100))%").font(.game(14, .black)).foregroundStyle(Color.grassDark)
+                Text("\(Int(state.progress * 100))%").font(.story(15, .bold)).foregroundStyle(Color.grassDark)
                 Button { showShare = true } label: { Image(systemName: "square.and.arrow.up").font(.system(size: 14, weight: .bold)) }
-                    .buttonStyle(.chunky(.grassLight, text: .grassDark, radius: 14, padH: 9, padV: 6))
+                    .buttonStyle(.chunky(.grassLight, text: .grassDark, radius: 12, padH: 9, padV: 6))
             }
-            .font(.game(13, .bold))
+            .font(.game(13, .semibold))
             .foregroundStyle(Color.inkSoft)
         }
-        .card()
+        .card(padding: 18)
+        .taped(.top, angle: -3)
+    }
+
+    /// Today's quests on a ruled diary page, with the treasure box at the foot.
+    private var diary: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(state.quests.enumerated()), id: \.element.id) { i, q in
+                QuestRow(q: q).padding(.vertical, 12)
+                Rectangle().fill(Color.sky.opacity(0.35)).frame(height: 1)
+            }
+            chestRow.padding(.top, 12)
+        }
+        .padding(.leading, 6)
+        .card(padding: 14)
+        .overlay(alignment: .leading) {
+            Rectangle().fill(Color.tomato.opacity(0.3)).frame(width: 1.2).padding(.vertical, 8).padding(.leading, 56)
+        }
+        .taped(.topTrailing, angle: 6, color: .bubble, x: -24, width: 48)
     }
 
     private func eventCard(_ a: ActiveEvent) -> some View {
@@ -223,34 +248,29 @@ struct HomeView: View {
         .buttonStyle(SquishStyle())
     }
 
-    private var chestCard: some View {
+    private var chestRow: some View {
         HStack(spacing: 12) {
-            ArtView(id: "chest", size: 56, line: 2.5)
+            ArtView(id: "chest", size: 44, line: 2.2)
+                .frame(width: 40)
                 .rotationEffect(.degrees(state.chestReady ? -6 : 0))
                 .animation(state.chestReady ? .easeInOut(duration: 0.25).repeatForever(autoreverses: true) : .default,
                            value: state.chestReady)
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Daily chest").font(.game(18, .black))
-                Text(state.chestOpened ? "Opened · see you tomorrow"
-                     : state.chestReady ? "Ready to open!" : "Finish all 3 quests")
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Treasure box").font(.story(16, .bold))
+                Text(state.chestOpened ? "Opened · a new one tomorrow"
+                     : state.chestReady ? "All ticked off. Open it!" : "Tick off all three to open it")
                     .lineLimit(1)
-                    .font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
-                HStack(spacing: 5) {
-                    ForEach(state.quests) { q in
-                        Capsule().fill(state.isClaimed(q) ? Color.grass : Color.paper)
-                            .overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
-                            .frame(width: 28, height: 10)
-                    }
-                }
+                    .font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
             }
             Spacer()
-            Button { withAnimation { state.openChest() } } label: {
-                Text(state.chestOpened ? "Done" : "Open")
+            if state.chestOpened {
+                Stamp(text: loc("Opened"), color: .grassDark, size: 44, angle: -10)
+            } else {
+                Button { withAnimation { state.openChest() } } label: { Text("Open") }
+                    .buttonStyle(.chunky(.tomato, text: .white, radius: 14))
+                    .disabled(!state.chestReady)
             }
-            .buttonStyle(.chunky(.tomato, text: .white))
-            .disabled(!state.chestReady)
         }
-        .card(color: .chestBg)
     }
 }
 
@@ -260,46 +280,67 @@ struct QuestRow: View {
 
     var body: some View {
         let done = state.isDone(q), claimed = state.isClaimed(q), missed = state.isMissed(q)
+        let tint = Color(hexString: q.t.tint)
         HStack(spacing: 12) {
-            GameIcon(symbol: q.t.icon, tint: Color(hexString: q.t.tint), size: 46, muted: missed)
-            VStack(alignment: .leading, spacing: 5) {
-                Text(q.t.title).font(.game(17, .black))
+            ZStack {
+                PaperShape(radius: 5, wobble: 0.8, seed: q.id.count)
+                    .fill(done && !claimed ? Color.sun.opacity(0.35) : Color.clear)
+                PaperShape(radius: 5, wobble: 0.8, seed: q.id.count)
+                    .stroke(Color.ink.opacity(missed ? 0.25 : 0.55), lineWidth: 1.5)
+                if claimed || done {
+                    Image(systemName: "checkmark").font(.system(size: 17, weight: .heavy))
+                        .foregroundStyle(claimed ? Color.grassDark : Color.sunDark)
+                        .rotationEffect(.degrees(-8)).offset(x: 2, y: -2)
+                        .transition(.scale(scale: 0.5).combined(with: .opacity))
+                }
+            }
+            .frame(width: 26, height: 26)
+            .frame(width: 40)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Image(systemName: q.t.icon).font(.system(size: 12, weight: .bold)).foregroundStyle(tint)
+                    Text(q.t.title).font(.story(16, .semibold))
+                        .strikethrough(claimed, color: Color.inkSoft.opacity(0.6))
+                }
                 if claimed {
-                    Text("Claimed · +\(q.t.reward) coins").font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                    Text("Collected · +\(q.t.reward) coins").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                 } else if done {
-                    Text("Done! Tap claim").font(.game(12, .black)).foregroundStyle(Color.grassDark)
+                    Text("Done! Collect your coins").font(.game(12, .semibold)).foregroundStyle(Color.grassDark)
                 } else if missed {
-                    Text("Missed · \(q.detail)").font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                    Text("Missed · \(q.detail)").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                 } else {
-                    Text(q.detail).font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                    Text(q.detail).font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                     HStack(spacing: 6) {
-                        ProgressBar(value: Double(state.value(q)) / Double(max(1, q.target)),
-                                    color: Color(hexString: q.t.tint), height: 10)
-                        Text("\(shortSteps(state.value(q)))/\(shortSteps(q.target))").font(.game(11, .bold))
+                        ProgressBar(value: Double(state.value(q)) / Double(max(1, q.target)), color: tint, height: 7)
+                            .frame(maxWidth: 120)
+                        Text("\(shortSteps(state.value(q)))/\(shortSteps(q.target))").font(.game(11, .semibold))
                             .foregroundStyle(Color.inkSoft).fixedSize()
                     }
                 }
             }
             Spacer(minLength: 4)
             if claimed {
-                Image(systemName: "checkmark").font(.game(16, .black)).foregroundStyle(.white)
-                    .frame(width: 34, height: 34)
-                    .background(Circle().fill(Color.grass))
-                    .transition(.scale(scale: 0.6).combined(with: .opacity))
-            } else {
+                Stamp(text: "+\(q.t.reward)", color: .tomato, size: 42)
+                    .transition(.scale(scale: 1.4).combined(with: .opacity))
+            } else if done {
                 Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { state.claim(q) } } label: {
                     HStack(spacing: 4) {
                         ArtView(id: "coin", size: 18, line: 1.4)
-                        Text(done ? "Claim" : "\(q.t.reward)")
+                        Text("Collect")
                     }
                 }
-                .buttonStyle(.chunky(done ? .sun : .paper, padH: 10, padV: 7))
-                .disabled(!done)
+                .buttonStyle(.chunky(.sun, radius: 12, padH: 10, padV: 7))
+            } else {
+                HStack(spacing: 3) {
+                    ArtView(id: "coin", size: 16, line: 1.3)
+                    Text("\(q.t.reward)").font(.game(13, .semibold))
+                }
+                .foregroundStyle(Color.inkSoft)
+                .opacity(0.8)
             }
         }
         .foregroundStyle(Color.ink)
-        .opacity(missed ? 0.65 : 1)
-        .card(padding: 14)
+        .opacity(missed ? 0.6 : 1)
     }
 }
 
@@ -450,28 +491,30 @@ private struct PetScene: View {
 
                     HeartBurst(trigger: hearts).offset(y: 10 - 70 * d)
 
-                    SpeechBubble(text: movingLine ?? state.bubble).offset(y: -22 - 48 * d)
+                    SpeechBubble(text: movingLine ?? state.bubble).offset(y: -16 - 30 * d)
                 }
             }
 
             topBar.frame(maxHeight: .infinity, alignment: .top)
 
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(state.titleText.map { "\(state.petName) \(L($0))" } ?? state.petName).font(.game(17, .bold)).lineLimit(1)
-                    Text("Lv \(state.level)").font(.game(11, .bold))
-                        .padding(.horizontal, 7).padding(.vertical, 2)
-                        .background(Capsule().fill(Color.sun))
+            VStack(alignment: .leading, spacing: 1) {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(state.titleText.map { "\(state.petName) \(L($0))" } ?? state.petName).font(.story(18, .bold)).lineLimit(1)
+                    Text("Lv \(state.level)").font(.game(11, .semibold))
+                        .padding(.horizontal, 6).padding(.vertical, 1)
+                        .background(Capsule().fill(Color.sun.opacity(0.7)))
                 }
-                Text("\(L(state.mood)) · \(state.daysTogether) days together")
+                Text("\(L(state.mood)) · day \(state.daysTogether) of our trek")
                     .font(.game(12, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1)
             }
             .fixedSize()
-            .padding(.horizontal, 14).padding(.vertical, 9)
-            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.paper))
-            .shadow(color: .black.opacity(0.08), radius: 8, y: 2)
+            .padding(.horizontal, 14).padding(.top, 12).padding(.bottom, 9)
+            .background(PaperShape(radius: 4, seed: 19).fill(Color.paper))
+            .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
+            .taped(.top, angle: 4, color: .bubble, width: 46)
+            .rotationEffect(.degrees(-2.5))
             .foregroundStyle(Color.ink)
-            .padding(.leading, 16).padding(.top, 112)
+            .padding(.leading, 18).padding(.top, 104)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
             VStack(spacing: 10) {
@@ -486,7 +529,7 @@ private struct PetScene: View {
                         }
                     }
             }
-            .padding(.trailing, 16).padding(.bottom, 44)
+            .padding(.trailing, 16).padding(.bottom, 40)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
         }
         .frame(height: 440)
@@ -531,12 +574,13 @@ private struct SpeechBubble: View {
     var body: some View {
         VStack(spacing: -3) {
             Text(text)
-                .font(.game(14, .heavy))
+                .font(.story(15, .semibold))
+                .italic()
                 .foregroundStyle(Color.ink)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 14).padding(.vertical, 9)
-                .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.paper))
-                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.black.opacity(0.06), lineWidth: 1))
+                .background(PaperShape(radius: 14, wobble: 1, seed: 23).fill(Color.paper))
+                .overlay(PaperShape(radius: 14, wobble: 1, seed: 23).stroke(Color.ink.opacity(0.35), lineWidth: 1.2))
             Triangle().fill(Color.paper)
                 .rotationEffect(.degrees(180))
                 .frame(width: 16, height: 9)
@@ -697,7 +741,7 @@ struct InboxView: View {
                         row(symbol: "flag.2.crossed.fill", tint: "E5707A", loc("Duel with \(d.friendName)"), loc("Results are in"), loc("Claim")) { state.claimDuel(d) }
                     }
                     if state.chestReady {
-                        row(art: "chest", loc("Daily chest"), loc("All quests done"), loc("+30 +1 gem")) { state.openChest() }
+                        row(art: "chest", loc("Treasure box"), loc("All errands ticked off"), loc("+30 +1 gem")) { state.openChest() }
                     }
                     if let a = state.activeEvent {
                         ForEach(a.event.milestones.filter { state.canClaim(a, $0) }) { m in

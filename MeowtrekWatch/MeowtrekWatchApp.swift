@@ -20,7 +20,7 @@ struct MeowtrekWatchApp: App {
 final class WatchModel: NSObject, WCSessionDelegate {
     var steps = 0
     var meters = 0.0
-    var petName = "Gohan"
+    var petName = "Miso"
     var goal = 8000
     var streak = 0
     var mood = "Cheerful"

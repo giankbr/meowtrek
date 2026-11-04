@@ -11,8 +11,8 @@ extension Color {
 
     static let ink = Color(hex: 0x2B2622)
     static let inkSoft = Color(hex: 0x8A837A)
-    static let cream = Color(hex: 0xF7F4EC)
-    static let paper = Color.white
+    static let cream = Color(hex: 0xF6F0E4)
+    static let paper = Color(hex: 0xFFFDF8)
     static let grass = Color(hex: 0x7FA86B)
     static let grassDark = Color(hex: 0x4F7F3E)
     static let grassLight = Color(hex: 0xDDEBCF)

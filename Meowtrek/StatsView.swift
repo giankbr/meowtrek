@@ -1,24 +1,15 @@
 import SwiftUI
 import Charts
 
+/// The walk journal: one page that reads like a diary of your steps rather than a dashboard.
 struct StatsView: View {
     @Environment(AppState.self) private var state
 
-    enum Tab: String, CaseIterable {
-        case steps = "Steps", trends = "Trends", records = "Records", health = "Health"
-        var icon: String {
-            switch self {
-            case .steps: "shoeprints.fill"
-            case .trends: "sparkles"
-            case .records: "trophy.fill"
-            case .health: "heart.fill"
-            }
-        }
+    enum Range: String, CaseIterable {
+        case day = "Today", week = "This week", month = "This month", year = "This year"
     }
 
-    enum Range: String, CaseIterable { case day = "Day", week = "Week", month = "Month", year = "Year" }
-
-    private struct Bar: Identifiable {
+    private struct Point: Identifiable {
         let id: Int
         let steps: Int
         let hit: Bool
@@ -26,11 +17,9 @@ struct StatsView: View {
         var current = false
     }
 
-    @State private var tab: Tab = .steps
-    @State private var range: Range = .month
+    @State private var range: Range = .week
     @State private var month = Self.monthStart(.now)
     @State private var selectedDay: Date?
-    @Namespace private var rangeNS
     @State private var pickedX: Double?
 
     private static var cal: Calendar {
@@ -44,47 +33,35 @@ struct StatsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                ScreenHeader(title: loc("Stats")) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "flame.fill").foregroundStyle(Color.pumpkin)
-                        Text("\(state.streak)").font(.game(16, .black))
-                    }
-                    .padding(.horizontal, 12).padding(.vertical, 6)
-                    .background(Capsule().fill(Color.paper)).overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
-                }
-                tabBar
-                switch tab {
-                case .steps: stepsTab
-                case .trends: trendsTab
-                case .records: recordsTab
-                case .health: healthTab
-                }
+            VStack(alignment: .leading, spacing: 22) {
+                ScreenHeader(title: loc("Walk journal")) { streakTag }
+                journal
+                stickerCalendar
+                notes
+                bests
+                sourceNote
             }
             .padding(16)
-            .padding(.bottom, 20)
+            .padding(.bottom, 24)
         }
         .foregroundStyle(Color.ink)
-        .background(Color.cream)
+        .paperBackground()
         .toolbar(.hidden, for: .navigationBar)
     }
 
-    private var tabBar: some View {
-        HStack(spacing: 6) {
-            ForEach(Tab.allCases, id: \.self) { t in
-                Button { withAnimation(.snappy) { tab = t } } label: {
-                    VStack(spacing: 2) {
-                        Image(systemName: t.icon).font(.system(size: 15, weight: .black))
-                        Text(L(t.rawValue)).font(.game(11, .black)).lineLimit(1)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.chunky(tab == t ? .grass : .paper, text: tab == t ? .white : .inkSoft, radius: 14, padH: 4, padV: 7))
-            }
+    private var streakTag: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "flame.fill").foregroundStyle(Color.pumpkin)
+            Text("\(state.streak)-day streak").font(.story(14, .semibold))
         }
+        .padding(.horizontal, 10).padding(.top, 9).padding(.bottom, 6)
+        .background(PaperShape(radius: 4, seed: 31).fill(Color.paper))
+        .shadow(color: .black.opacity(0.08), radius: 2, y: 1.5)
+        .taped(.top, angle: -5, color: .pumpkin, width: 34)
+        .rotationEffect(.degrees(3))
     }
 
-    // MARK: Steps
+    // MARK: Journal page
 
     private func days(from start: Date, count: Int) -> [Date] {
         (0..<count).map { cal.date(byAdding: .day, value: $0, to: start)! }
@@ -94,298 +71,297 @@ struct StatsView: View {
         switch range {
         case .day: return [today]
         case .week: return days(from: cal.dateInterval(of: .weekOfYear, for: today)!.start, count: 7)
-        case .month: return days(from: month, count: cal.range(of: .day, in: .month, for: month)!.count)
+        case .month: return days(from: Self.monthStart(today), count: cal.range(of: .day, in: .month, for: today)!.count)
         case .year:
             let year = cal.dateInterval(of: .year, for: today)!
             return days(from: year.start, count: cal.range(of: .day, in: .year, for: today)!.count)
         }
     }
 
-    private var bars: [Bar] {
+    private var points: [Point] {
         let goal = state.goal
         if range == .day {
             let now = cal.component(.hour, from: .now)
-            return state.steps.hourly.enumerated().map { h, s in Bar(id: h + 1, steps: s, hit: s >= 250, future: h > now, current: h == now) }
+            var run = 0
+            return state.steps.hourly.enumerated().map { h, s in
+                run += h > now ? 0 : s
+                return Point(id: h + 1, steps: run, hit: run >= goal, future: h > now, current: h == now)
+            }
         }
         if range == .year {
             let elapsed = rangeDays.filter { $0 <= today }
+            let thisMonth = cal.component(.month, from: today)
             return (1...12).map { m in
-                let total = elapsed.filter { cal.component(.month, from: $0) == m }
-                    .reduce(0) { $0 + state.steps.steps(on: $1) }
-                let thisMonth = cal.component(.month, from: today)
-                return Bar(id: m, steps: total, hit: false, future: m > thisMonth, current: m == thisMonth)
+                let ds = elapsed.filter { cal.component(.month, from: $0) == m }
+                let avg = ds.reduce(0) { $0 + state.steps.steps(on: $1) } / max(1, ds.count)
+                return Point(id: m, steps: avg, hit: avg >= goal, future: m > thisMonth, current: m == thisMonth)
             }
         }
         return rangeDays.enumerated().map { i, d in
             let s = d <= today ? state.steps.steps(on: d) : 0
-            return Bar(id: i + 1, steps: s, hit: s >= goal, future: d > today, current: d == today)
+            return Point(id: i + 1, steps: s, hit: s >= goal, future: d > today, current: d == today)
         }
+    }
+
+    private var journal: some View {
+        let elapsed = rangeDays.filter { $0 <= today }
+        let perDay = elapsed.map { state.steps.steps(on: $0) }
+        let total = perDay.reduce(0, +)
+        let avg = total / max(1, elapsed.count)
+        let hits = perDay.filter { $0 >= state.goal }.count
+        let meters = elapsed.reduce(0.0) { $0 + state.steps.meters(on: $1) }
+        let kcal = Int(elapsed.reduce(0.0) { $0 + state.steps.kcal(on: $1) })
+        let flights = elapsed.reduce(0) { $0 + (state.steps.flights[$1] ?? 0) }
+
+        return VStack(alignment: .leading, spacing: 0) {
+            folderTabs.zIndex(1)
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(lead).font(.story(15, .regular)).italic().foregroundStyle(Color.inkSoft)
+                    Text("\(total.formatted()) steps").font(.story(38, .bold)).contentTransition(.numericText())
+                        .lineLimit(1).minimumScaleFactor(0.6)
+                    Text(sentence(avg: avg, hits: hits, days: elapsed.count, meters: meters))
+                        .font(.game(14, .medium)).foregroundStyle(Color.inkSoft)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, 4)
+                }
+                chart
+                Rectangle().fill(Color.sky.opacity(0.35)).frame(height: 1)
+                numbers(meters: meters, steps: total, kcal: kcal, flights: flights)
+            }
+            .card(padding: 18)
+        }
+    }
+
+    private var folderTabs: some View {
+        HStack(alignment: .bottom, spacing: 4) {
+            ForEach(Range.allCases, id: \.self) { r in
+                let on = range == r
+                Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { range = r } } label: {
+                    Text(L(r.rawValue))
+                        .font(.story(13, on ? .bold : .medium))
+                        .foregroundStyle(on ? Color.ink : Color.inkSoft)
+                        .lineLimit(1).minimumScaleFactor(0.8)
+                        .padding(.horizontal, 10)
+                        .padding(.top, on ? 10 : 7).padding(.bottom, on ? 10 : 6)
+                        .frame(maxWidth: .infinity)
+                        .background(UnevenRoundedRectangle(topLeadingRadius: 10, topTrailingRadius: 10, style: .continuous)
+                            .fill(on ? Color.paper : Color(hex: 0xEAE0CB)))
+                        .offset(y: on ? 4 : 2)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 10)
+    }
+
+    private var lead: String {
+        switch range {
+        case .day: loc("So far today")
+        case .week: loc("This week, together we walked")
+        case .month: loc("In \(today.formatted(.dateTime.month(.wide))) we walked")
+        case .year: loc("In \(today.formatted(.dateTime.year())) we walked")
+        }
+    }
+
+    private func sentence(avg: Int, hits: Int, days: Int, meters: Double) -> String {
+        if range == .day {
+            return state.remaining == 0
+                ? loc("Goal reached, about \(state.distanceText(meters)) on foot. \(state.petName) is purring.")
+                : loc("\(state.remaining.formatted()) more to reach the goal, about \(state.distanceText(meters)) so far.")
+        }
+        if range == .year {
+            return loc("A usual day this year was \(avg.formatted()) steps.")
+        }
+        return loc("A usual day was \(avg.formatted()) steps, and \(hits) of \(days) days reached the goal.")
+    }
+
+    private var chart: some View {
+        let data = points
+        let shown = data.filter { !$0.future }
+        let top = Double(max(shown.map(\.steps).max() ?? 0, state.goal, 1)) * 1.2
+        let picked = pickedX.map { Int($0.rounded()) }
+        return Chart {
+            ForEach(shown) { p in
+                AreaMark(x: .value("When", Double(p.id)), y: .value("Steps", p.steps))
+                    .foregroundStyle(LinearGradient(colors: [Color.grass.opacity(0.28), Color.grass.opacity(0.02)],
+                                                    startPoint: .top, endPoint: .bottom))
+                    .interpolationMethod(.catmullRom)
+                LineMark(x: .value("When", Double(p.id)), y: .value("Steps", p.steps))
+                    .foregroundStyle(Color.grassDark)
+                    .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                    .interpolationMethod(.catmullRom)
+                if range != .day || p.current {
+                    PointMark(x: .value("When", Double(p.id)), y: .value("Steps", p.steps))
+                        .symbol {
+                            if p.hit && range != .day {
+                                Image(systemName: "pawprint.fill").font(.system(size: data.count > 20 ? 8 : 11))
+                                    .foregroundStyle(Color.grassDark)
+                            } else {
+                                Circle().fill(p.current ? Color.sun : Color.paper)
+                                    .overlay(Circle().stroke(Color.grassDark, lineWidth: 1.5))
+                                    .frame(width: data.count > 20 ? 6 : 9)
+                            }
+                        }
+                }
+            }
+            RuleMark(y: .value("Goal", state.goal))
+                .foregroundStyle(Color.tomato.opacity(0.6))
+                .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [2, 4]))
+                .annotation(position: .top, alignment: .leading, spacing: 2) {
+                    Text("goal \(shortSteps(state.goal))").font(.story(11, .medium)).italic().foregroundStyle(Color.tomato)
+                }
+            if let p = picked, let b = data.first(where: { $0.id == p }), !b.future {
+                RuleMark(x: .value("When", Double(p)))
+                    .foregroundStyle(Color.ink.opacity(0.15))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    .annotation(position: .top, spacing: 4, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
+                        VStack(spacing: 1) {
+                            Text(calloutLabel(p)).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+                            Text(b.steps.formatted()).font(.story(15, .bold)).foregroundStyle(Color.ink)
+                        }
+                        .padding(.horizontal, 10).padding(.vertical, 6)
+                        .background(PaperShape(radius: 6, seed: 9).fill(Color.paper))
+                        .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+                    }
+            }
+        }
+        .chartXScale(domain: 0.5...(Double(data.count) + 0.5))
+        .chartYScale(domain: 0...top)
+        .chartXSelection(value: $pickedX)
+        .chartXAxis {
+            AxisMarks(values: xMarks.map(Double.init)) { v in
+                AxisValueLabel {
+                    if let i = v.as(Double.self) { Text(xLabel(Int(i))).font(.game(11, .medium)).foregroundStyle(Color.inkSoft) }
+                }
+            }
+        }
+        .chartYAxis(.hidden)
+        .frame(height: 190)
+        .sensoryFeedback(.selection, trigger: picked)
+        .onChange(of: range) { pickedX = nil }
     }
 
     private var xMarks: [Int] {
         switch range {
-        case .day: [1, 7, 13, 19]
+        case .day: [1, 7, 13, 19, 24]
         case .week: Array(1...7)
-        case .month: [1, 8, 15, 22]
+        case .month: [1, 8, 15, 22, 29]
         case .year: Array(1...12)
         }
     }
 
     private func xLabel(_ i: Int) -> String {
         switch range {
-        case .week: ["M", "T", "W", "T", "F", "S", "S"][i - 1]
+        case .week: cal.veryShortWeekdaySymbols[i % 7]
         case .year: cal.veryShortMonthSymbols[i - 1]
         case .day: "\(i - 1)h"
         default: "\(i)"
         }
     }
 
-    private var subtitle: String {
-        switch range {
-        case .day: "steps · today"
-        case .week: "steps · this week"
-        case .month: "steps · \(month.formatted(.dateTime.month(.wide)))"
-        case .year: "steps · \(today.formatted(.dateTime.year()))"
-        }
-    }
-
-    private var stepsTab: some View {
-        let elapsed = rangeDays.filter { $0 <= today }
-        let perDay = elapsed.map { state.steps.steps(on: $0) }
-        let total = perDay.reduce(0, +)
-        let avg = total / max(1, elapsed.count)
-        let hits = perDay.filter { $0 >= state.goal }.count
-        let flights = elapsed.reduce(0) { $0 + (state.steps.flights[$1] ?? 0) }
-        let meters = elapsed.reduce(0.0) { $0 + state.steps.meters(on: $1) }
-        let kcal = Int(elapsed.reduce(0.0) { $0 + state.steps.kcal(on: $1) })
-        let est = state.steps.source == .health ? "" : " · est."
-
-        return VStack(alignment: .leading, spacing: 16) {
-            rangePicker
-
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(total.formatted()).font(.game(38, .black)).contentTransition(.numericText())
-                    Text(subtitle).font(.game(14, .bold)).foregroundStyle(Color.inkSoft)
-                }
-                HStack(spacing: 6) {
-                    if range == .day {
-                        statChip("flag.checkered", state.remaining == 0 ? loc("Goal reached") : loc("\(state.remaining.formatted()) to go"), .tomato)
-                    } else {
-                        statChip("chart.line.flattrend.xyaxis", loc("Avg \(avg.formatted()) a day"), .grassDark)
-                        if range != .year {
-                            statChip("checkmark.seal.fill", loc("Goal hit \(hits)/\(elapsed.count)"), .sunDark)
-                        }
-                    }
-                }
-
-                if range == .day { ring }
-                chart(avg: avg).padding(.top, 8)
-            }
-            .card()
-
-            HStack {
-                metric("map.fill", .sky, state.distanceText(meters), loc("distance\(est)"))
-                metric("timer", .grape, activeTime(total), loc("active · est."))
-                metric("flame.fill", .tomato, kcal.formatted(), loc("kcal\(est)"))
-                metric("stairs", .grass, state.steps.source == .health ? "\(flights)" : "–", loc("flights"))
-            }
-            .card(padding: 12)
-
-            calendarCard
-        }
-    }
-
-    private var rangePicker: some View {
-        HStack(spacing: 4) {
-            ForEach(Range.allCases, id: \.self) { r in
-                Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { range = r } } label: {
-                    Text(L(r.rawValue)).font(.game(14, .black))
-                        .padding(.horizontal, 14).padding(.vertical, 7)
-                        .background {
-                            if range == r { Capsule().fill(Color.sun).matchedGeometryEffect(id: "range", in: rangeNS) }
-                        }
-                        .foregroundStyle(range == r ? Color.ink : Color.inkSoft)
-                }
-                .buttonStyle(SquishStyle())
-            }
-        }
-        .padding(4)
-        .background(Capsule().fill(Color.paper))
-        .overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 1))
-    }
-
-    private var ring: some View {
-        ZStack {
-            Circle().stroke(Color.leafLight.opacity(0.5), lineWidth: 18)
-            Circle().trim(from: 0, to: state.progress)
-                .stroke(Color.leaf, style: StrokeStyle(lineWidth: 18, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-            VStack {
-                Text("\(Int(state.progress * 100))%").font(.title.weight(.bold))
-                Text("of \(state.goal.formatted())").font(.caption).foregroundStyle(Color.inkSoft)
-            }
-        }
-        .frame(width: 170, height: 170)
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-    }
-
-    private func chart(avg: Int) -> some View {
-        let data = bars
-        let showRules = range == .week || range == .month
-        let top = Double(max(data.map(\.steps).max() ?? 0, showRules ? max(state.goal, avg) : 0, 1)) * 1.18
-        let width = max(4, min(24, 250 / CGFloat(data.count)))
-        let picked = pickedX.map { Int($0.rounded()) }
-        return Chart {
-            ForEach(data) { b in
-                if b.future {
-                    PointMark(x: .value("Day", Double(b.id)), y: .value("Steps", top * 0.012))
-                        .symbolSize(12)
-                        .foregroundStyle(Color.inkSoft.opacity(0.25))
-                } else {
-                    BarMark(x: .value("Day", Double(b.id)), yStart: .value("Base", 0), yEnd: .value("Steps", max(b.steps, Int(top * 0.012))),
-                            width: .fixed(width))
-                        .clipShape(RoundedRectangle(cornerRadius: width / 2, style: .continuous))
-                        .foregroundStyle(b.current ? Color.grassDark : b.hit || range == .year ? Color.grass : Color.grassLight)
-                        .opacity(picked == nil || picked == b.id ? 1 : 0.4)
-                }
-            }
-            if showRules {
-                RuleMark(y: .value("Goal", state.goal))
-                    .foregroundStyle(Color.tomato.opacity(0.7))
-                    .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
-                    .annotation(position: .top, alignment: .trailing, spacing: 3) { rulePill(loc("Goal"), state.goal, .tomato) }
-                RuleMark(y: .value("Average", avg))
-                    .foregroundStyle(Color.grassDark.opacity(0.5))
-                    .lineStyle(StrokeStyle(lineWidth: 1.5))
-                    .annotation(position: .bottom, alignment: .trailing, spacing: 3) { rulePill(loc("Avg"), avg, .grassDark) }
-            }
-            if let p = picked, let b = data.first(where: { $0.id == p }), !b.future {
-                RuleMark(x: .value("Day", Double(p)))
-                    .foregroundStyle(Color.ink.opacity(0.12))
-                    .annotation(position: .top, spacing: 4, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                        VStack(spacing: 1) {
-                            Text(calloutLabel(p)).font(.game(11, .semibold)).foregroundStyle(Color.inkSoft)
-                            Text(b.steps.formatted()).font(.game(15, .bold)).foregroundStyle(Color.ink)
-                        }
-                        .padding(.horizontal, 10).padding(.vertical, 6)
-                        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.paper))
-                        .shadow(color: .black.opacity(0.1), radius: 6, y: 2)
-                    }
-            }
-        }
-        .chartXScale(domain: 0.4...(Double(data.count) + 0.6))
-        .chartYScale(domain: 0...top)
-        .chartXSelection(value: $pickedX)
-        .chartXAxis {
-            AxisMarks(values: xMarks.map(Double.init)) { v in
-                AxisValueLabel {
-                    if let i = v.as(Double.self) { Text(xLabel(Int(i))).font(.game(11, .semibold)) }
-                }
-            }
-        }
-        .chartYAxis(.hidden)
-        .frame(height: 210)
-        .sensoryFeedback(.selection, trigger: picked)
-        .onChange(of: range) { pickedX = nil }
-    }
-
-    private func rulePill(_ label: String, _ value: Int, _ tint: Color) -> some View {
-        Text("\(label) \(shortSteps(value))")
-            .font(.game(10, .bold))
-            .foregroundStyle(tint)
-            .padding(.horizontal, 6).padding(.vertical, 2)
-            .background(Capsule().fill(Color.paper))
-            .overlay(Capsule().stroke(tint.opacity(0.3), lineWidth: 1))
-    }
-
-    private func statChip(_ symbol: String, _ text: String, _ tint: Color) -> some View {
-        Label(text, systemImage: symbol)
-            .font(.game(12, .bold))
-            .foregroundStyle(tint)
-            .padding(.horizontal, 10).padding(.vertical, 5)
-            .background(Capsule().fill(tint.opacity(0.12)))
-    }
-
     private func calloutLabel(_ i: Int) -> String {
         switch range {
-        case .day: return String(format: "%02d:00", i - 1)
-        case .year: return cal.shortMonthSymbols[i - 1]
+        case .day: return loc("by \(String(format: "%02d:00", i))")
+        case .year: return loc("\(cal.shortMonthSymbols[i - 1]) · usual day")
         default:
             guard i - 1 < rangeDays.count else { return "" }
             return rangeDays[i - 1].formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated))
         }
     }
 
-    private func activeTime(_ steps: Int) -> String {
+    private func numbers(meters: Double, steps: Int, kcal: Int, flights: Int) -> some View {
+        let est = state.steps.source == .health ? "" : loc(" (est.)")
         let minutes = steps / 110
-        return minutes >= 60 ? "\(minutes / 60)h \(minutes % 60)m" : "\(minutes)m"
-    }
-
-    private func metric(_ symbol: String, _ tint: Color, _ value: String, _ label: String) -> some View {
-        VStack(spacing: 5) {
-            GameIcon(symbol: symbol, tint: tint, size: 34)
-            Text(value).font(.game(16, .black)).lineLimit(1).minimumScaleFactor(0.6)
-            Text(label).font(.game(10, .bold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8)
+        let active = minutes >= 60 ? "\(minutes / 60)h \(minutes % 60)m" : "\(minutes)m"
+        return LazyVGrid(columns: [GridItem(.flexible(), alignment: .leading), GridItem(.flexible(), alignment: .leading)], spacing: 12) {
+            numberLine("map", .skyDark, state.distanceText(meters), loc("covered"))
+            numberLine("timer", .grapeDark, active, loc("on the move\(est)"))
+            numberLine("flame", .tomato, kcal.formatted(), loc("kcal burned\(est)"))
+            numberLine("stairs", .grassDark, state.steps.source == .health ? "\(flights)" : "–", loc("floors climbed"))
         }
-        .frame(maxWidth: .infinity)
     }
 
-    // MARK: Calendar
+    private func numberLine(_ symbol: String, _ tint: Color, _ value: String, _ label: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: symbol).font(.system(size: 13, weight: .semibold)).foregroundStyle(tint).frame(width: 18)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(value).font(.story(18, .bold)).lineLimit(1).minimumScaleFactor(0.7)
+                Text(label).font(.game(11, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8)
+            }
+        }
+    }
 
-    private var calendarCard: some View {
+    // MARK: Sticker calendar
+
+    private var stickerCalendar: some View {
         let first = month
         let offset = (cal.component(.weekday, from: first) + 5) % 7
-        let gridStart = cal.date(byAdding: .day, value: -offset, to: first)!
         let count = cal.range(of: .day, in: .month, for: first)!.count
-        let weeks = Int(ceil(Double(offset + count) / 7))
         let isCurrent = first == Self.monthStart(.now)
+        let goalDays = (0..<count).map { cal.date(byAdding: .day, value: $0, to: first)! }.filter { $0 <= today && state.hitGoal($0) }.count
+        let cols = Array(repeating: GridItem(.flexible(), spacing: 4), count: 7)
 
-        return VStack(spacing: 10) {
-            HStack {
-                Text(first.formatted(.dateTime.month(.wide).year())).font(.game(18, .black))
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 8) {
+                    StoryHeading(text: loc("Sticker book"), size: 22, color: .grass)
+                    Text("\(goalDays) paw stickers in \(first.formatted(.dateTime.month(.wide)))")
+                        .font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                }
                 Spacer()
-                Button { shiftMonth(-1) } label: { navIcon("chevron.left") }
-                Button { shiftMonth(1) } label: { navIcon("chevron.right") }
-                    .disabled(isCurrent).opacity(isCurrent ? 0.3 : 1)
-            }
-            .buttonStyle(.plain)
-
-            if let d = selectedDay { dayDetail(d) }
-
-            HStack(spacing: 2) {
-                ForEach(Array(["M", "T", "W", "T", "F", "S", "S", "Week"].enumerated()), id: \.offset) { _, d in
-                    Text(d).font(.caption2.weight(.semibold)).foregroundStyle(Color.inkSoft).frame(maxWidth: .infinity)
+                HStack(spacing: 6) {
+                    RoundIconButton(symbol: "chevron.left", size: 32) { shiftMonth(-1) }
+                    RoundIconButton(symbol: "chevron.right", size: 32) { shiftMonth(1) }.disabled(isCurrent)
                 }
             }
-
-            ForEach(0..<weeks, id: \.self) { w in
-                let dates = days(from: cal.date(byAdding: .day, value: w * 7, to: gridStart)!, count: 7)
-                let weekTotal = dates.filter { cal.isDate($0, equalTo: first, toGranularity: .month) && $0 <= today }
-                    .reduce(0) { $0 + state.steps.steps(on: $1) }
-                HStack(spacing: 2) {
-                    ForEach(dates, id: \.self) { d in
-                        Button { withAnimation(.snappy) { selectedDay = selectedDay == d ? nil : d } } label: {
-                            dayCell(d, inMonth: cal.isDate(d, equalTo: first, toGranularity: .month))
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(d > today)
+            VStack(spacing: 8) {
+                Text(first.formatted(.dateTime.month(.wide).year())).font(.story(16, .semibold)).italic()
+                    .frame(maxWidth: .infinity)
+                LazyVGrid(columns: cols, spacing: 6) {
+                    ForEach(100..<107, id: \.self) { i in
+                        Text(cal.veryShortWeekdaySymbols[(i - 99) % 7]).font(.game(11, .semibold)).foregroundStyle(Color.inkSoft)
                     }
-                    Text(weekTotal > 0 ? shortSteps(weekTotal) : "")
-                        .font(.caption2.weight(.semibold))
-                        .frame(maxWidth: .infinity)
+                    ForEach(200..<(200 + offset), id: \.self) { _ in Color.clear.frame(height: 40) }
+                    ForEach(0..<count, id: \.self) { i in
+                        let d = cal.date(byAdding: .day, value: i, to: first)!
+                        Button { withAnimation(.snappy) { selectedDay = selectedDay == d ? nil : d } } label: { sticker(d) }
+                            .buttonStyle(SquishStyle())
+                            .disabled(d > today)
+                    }
                 }
+                if let d = selectedDay { dayDetail(d) }
             }
+            .card(padding: 14)
         }
-        .card()
     }
 
-    private func navIcon(_ name: String) -> some View {
-        Image(systemName: name).font(.system(size: 13, weight: .black))
-            .frame(width: 32, height: 32)
-            .background(Circle().fill(Color.sun))
-            .overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
+    private func sticker(_ d: Date) -> some View {
+        let day = cal.component(.day, from: d)
+        let future = d > today
+        let s = state.steps.steps(on: d)
+        let hit = !future && state.hitGoal(d)
+        let frozen = hit && s < state.goal
+        let tilt = Double((day * 37) % 26) - 13
+        return ZStack {
+            if future {
+                Circle().strokeBorder(Color.inkSoft.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                Text("\(day)").font(.game(12, .medium)).foregroundStyle(Color.inkSoft.opacity(0.5))
+            } else if hit {
+                Circle().fill(frozen ? Color.sky : Color.grass)
+                    .overlay(Circle().strokeBorder(Color.paper, lineWidth: 2.5))
+                    .shadow(color: .black.opacity(0.15), radius: 1, y: 1)
+                Image(systemName: frozen ? "snowflake" : "pawprint.fill").font(.system(size: 14, weight: .bold)).foregroundStyle(.white)
+                    .rotationEffect(.degrees(tilt))
+            } else {
+                Circle().fill(Color.grass.opacity(s == 0 ? 0 : 0.1 + 0.4 * min(1, Double(s) / Double(max(1, state.goal)))))
+                Text("\(day)").font(.game(12, .semibold)).foregroundStyle(Color.ink)
+            }
+        }
+        .frame(width: 36, height: 36)
+        .overlay(Circle().stroke(d == selectedDay ? Color.sunDark : d == today ? Color.ink.opacity(0.5) : .clear,
+                                 style: StrokeStyle(lineWidth: 1.5, dash: d == today ? [3, 2] : [])).padding(-3))
+        .frame(height: 40)
     }
 
     private func dayDetail(_ d: Date) -> some View {
@@ -393,182 +369,161 @@ struct StatsView: View {
         let pct = Int(Double(s) / Double(max(1, state.goal)) * 100)
         return HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(d.formatted(.dateTime.weekday(.wide).day().month())).font(.subheadline.weight(.bold))
+                Text(d.formatted(.dateTime.weekday(.wide).day().month())).font(.story(15, .semibold))
                 Text("\(s.formatted()) steps · \(state.distanceText(state.steps.meters(on: d))) · \(Int(state.steps.kcal(on: d))) kcal")
-                    .font(.caption).foregroundStyle(Color.inkSoft)
+                    .font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
             }
             Spacer()
-            Group {
-                if state.hitGoal(d) && s >= state.goal {
-                    Label("Goal", systemImage: "checkmark.circle.fill").foregroundStyle(Color.grassDark)
-                } else if state.hitGoal(d) {
-                    Label("Frozen", systemImage: "snowflake").foregroundStyle(Color.skyDark)
-                } else {
-                    Text("\(pct)%").foregroundStyle(Color.inkSoft)
-                }
+            if state.hitGoal(d) && s >= state.goal {
+                Stamp(text: loc("Goal"), color: .grassDark, size: 40)
+            } else if state.hitGoal(d) {
+                Stamp(text: loc("Frozen"), color: .skyDark, size: 40)
+            } else {
+                Text("\(pct)%").font(.story(16, .bold)).foregroundStyle(Color.inkSoft)
             }
-            .font(.game(13, .bold))
         }
         .padding(10)
-        .background(Color.cream, in: RoundedRectangle(cornerRadius: 12))
+        .background(SketchSquare())
         .transition(.opacity)
-    }
-
-    private func dayCell(_ d: Date, inMonth: Bool) -> some View {
-        let future = d > today
-        let s = state.steps.steps(on: d)
-        let hit = !future && state.hitGoal(d)
-        return VStack(spacing: 2) {
-            Text("\(cal.component(.day, from: d))")
-                .font(.caption.weight(.bold))
-                .frame(width: 30, height: 30)
-                .background(Circle().fill(hit ? Color.grass : Color.cream))
-                .foregroundStyle(hit ? .white : Color.ink)
-                .overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
-                .overlay(Circle().stroke(d == selectedDay ? Color.honey : d == today ? Color.leafDark : .clear, lineWidth: 2))
-            Text(future || s == 0 ? " " : shortSteps(s))
-                .font(.system(size: 9))
-                .foregroundStyle(Color.inkSoft)
-        }
-        .frame(maxWidth: .infinity)
-        .opacity(inMonth ? 1 : 0.3)
     }
 
     private func shiftMonth(_ by: Int) {
         withAnimation(.snappy) {
             month = cal.date(byAdding: .month, value: by, to: month)!
-            range = .month
+            selectedDay = nil
         }
     }
 
-    // MARK: Trends
+    // MARK: Notes
 
-    private var weekly: [Bar] {
+    private var weekly: [Point] {
         let thisWeek = cal.dateInterval(of: .weekOfYear, for: today)!.start
         return (0..<12).reversed().map { w in
             let start = cal.date(byAdding: .weekOfYear, value: -w, to: thisWeek)!
             let elapsed = days(from: start, count: 7).filter { $0 <= today }
             let avg = elapsed.reduce(0) { $0 + state.steps.steps(on: $1) } / max(1, elapsed.count)
-            return Bar(id: 12 - w, steps: avg, hit: avg >= state.goal)
+            return Point(id: 12 - w, steps: avg, hit: avg >= state.goal)
         }
     }
 
-    private var trendsTab: some View {
+    private var notes: some View {
         let data = weekly
         let now = data.last?.steps ?? 0, before = data.dropLast().last?.steps ?? 0
         let change = before == 0 ? 0 : Int((Double(now - before) / Double(before) * 100).rounded())
 
-        return VStack(alignment: .leading, spacing: 16) {
+        return VStack(alignment: .leading, spacing: 12) {
+            StoryHeading(text: loc("Notes from \(state.petName)"), size: 22, color: .bubble)
             InsightCard()
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Daily average, last 12 weeks").font(.headline)
-                Text(change >= 0 ? "Up \(change)% vs last week" : "Down \(-change)% vs last week")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(change >= 0 ? Color.leafDark : Color(hex: 0xC0645A))
+            VStack(alignment: .leading, spacing: 8) {
+                Text("A usual day, week by week").font(.story(16, .semibold))
+                Text(change >= 0 ? "\(change)% more than the week before" : "\(-change)% less than the week before")
+                    .font(.game(12, .medium))
+                    .foregroundStyle(change >= 0 ? Color.grassDark : Color.tomato)
                 Chart {
                     ForEach(data) { b in
-                        AreaMark(x: .value("Week", b.id), y: .value("Avg", b.steps))
-                            .foregroundStyle(Color.leafLight.opacity(0.5))
+                        LineMark(x: .value("Week", b.id), y: .value("Usual day", b.steps))
+                            .foregroundStyle(Color.grape)
+                            .lineStyle(StrokeStyle(lineWidth: 2.2, lineCap: .round))
                             .interpolationMethod(.catmullRom)
-                        LineMark(x: .value("Week", b.id), y: .value("Avg", b.steps))
-                            .foregroundStyle(Color.leaf)
-                            .interpolationMethod(.catmullRom)
-                        PointMark(x: .value("Week", b.id), y: .value("Avg", b.steps))
-                            .foregroundStyle(b.hit ? Color.leafDark : Color.leaf)
-                            .symbolSize(30)
+                        PointMark(x: .value("Week", b.id), y: .value("Usual day", b.steps))
+                            .symbol { Circle().fill(b.hit ? Color.grape : Color.paper).overlay(Circle().stroke(Color.grape, lineWidth: 1.5)).frame(width: 8) }
                     }
                     RuleMark(y: .value("Goal", state.goal))
-                        .foregroundStyle(Color.inkSoft.opacity(0.6))
-                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                        .foregroundStyle(Color.tomato.opacity(0.5))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [2, 4]))
                 }
                 .chartXAxis(.hidden)
-                .frame(height: 200)
-                .padding(.top, 8)
+                .chartYAxis(.hidden)
+                .chartYScale(domain: Double(min(data.map(\.steps).min() ?? 0, state.goal)) * 0.85...Double(max(data.map(\.steps).max() ?? 1, state.goal)) * 1.08)
+                .frame(height: 110)
             }
             .card()
         }
     }
 
-    // MARK: Records
+    // MARK: Personal bests
 
-    private var recordsTab: some View {
+    private var bests: some View {
         let daily = state.steps.daily.filter { $0.key <= today }
         let best = daily.max { $0.value < $1.value }
-        let sorted = daily.keys.sorted()
-        var longest = 0, run = 0
-        for d in sorted {
-            run = (daily[d] ?? 0) >= state.goal ? run + 1 : 0
-            longest = max(longest, run)
-        }
         let weeks = Dictionary(grouping: daily) { cal.dateInterval(of: .weekOfYear, for: $0.key)!.start }
             .mapValues { $0.reduce(0) { $0 + $1.value } }
         let bestWeek = weeks.max { $0.value < $1.value }
+        let cols = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
-        return VStack(spacing: 12) {
-            record("trophy.fill", .sun, loc("Best day"), best.map { "\($0.value.formatted()) steps" } ?? "–",
-                   best.map { $0.key.formatted(date: .abbreviated, time: .omitted) } ?? "")
-            record("calendar", .sky, loc("Best week"), bestWeek.map { "\($0.value.formatted()) steps" } ?? "–",
-                   bestWeek.map { "Week of \($0.key.formatted(date: .abbreviated, time: .omitted))" } ?? "")
-            record("flame.fill", .pumpkin, loc("Longest streak"), "\(state.longestStreak) days", loc("Current: \(state.streak) days · \(state.streakFreezes) freezes"))
-            record("globe.asia.australia.fill", .grass, loc("All time"), "\(daily.values.reduce(0, +).formatted()) steps", loc("\(daily.count) days tracked"))
-
-            Text("Badges").font(.game(22, .black)).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
+        return VStack(alignment: .leading, spacing: 12) {
+            StoryHeading(text: loc("Proudest moments"), size: 22, color: .sun)
+            LazyVGrid(columns: cols, spacing: 12) {
+                best1("star.fill", .sunDark, loc("Biggest day"), best.map { $0.value.formatted() } ?? "–",
+                      best.map { $0.key.formatted(.dateTime.day().month(.abbreviated)) } ?? "", 0)
+                best1("calendar", .skyDark, loc("Biggest week"), bestWeek.map { $0.value.formatted() } ?? "–",
+                      bestWeek.map { loc("from \($0.key.formatted(.dateTime.day().month(.abbreviated)))") } ?? "", 1)
+                best1("flame.fill", .pumpkin, loc("Longest streak"), loc("\(state.longestStreak) days"),
+                      loc("\(state.streakFreezes) freezes saved"), 2)
+                best1("globe.asia.australia.fill", .grassDark, loc("Since we met"), daily.values.reduce(0, +).formatted(),
+                      loc("steps over \(daily.count) days"), 3)
+            }
+            Text("Badges").font(.story(18, .bold)).padding(.top, 6)
+            LazyVGrid(columns: cols, spacing: 12) {
                 ForEach(state.content.achievements) { a in badge(a) }
             }
         }
     }
 
+    private func best1(_ symbol: String, _ tint: Color, _ title: String, _ value: String, _ detail: String, _ i: Int) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ZStack {
+                Circle().stroke(tint.opacity(0.8), lineWidth: 1.6)
+                Circle().inset(by: 3.5).stroke(tint.opacity(0.6), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+                Image(systemName: symbol).font(.system(size: 15, weight: .semibold)).foregroundStyle(tint)
+            }
+            .frame(width: 40, height: 40)
+            .rotationEffect(.degrees(i.isMultiple(of: 2) ? -10 : 8))
+            Text(title).font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+            Text(value).font(.story(20, .bold)).lineLimit(1).minimumScaleFactor(0.6)
+            Text(detail).font(.game(11, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card(padding: 14)
+        .rotationEffect(.degrees(i.isMultiple(of: 2) ? -0.8 : 0.8))
+    }
+
     private func badge(_ a: Achievement) -> some View {
         let v = state.value(a), unlocked = state.isUnlocked(a), claimed = state.isClaimed(a)
         return VStack(spacing: 6) {
-            GameIcon(symbol: a.icon, tint: Color(hexString: a.tint), size: 52, muted: !unlocked)
-            Text(a.title).font(.game(15, .black))
-            Text(a.detail).font(.game(11, .bold)).foregroundStyle(Color.inkSoft).multilineTextAlignment(.center).lineLimit(2)
+            GameIcon(symbol: a.icon, tint: Color(hexString: a.tint), size: 48, muted: !unlocked)
+            Text(a.title).font(.story(15, .bold)).multilineTextAlignment(.center)
+            Text(a.detail).font(.game(11, .medium)).foregroundStyle(Color.inkSoft).multilineTextAlignment(.center).lineLimit(2)
             if claimed {
-                Tag(text: loc("Claimed"), color: .grass)
+                Stamp(text: loc("Earned"), color: .grassDark, size: 44)
             } else if unlocked {
-                Button("Claim") { withAnimation { state.claim(a) } }.buttonStyle(.chunky(.sun, padH: 12, padV: 5))
+                Button("Collect") { withAnimation { state.claim(a) } }.buttonStyle(.chunky(.sun, radius: 12, padH: 12, padV: 5))
             } else {
-                ProgressBar(value: Double(v) / Double(a.value), color: Color(hexString: a.tint), height: 10)
-                Text("\(shortSteps(min(v, a.value))) / \(shortSteps(a.value))").font(.game(11, .bold)).foregroundStyle(Color.inkSoft)
+                ProgressBar(value: Double(v) / Double(a.value), color: Color(hexString: a.tint), height: 8)
+                Text("\(shortSteps(min(v, a.value))) / \(shortSteps(a.value))").font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 150)
+        .frame(maxWidth: .infinity, minHeight: 160)
         .card(padding: 12)
     }
 
-    private func record(_ symbol: String, _ tint: Color, _ title: String, _ value: String, _ detail: String) -> some View {
-        HStack(spacing: 14) {
-            GameIcon(symbol: symbol, tint: tint, size: 46)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
-                Text(value).font(.game(18, .black))
-                Text(detail).font(.game(11, .bold)).foregroundStyle(Color.inkSoft)
-            }
-            Spacer()
-        }
-        .card()
-    }
+    // MARK: Source
 
-    // MARK: Health
-
-    private var healthTab: some View {
+    private var sourceNote: some View {
         let connected = state.steps.source == .health
-        return VStack(alignment: .leading, spacing: 10) {
-            Label(connected ? "Apple Health connected" : "Showing demo data",
-                  systemImage: connected ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                .font(.headline)
-                .foregroundStyle(connected ? Color.leafDark : Color(hex: 0xC08A2A))
-            Text(connected
-                 ? "Steps and flights come from Apple Health. Distance, active time and calories are estimates from steps."
-                 : "No step data from Apple Health yet. Allow access in Settings › Health › Data Access & Devices › Meowtrek.")
-                .font(.subheadline)
-                .foregroundStyle(Color.inkSoft)
-            Button("Refresh") { Task { await state.steps.load() } }
-                .buttonStyle(.chunky(.grass, text: .white))
+        return HStack(alignment: .top, spacing: 10) {
+            Image(systemName: connected ? "heart.text.square" : "exclamationmark.circle")
+                .font(.system(size: 18)).foregroundStyle(connected ? Color.tomato : Color.sunDark)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(connected
+                     ? "Steps and floors come from Apple Health. Distance, time on the move and kcal are worked out from your steps."
+                     : "These pages use sample steps until Apple Health shares yours. Allow it in Settings › Health › Data Access & Devices › Meowtrek.")
+                    .font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button("Refresh steps") { Task { await state.steps.load() } }
+                    .font(.story(13, .semibold)).foregroundStyle(Color.grassDark)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .card()
+        .padding(.horizontal, 4)
     }
 }
