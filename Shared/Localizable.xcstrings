@@ -1966,6 +1966,16 @@
         }
       }
     },
+    "Goal reached · %lld glasses": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target tercapai · %lld gelas"
+          }
+        }
+      }
+    },
     "Goal reached — %@ is proud!": {
       "localizations": {
         "id": {

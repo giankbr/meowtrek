@@ -28,6 +28,7 @@ struct StatsView: View {
     @State private var range: Range = .month
     @State private var month = Self.monthStart(.now)
     @State private var selectedDay: Date?
+    @Namespace private var rangeNS
 
     private static var cal: Calendar {
         var c = Calendar.current
@@ -187,11 +188,12 @@ struct StatsView: View {
     private var rangePicker: some View {
         HStack(spacing: 4) {
             ForEach(Range.allCases, id: \.self) { r in
-                Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { range = r } } label: {
+                Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { range = r } } label: {
                     Text(L(r.rawValue)).font(.game(14, .black))
                         .padding(.horizontal, 14).padding(.vertical, 7)
-                        .background(Capsule().fill(range == r ? Color.sun : .clear))
-                        .overlay(Capsule().stroke(range == r ? Color.ink : .clear, lineWidth: 2.5))
+                        .background {
+                            if range == r { Capsule().fill(Color.sun).matchedGeometryEffect(id: "range", in: rangeNS) }
+                        }
                         .foregroundStyle(range == r ? Color.ink : Color.inkSoft)
                 }
                 .buttonStyle(SquishStyle())

@@ -64,9 +64,9 @@ struct ChunkyButtonStyle: ButtonStyle {
                     .fill(enabled ? color : Color.black.opacity(0.05)))
                 .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous)
                     .stroke(Color.black.opacity(plain && enabled ? 0.07 : 0), lineWidth: 1))
-                .scaleEffect(configuration.isPressed ? 0.96 : 1)
-                .opacity(configuration.isPressed ? 0.85 : 1)
-                .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
+                .scaleEffect(configuration.isPressed ? 0.97 : 1)
+                .opacity(configuration.isPressed ? 0.9 : 1)
+                .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
         }
     }
 }
@@ -92,6 +92,8 @@ struct SquishStyle: ButtonStyle {
 struct Pill: View {
     let art: String
     let text: String
+    @State private var bump = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 5) {
@@ -102,7 +104,16 @@ struct Pill: View {
         .padding(.leading, 6).padding(.trailing, 11).padding(.vertical, 5)
         .background(Capsule().fill(Color.paper))
         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
-        .animation(.spring, value: text)
+        .scaleEffect(bump ? 1.1 : 1)
+        .animation(.snappy(duration: 0.25), value: text)
+        .onChange(of: text) { old, new in
+            // Only celebrate increases; spending stays quiet.
+            guard !reduceMotion, (Int(new.filter(\.isNumber)) ?? 0) > (Int(old.filter(\.isNumber)) ?? 0) else { return }
+            withAnimation(.spring(response: 0.18, dampingFraction: 0.5)) { bump = true }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { bump = false }
+            }
+        }
     }
 }
 
@@ -110,16 +121,74 @@ struct ProgressBar: View {
     let value: Double
     var color: Color = .grass
     var height: CGFloat = 10
+    @State private var shown = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         GeometryReader { g in
             ZStack(alignment: .leading) {
                 Capsule().fill(Color.grassLight.opacity(0.6))
-                Capsule().fill(color).frame(width: g.size.width * min(1, max(0, value)))
+                Capsule().fill(color).frame(width: g.size.width * min(1, max(0, shown ? value : 0)))
             }
         }
         .frame(height: height)
-        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: value)
+        .animation(.spring(response: 0.45, dampingFraction: 0.85), value: value)
+        .onAppear {
+            guard !shown else { return }
+            if reduceMotion { shown = true } else { withAnimation(.easeOut(duration: 0.6).delay(0.1)) { shown = true } }
+        }
+    }
+}
+
+/// Fades and lifts a view in once, staggered by index.
+private struct AppearIn: ViewModifier {
+    let index: Int
+    @State private var shown = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(shown ? 1 : 0)
+            .offset(y: shown || reduceMotion ? 0 : 10)
+            .onAppear {
+                guard !shown else { return }
+                withAnimation(.easeOut(duration: 0.3).delay(Double(index) * 0.04)) { shown = true }
+            }
+    }
+}
+
+extension View {
+    func appearIn(_ index: Int) -> some View { modifier(AppearIn(index: index)) }
+}
+
+/// Fixed-size circular icon button so paired controls line up exactly.
+struct RoundIconButton: View {
+    let symbol: String
+    var fill: Color = .paper
+    var tint: Color = .ink
+    var size: CGFloat = 40
+    let action: () -> Void
+    @Environment(\.isEnabled) private var enabled
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: size * 0.38, weight: .bold))
+                .foregroundStyle(enabled ? tint : Color.inkSoft.opacity(0.5))
+                .frame(width: size, height: size)
+                .background(Circle().fill(enabled ? fill : Color.black.opacity(0.04)))
+                .overlay(Circle().stroke(Color.black.opacity(fill == .paper ? 0.08 : 0), lineWidth: 1))
+                .contentShape(Circle())
+        }
+        .buttonStyle(PressScale())
+    }
+}
+
+private struct PressScale: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.92 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
 

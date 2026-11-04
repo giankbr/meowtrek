@@ -13,6 +13,7 @@ struct HomeView: View {
     @State private var personalizing = false
     @State private var showTrek = false
     @State private var showMeal = false
+    @State private var waterPulse = false
 
     var body: some View {
         ScrollView {
@@ -43,9 +44,9 @@ struct HomeView: View {
                         .disabled(personalizing)
                     }
                     .padding(.top, 4)
-                    if let a = state.activeEvent { eventCard(a) }
-                    chestCard
-                    waterCard
+                    if let a = state.activeEvent { eventCard(a).appearIn(0) }
+                    chestCard.appearIn(1)
+                    waterCard.appearIn(2)
                     Button { showMeal = true } label: {
                         HStack(spacing: 12) {
                             GameIcon(symbol: "camera.fill", tint: .pumpkin, size: 44)
@@ -59,7 +60,8 @@ struct HomeView: View {
                         .card()
                     }
                     .buttonStyle(SquishStyle())
-                    ForEach(state.quests) { QuestRow(q: $0) }
+                    .appearIn(3)
+                    ForEach(Array(state.quests.enumerated()), id: \.element.id) { i, q in QuestRow(q: q).appearIn(i + 4) }
                 }
                 .foregroundStyle(Color.ink)
                 .padding(16)
@@ -85,23 +87,37 @@ struct HomeView: View {
     }
 
     private var waterCard: some View {
-        HStack(spacing: 12) {
+        let n = state.waterToday, goal = state.waterGoal
+        return HStack(spacing: 12) {
             ArtView(id: "water", size: 44)
+                .scaleEffect(waterPulse ? 1.12 : 1, anchor: .bottom)
             VStack(alignment: .leading, spacing: 6) {
                 Text("Water").font(.game(17, .bold))
-                HStack(spacing: 3) {
-                    ForEach(0..<state.waterGoal, id: \.self) { i in
-                        Capsule().fill(i < state.waterToday ? Color.sky : Color.sky.opacity(0.18)).frame(width: 10, height: 16)
+                HStack(spacing: 4) {
+                    ForEach(0..<goal, id: \.self) { i in
+                        Capsule().fill(i < n ? Color.sky : Color.sky.opacity(0.18))
+                            .frame(width: 10, height: 16)
+                            .scaleEffect(waterPulse && i == min(n, goal) - 1 ? 1.3 : 1)
                     }
                 }
-                Text("\(state.waterToday) of \(state.waterGoal) glasses").font(.game(12, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1).fixedSize()
+                Text(n >= goal ? loc("Goal reached · \(n) glasses") : loc("\(n) of \(goal) glasses"))
+                    .font(.game(12, .medium)).foregroundStyle(n >= goal ? Color.skyDark : Color.inkSoft)
+                    .lineLimit(1).fixedSize()
+                    .contentTransition(.numericText(value: Double(n)))
             }
-            Spacer()
-            Button { withAnimation(.spring) { state.removeWater() } } label: { Image(systemName: "minus") }
-                .buttonStyle(.chunky(.paper, radius: 14, padH: 10, padV: 8))
-                .disabled(state.waterToday == 0)
-            Button { withAnimation(.spring) { state.addWater() } } label: { Image(systemName: "plus") }
-                .buttonStyle(.chunky(.sky, text: .white, radius: 14, padH: 10, padV: 8))
+            Spacer(minLength: 8)
+            HStack(spacing: 8) {
+                RoundIconButton(symbol: "minus") { withAnimation(.snappy) { state.removeWater() } }
+                    .disabled(n == 0)
+                RoundIconButton(symbol: "plus", fill: .sky, tint: .white) {
+                    withAnimation(.snappy) { state.addWater() }
+                    withAnimation(.spring(response: 0.18, dampingFraction: 0.5)) { waterPulse = true }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { waterPulse = false }
+                    }
+                }
+            }
+            .sensoryFeedback(.impact(weight: .light), trigger: n)
         }
         .card()
     }
@@ -263,9 +279,10 @@ struct QuestRow: View {
             if claimed {
                 Image(systemName: "checkmark").font(.game(16, .black)).foregroundStyle(.white)
                     .frame(width: 34, height: 34)
-                    .background(Circle().fill(Color.grass)).overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
+                    .background(Circle().fill(Color.grass))
+                    .transition(.scale(scale: 0.6).combined(with: .opacity))
             } else {
-                Button { withAnimation { state.claim(q) } } label: {
+                Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { state.claim(q) } } label: {
                     HStack(spacing: 4) {
                         ArtView(id: "coin", size: 18, line: 1.4)
                         Text(done ? "Claim" : "\(q.t.reward)")
@@ -438,6 +455,7 @@ private struct PetScene: View {
         }
         .frame(height: 440)
         .clipped()
+        .onChange(of: state.coins) { old, new in if new > old { hop += 1 } }
         .onAppear {
             withAnimation(.easeInOut(duration: 14).repeatForever(autoreverses: true)) { drift = true }
         }
