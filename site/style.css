@@ -137,13 +137,24 @@ p { margin: 0; }
 .faq details[open] summary::after { content: "–"; }
 .faq details p { margin-top: 10px; color: var(--muted); }
 
-footer { padding-block: 40px 56px; color: var(--muted); font-size: .92rem; }
-footer .wrap { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: center; justify-content: space-between; }
-footer nav { display: flex; flex-wrap: wrap; gap: 18px; }
-footer a { color: var(--muted); }
+.site-footer { border-top: 1px solid var(--line); background: var(--bg); padding-block: 56px 28px; color: var(--muted); font-size: .95rem; }
+.foot-grid { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 36px 28px; }
+.foot-brand { display: flex; flex-direction: column; gap: 12px; max-width: 32ch; }
+.foot-brand p { color: var(--muted); }
+.foot-badge { align-self: flex-start; font: 700 .8rem var(--body); color: var(--leaf-deep); background: var(--leaf-soft); border-radius: 999px; padding: 5px 12px; }
+.foot-col { display: flex; flex-direction: column; gap: 10px; }
+.foot-col h2 { font: 700 .78rem/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink); margin-bottom: 4px; }
+.foot-col a { color: var(--muted); text-decoration: none; width: fit-content; }
+.foot-col a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line); font-size: .88rem; }
+@media (max-width: 760px) {
+  .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .foot-brand { grid-column: 1 / -1; max-width: none; }
+}
 
 /* legal pages */
-.doc { max-width: 720px; padding-block: 24px 80px; display: flex; flex-direction: column; gap: 16px; }
+.doc { padding-block: 24px 80px; display: flex; flex-direction: column; gap: 16px; }
+.doc > * { max-width: 720px; }
 .doc h1 { font-size: clamp(2.2rem, 5vw, 3rem); }
 .doc h2 { font-size: 1.45rem; margin-top: 18px; }
 .doc p, .doc li { color: var(--muted); }
