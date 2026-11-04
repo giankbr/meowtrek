@@ -24,7 +24,7 @@ struct WidgetSnapshot: Codable {
 }
 
 enum WidgetBridge {
-    static let group = "group.id.gian.pawstep"
+    static let group = "group.id.gian.meowtrek"
     private static var defaults: UserDefaults { UserDefaults(suiteName: group) ?? .standard }
 
     static func write(_ s: WidgetSnapshot) {

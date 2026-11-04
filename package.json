@@ -1,7 +1,7 @@
 {
-  "name": "pawstep-tooling",
+  "name": "meowtrek-tooling",
   "private": true,
-  "description": "Commit message linting only; the app itself is Swift (open Pawstep.xcodeproj).",
+  "description": "Commit message linting only; the app itself is Swift (open Meowtrek.xcodeproj).",
   "scripts": {
     "prepare": "husky"
   },

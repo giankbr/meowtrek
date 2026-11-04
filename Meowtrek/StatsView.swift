@@ -479,7 +479,7 @@ struct StatsView: View {
                 .foregroundStyle(connected ? Color.leafDark : Color(hex: 0xC08A2A))
             Text(connected
                  ? "Steps and flights come from Apple Health. Distance, active time and calories are estimates from steps."
-                 : "No step data from Apple Health yet. Allow access in Settings › Health › Data Access & Devices › Pawstep.")
+                 : "No step data from Apple Health yet. Allow access in Settings › Health › Data Access & Devices › Meowtrek.")
                 .font(.subheadline)
                 .foregroundStyle(Color.inkSoft)
             Button("Refresh") { Task { await state.steps.load() } }

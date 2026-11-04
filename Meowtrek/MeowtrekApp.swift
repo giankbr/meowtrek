@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct PawstepApp: App {
+struct MeowtrekApp: App {
     @State private var state = AppState()
     @Environment(\.scenePhase) private var scenePhase
 

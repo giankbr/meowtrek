@@ -20,7 +20,7 @@ struct Provider: TimelineProvider {
     }
 }
 
-struct PawstepWidgetView: View {
+struct MeowtrekWidgetView: View {
     @Environment(\.widgetFamily) private var family
     let entry: StepEntry
 
@@ -78,24 +78,24 @@ struct PawstepWidgetView: View {
     }
 }
 
-struct PawstepWidget: Widget {
+struct MeowtrekWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "PawstepWidget", provider: Provider()) { entry in
-            PawstepWidgetView(entry: entry)
+        StaticConfiguration(kind: "MeowtrekWidget", provider: Provider()) { entry in
+            MeowtrekWidgetView(entry: entry)
                 .foregroundStyle(Color.ink)
                 .fontDesign(.rounded)
                 .containerBackground(for: .widget) { Color.cream }
-                .widgetURL(URL(string: "pawstep://home"))
+                .widgetURL(URL(string: "meowtrek://home"))
         }
-        .configurationDisplayName("Pawstep")
+        .configurationDisplayName("Meowtrek")
         .description("Today's steps with your cat.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular])
     }
 }
 
 @main
-struct PawstepWidgetBundle: WidgetBundle {
-    var body: some Widget { PawstepWidget() }
+struct MeowtrekWidgetBundle: WidgetBundle {
+    var body: some Widget { MeowtrekWidget() }
 }
 
 private func shortSteps(_ n: Int) -> String {

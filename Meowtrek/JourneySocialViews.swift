@@ -104,7 +104,7 @@ struct SocialView: View {
                     }
                     HStack {
                         ShareLink(item: state.inviteURL,
-                                  message: Text("Walk with \(state.petName) on Pawstep! Tap to add me.")) {
+                                  message: Text("Walk with \(state.petName) on Meowtrek! Tap to add me.")) {
                             Label("Share my card", systemImage: "square.and.arrow.up")
                         }
                         .buttonStyle(.borderedProminent).tint(.leaf)
@@ -148,7 +148,7 @@ struct SocialView: View {
             }
             Button("Cancel", role: .cancel) { code = "" }
         } message: {
-            Text("Ask your friend to share their Pawstep card, then paste the link here.")
+            Text("Ask your friend to share their Meowtrek card, then paste the link here.")
         }
     }
 
@@ -191,6 +191,8 @@ struct OnboardingView: View {
                 switch page {
                 case 0:
                     VStack(spacing: 10) {
+                        (Text("Meow").foregroundStyle(Color.ink) + Text("trek").foregroundStyle(Color.leafDark))
+                            .font(.system(size: 40, weight: .heavy, design: .rounded))
                         Text("Meet your walking buddy").font(.title2.weight(.bold))
                         Text("Every step you take, your cat walks too. Earn coins, dress them up and explore together.")
                             .multilineTextAlignment(.center).foregroundStyle(Color.inkSoft)
@@ -218,7 +220,7 @@ struct OnboardingView: View {
                         Text("Daily goal").font(.title2.weight(.bold))
                         Text("\(goal.formatted()) steps").font(.system(size: 34, weight: .bold))
                         Stepper("Goal", value: $goal, in: 2000...30000, step: 500).labelsHidden()
-                        Text("Pawstep reads steps from Apple Health. You can change this later.")
+                        Text("Meowtrek reads steps from Apple Health. You can change this later.")
                             .font(.caption).multilineTextAlignment(.center).foregroundStyle(Color.inkSoft)
                     }
                 }

@@ -473,7 +473,7 @@ final class AppState {
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
-        return URL(string: "pawstep://friend?d=\(code)")!
+        return URL(string: "meowtrek://friend?d=\(code)")!
     }
 
     @discardableResult
@@ -516,7 +516,7 @@ final class AppState {
         var onboarded, remindersOn, useMiles: Bool
     }
 
-    private static let storeKey = "pawstep.v2"
+    private static let storeKey = "meowtrek.v2"
 
     private static func fresh() -> Snapshot {
         let demo = Self.demo

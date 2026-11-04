@@ -554,7 +554,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Notifications")
                 } footer: {
-                    Text("Pawstep nudges you if you're short of your goal, and before events end.")
+                    Text("Meowtrek nudges you if you're short of your goal, and before events end.")
                 }
                 Section("Units") {
                     Picker("Distance", selection: $s.useMiles) {
@@ -571,7 +571,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Data")
                 } footer: {
-                    Text("With no Health data or access, Pawstep shows demo steps. Allow access in Settings › Health › Data Access.")
+                    Text("With no Health data or access, Meowtrek shows demo steps. Allow access in Settings › Health › Data Access.")
                 }
                 Section {
                     Button("Reset all progress", role: .destructive) { confirmReset = true }
