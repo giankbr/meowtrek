@@ -163,6 +163,6 @@ enum AppConfig {
     static var apiBase: URL? { URL(string: info("MeowtrekAPIBase")).flatMap { $0.host == nil ? nil : $0 } }
     static var facebookAppID: String { info("MeowtrekFacebookAppID") }
     static var fitbitClientID: String { info("MeowtrekFitbitClientID") }
-    static let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
-    static let privacyURL = URL(string: "https://github.com/giankbr/meowtrek")!
+    static let termsURL = URL(string: "https://giankbr.github.io/meowtrek/terms.html")!
+    static let privacyURL = URL(string: "https://giankbr.github.io/meowtrek/privacy.html")!
 }

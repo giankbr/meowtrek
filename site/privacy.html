@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Policy · Meowtrek</title>
+<meta name="theme-color" content="#F7F4EC">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="./"><img src="assets/icon.png" alt="" width="36" height="36"><span>Meow<b>trek</b></span></a>
+</header>
+<main class="wrap doc">
+<span class="eyebrow">Legal</span>
+<h1>Privacy Policy</h1>
+<p class="updated">Last updated 5 November 2026</p>
+<p>Meowtrek is built so that your health and activity data stay on your device. There are no accounts, no advertising, and no third-party analytics or tracking SDKs. This policy explains exactly what data the app uses and where it goes.</p>
+
+<h2>Data stored only on your device</h2>
+<ul>
+  <li><strong>Apple Health:</strong> with your permission the app reads steps, distance, flights climbed and active energy, and writes walks, runs and hikes (with their routes) and water you log. Health data is never sent to our server or used for advertising.</li>
+  <li><strong>Motion:</strong> the pedometer gives a live step count while the app is open.</li>
+  <li><strong>Location:</strong> used only while you record a trek, to draw your route and measure distance. Routes are saved on your device and in Apple Health.</li>
+  <li><strong>Game progress:</strong> your cat's name, coins, items, quests, friend list and meal diary photos are stored in the app's storage on your device.</li>
+  <li><strong>Camera and photos:</strong> used only when you choose to snap or pick a meal photo, or save a share card to Photos.</li>
+</ul>
+
+<h2>Data sent to our server</h2>
+<p>Some optional features use the Meowtrek server, run on Cloudflare Workers:</p>
+<ul>
+  <li><strong>Cloud cat coach</strong> (chat, weekly insight, AI quests) and <strong>meal reactions:</strong> the app sends your pet's name and mood, today's and recent daily step counts, goal, streak, level, your language setting, and your chat message or meal photo. The server passes them to Anthropic's Claude API to write the answer and returns it to the app. The server does not store your messages, photos or stats.</li>
+  <li><strong>Usage limits:</strong> requests include a random ID created when you install the app. The server stores a daily request count per ID for up to two days to enforce free-plan limits. If you subscribe to Plus, the app sends Apple's signed purchase record so the server can verify it.</li>
+  <li><strong>Garmin (optional):</strong> if you link Garmin, Garmin sends your daily step summaries to our server, which stores them with your install ID so the app can fetch them. Disconnecting Garmin deletes the link.</li>
+</ul>
+<p>When the on-device AI (Apple Intelligence) is available and selected, chat, insights and quests are processed on your iPhone and nothing is sent.</p>
+
+<h2>Third parties</h2>
+<ul>
+  <li><strong>Anthropic</strong> processes AI requests under its commercial API terms and does not use them to train models. See <a href="https://www.anthropic.com/legal/privacy">Anthropic's privacy policy</a>.</li>
+  <li><strong>Fitbit (optional):</strong> sign-in happens on Fitbit's site; the access token is kept in your device's Keychain and steps are fetched directly from Fitbit to your device.</li>
+  <li><strong>Apple:</strong> purchases are handled by the App Store. We never see your payment details.</li>
+  <li><strong>Instagram and other apps:</strong> when you share a card, the image is handed to the app you choose.</li>
+</ul>
+
+<h2>Your choices</h2>
+<ul>
+  <li>Change Health, Location, Camera and Photos permissions any time in iOS Settings.</li>
+  <li>Disconnect Fitbit or Garmin in Meowtrek Settings › Connected devices.</li>
+  <li>Reset all game data in Meowtrek Settings › Reset all progress, or delete the app.</li>
+</ul>
+
+<h2>Children</h2>
+<p>Meowtrek is not directed at children under 13 and does not knowingly collect their personal information.</p>
+
+<h2>Contact</h2>
+<p>Questions about privacy? Open an issue on <a href="https://github.com/giankbr/meowtrek/issues">GitHub</a>. We'll update this page if anything changes.</p>
+</main>
+<footer>
+  <div class="wrap">
+    <span>© 2026 Meowtrek</span>
+    <nav aria-label="Footer"><a href="./">Home</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="support.html">Support</a></nav>
+  </div>
+</footer>
+</body>
+</html>

@@ -11,6 +11,8 @@ Open `Meowtrek.xcodeproj` in Xcode 26, pick an iPhone simulator, Run. iOS 17+.
 Steps come from Apple Health (plus live CoreMotion pedometer). With no Health data the app shows demo steps.
 Launch arguments for development: `-demo` (skip Health and onboarding), `-tab N` (start on tab N), `-closet` (open the closet).
 
+Website: https://giankbr.github.io/meowtrek/ (source in `site/`, deployed by GitHub Pages).
+
 ## Layout
 
 - `Meowtrek/` — app (screens, state, HealthKit, notifications)
