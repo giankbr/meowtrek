@@ -395,16 +395,21 @@ struct DailyRewardCard: View {
                     let r = AppState.dailyRewards[day - 1]
                     let done = day < shown || (day == shown && state.loginClaimedToday)
                     let today = day == shown && !state.loginClaimedToday
-                    VStack(spacing: 4) {
+                    let finale = day == 7
+                    VStack(spacing: 5) {
                         ZStack {
-                            SketchSquare(on: today)
-                            ArtView(id: r.art, size: day == 7 ? 26 : 21, line: 1.5).opacity(done ? 0.3 : 1)
+                            Circle().fill(done ? Color.grassLight : today ? Color.sun.opacity(0.22) : (finale ? Color.sun.opacity(0.14) : Color.cream))
+                            Circle().stroke(today ? Color.sun : (done ? Color.grass.opacity(0.5) : Color.ink.opacity(0.12)),
+                                            lineWidth: today ? 2.5 : 1.5)
                             if done {
-                                Stamp(text: "\(day)", color: .tomato, size: 30, angle: Double(day * 7 % 20) - 10)
+                                Image(systemName: "checkmark").font(.system(size: 14, weight: .heavy)).foregroundStyle(Color.grassDark)
+                            } else {
+                                ArtView(id: r.art, size: finale ? 24 : 20, line: 1.5)
                             }
                         }
-                        .frame(maxWidth: .infinity).frame(height: 42)
-                        Text(r.label).font(.game(10, .semibold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.7)
+                        .frame(width: 38, height: 38)
+                        .frame(maxWidth: .infinity)
+                        Text(r.label).font(.game(10, .semibold)).foregroundStyle(today ? Color.sunDark : Color.inkSoft).lineLimit(1).minimumScaleFactor(0.7)
                     }
                 }
             }
