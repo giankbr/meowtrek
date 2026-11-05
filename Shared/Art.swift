@@ -66,6 +66,14 @@ extension Shape {
         }
     }
 
+    /// Same sticker look with a soft top-to-bottom gradient for a little depth.
+    func sticker(_ top: Color, _ bottom: Color, _ w: CGFloat = 3) -> some View {
+        ZStack {
+            fill(LinearGradient(colors: [top, bottom], startPoint: .top, endPoint: .bottom))
+            stroke(bottom.darker(0.28).opacity(0.9), style: StrokeStyle(lineWidth: w * 0.55, lineCap: .round, lineJoin: .round))
+        }
+    }
+
     func line(_ w: CGFloat = 3, _ color: Color = .ink) -> some View {
         stroke(color, style: StrokeStyle(lineWidth: w, lineCap: .round, lineJoin: .round))
     }

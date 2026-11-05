@@ -441,9 +441,9 @@ private struct PetScene: View {
             ArtView(id: "deco_cloud", size: 64, line: 3).opacity(night ? 0.3 : 0.9)
                 .offset(x: drift ? 120 : 40, y: -70)
 
-            oval(50, 50, 100, 100).sticker(farHill, 3)
+            oval(50, 50, 100, 100).sticker(farHill.lighter(0.07), farHill, 3)
                 .frame(width: 360, height: 220).offset(x: -150, y: 120)
-            oval(50, 50, 100, 100).sticker(farHill, 3)
+            oval(50, 50, 100, 100).sticker(farHill.lighter(0.07), farHill, 3)
                 .frame(width: 380, height: 240).offset(x: 170, y: 110)
 
             ArtView(id: "deco_tree", size: 110, line: 3).modifier(Drift(x: -140, y: 50, pace: pace, speed: 18))
@@ -455,7 +455,7 @@ private struct PetScene: View {
                 p.addQuadCurve(to: pt(105, 26), control: pt(50, -4))
                 p.addLine(to: pt(105, 105)); p.addLine(to: pt(-5, 105)); p.closeSubpath()
             }
-            .sticker(hill, 3)
+            .sticker(hill.lighter(0.08), hill.darker(0.04), 3)
             .frame(height: 170)
             .frame(maxHeight: .infinity, alignment: .bottom)
 
@@ -465,7 +465,7 @@ private struct PetScene: View {
                 p.addLine(to: pt(20, 100))
                 p.addQuadCurve(to: pt(42, 18), control: pt(22, 60))
             }
-            .sticker(night ? Color(hex: 0xB8A98A) : Color(hex: 0xF5DFAE), 3)
+            .sticker(night ? Color(hex: 0xC6B795) : Color(hex: 0xFBEBC6), night ? Color(hex: 0xB0A082) : Color(hex: 0xEFD3A0), 3)
             .frame(height: 170)
             .frame(maxHeight: .infinity, alignment: .bottom)
 
@@ -1084,17 +1084,17 @@ struct GoalEditor: View {
                 Text("steps a day").font(.story(14, .regular)).italic().foregroundStyle(Color.inkSoft)
                 Spacer()
                 HStack(spacing: 6) {
-                    RoundIconButton(symbol: "minus", size: 34) { set(state.goal - 250) }.disabled(state.goal <= 1000)
-                    RoundIconButton(symbol: "plus", size: 34) { set(state.goal + 250) }.disabled(state.goal >= 30000)
+                    RoundIconButton(symbol: "minus", size: 34) { set(state.goal - 250) }.disabled(state.goal <= AppState.goalMin)
+                    RoundIconButton(symbol: "plus", size: 34) { set(state.goal + 250) }.disabled(state.goal >= AppState.goalMax)
                 }
             }
             Slider(value: Binding(get: { Double(state.goal) }, set: { set(Int(($0 / 250).rounded()) * 250) }),
-                   in: 1000...30000)
+                   in: Double(AppState.goalMin)...Double(AppState.goalMax))
                 .tint(.grass)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
                     chip(loc("Suggested \(suggested.formatted())"), suggested)
-                    ForEach([5000, 7500, 10000], id: \.self) { g in chip(g.formatted(), g) }
+                    ForEach([5000, 7500, 10000, 15000, 20000], id: \.self) { g in chip(g.formatted(), g) }
                 }
                 .padding(.vertical, 2)
             }
@@ -1112,7 +1112,7 @@ struct GoalEditor: View {
     }
 
     private func set(_ g: Int) {
-        withAnimation(.snappy) { state.goal = min(30000, max(1000, g)) }
+        withAnimation(.snappy) { state.goal = min(AppState.goalMax, max(AppState.goalMin, g)) }
     }
 }
 

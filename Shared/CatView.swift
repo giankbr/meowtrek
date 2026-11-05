@@ -173,13 +173,18 @@ private func canvas(_ seed: Double = 1, _ b: @escaping @Sendable (inout Path, Un
 }
 
 fileprivate extension Shape {
-    /// Fill with a soft lower-right shade, then a doubled, slightly offset outline so the line weight varies like a pen.
+    /// Fill with soft top-down volume and a lit sheen, then a doubled, slightly offset outline so the line weight varies like a pen.
     func inked(_ color: Color, _ w: CGFloat = 3.5, shade: Bool = true) -> some View {
         let ink = color.darker(0.42).opacity(0.85)
         let style = StrokeStyle(lineWidth: w * 0.6, lineCap: .round, lineJoin: .round)
         return ZStack {
-            fill(shade ? color.darker(0.09) : color)
-            if shade { fill(color).offset(x: -3, y: -5).clipShape(self) }
+            if shade {
+                fill(LinearGradient(colors: [color.lighter(0.11), color, color.darker(0.15)],
+                                    startPoint: .top, endPoint: .bottom))
+                fill(color.lighter(0.17)).offset(x: -3, y: -6).blur(radius: 2).clipShape(self).opacity(0.55)
+            } else {
+                fill(color)
+            }
             stroke(ink, style: style)
             stroke(ink, style: style).offset(x: 0.6, y: 0.9)
         }
@@ -207,6 +212,8 @@ private struct VectorCat: View {
 
     var body: some View {
         ZStack {
+            Ellipse().fill(Color.black.opacity(0.11)).frame(width: 118, height: 20)
+                .blur(radius: 5).position(x: 100, y: 241)
             if let bag = outfit[.bag], Self.backBags.contains(bag.id) {
                 ArtView(id: bag.id, size: 176, line: line).position(x: 100, y: 176)
             }

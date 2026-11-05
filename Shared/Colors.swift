@@ -41,4 +41,11 @@ extension Color {
         ui.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
         return Color(hue: h, saturation: min(1, s + 0.05), brightness: max(0, b - k), opacity: a)
     }
+
+    func lighter(_ k: Double = 0.14) -> Color {
+        let ui = UIColor(self)
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        ui.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return Color(hue: h, saturation: max(0, s - 0.05), brightness: min(1, b + k), opacity: a)
+    }
 }

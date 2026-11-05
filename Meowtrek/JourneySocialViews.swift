@@ -438,7 +438,7 @@ struct OnboardingView: View {
                 Button { withAnimation(.snappy) { goal = max(2000, goal - 500) } } label: { Image(systemName: "minus").frame(width: 20, height: 20) }
                     .buttonStyle(StoryChipStyle(on: false))
                 Text(goal.formatted()).font(.story(50, .heavy)).contentTransition(.numericText()).frame(minWidth: 150)
-                Button { withAnimation(.snappy) { goal = min(30000, goal + 500) } } label: { Image(systemName: "plus").frame(width: 20, height: 20) }
+                Button { withAnimation(.snappy) { goal = min(AppState.goalMax, goal + 500) } } label: { Image(systemName: "plus").frame(width: 20, height: 20) }
                     .buttonStyle(StoryChipStyle(on: false))
             }
             Text("steps a day").font(.story(15, .medium)).italic().foregroundStyle(Color.inkSoft)

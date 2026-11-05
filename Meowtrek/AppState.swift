@@ -46,6 +46,8 @@ final class AppState {
     @ObservationIgnored let content = GameContent.shared
     @ObservationIgnored let cal = Calendar.current
     static let demo = ProcessInfo.processInfo.arguments.contains("-demo")
+    /// Lowest and highest daily step goal the user can dial in.
+    static let goalMin = 1000, goalMax = 60000
 
     var coins = 0
     var gems = 0
