@@ -200,6 +200,8 @@ struct SocialView: View {
 
                 DuelsSection()
 
+                GroupChallengeSection()
+
                 StorySection(loc("This week's ribbons"), subtitle: loc("Steps over the last seven days"), color: .tomato)
                 if state.friends.isEmpty {
                     PencilNote(text: loc("No pals here yet. Send your card and the first one gets a ribbon spot next to \(state.petName)."),
@@ -451,5 +453,120 @@ struct OnboardingView: View {
             Text("Steps come from Apple Health. Start gentle; you can stretch it later.")
                 .font(.game(12, .medium)).multilineTextAlignment(.center).foregroundStyle(Color.inkSoft)
         }
+    }
+}
+
+// MARK: - Group challenge
+
+/// A backend-synced group step challenge: create or join by code, see a shared weekly leaderboard.
+struct GroupChallengeSection: View {
+    @Environment(AppState.self) private var state
+    @State private var showCreate = false
+    @State private var showJoin = false
+    @State private var name = ""
+    @State private var goalText = "50000"
+    @State private var joinCode = ""
+    @State private var busy = false
+
+    private var available: Bool { AppConfig.apiBase != nil }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            StorySection(loc("Group challenge"), subtitle: loc("A shared weekly board with friends near and far"), color: .grape)
+            if !available {
+                PencilNote(text: loc("Group challenges turn on once the Meowtrek server is set up."), symbol: "cloud")
+            } else if let g = state.group {
+                board(g)
+            } else {
+                HStack(spacing: 10) {
+                    Button { showCreate = true } label: { Label("Start a group", systemImage: "plus.circle.fill") }
+                        .buttonStyle(.chunky(.grape, text: .white))
+                    Button { showJoin = true } label: { Label("Join", systemImage: "number") }
+                        .buttonStyle(.chunky(.paper))
+                }
+                if !state.groupCode.isEmpty {
+                    Button { Task { await state.syncGroup() } } label: { Label("Reload my group", systemImage: "arrow.clockwise") }
+                        .buttonStyle(.chunky(.paper))
+                }
+            }
+        }
+        .task { if available, !state.groupCode.isEmpty, state.group == nil { await state.syncGroup() } }
+        .sheet(isPresented: $showCreate) {
+            groupForm(title: loc("Start a group"), confirm: loc("Create")) {
+                let goal = Int(goalText.filter(\.isNumber)) ?? 0
+                await state.createGroup(name: name.isEmpty ? loc("Walk Club") : name, goal: goal)
+            } fields: {
+                TextField(loc("Group name"), text: $name)
+                TextField(loc("Weekly goal (steps)"), text: $goalText).keyboardType(.numberPad)
+            }
+        }
+        .sheet(isPresented: $showJoin) {
+            groupForm(title: loc("Join a group"), confirm: loc("Join")) {
+                await state.joinGroup(code: joinCode)
+            } fields: {
+                TextField(loc("6-letter code"), text: $joinCode)
+                    .textInputAutocapitalization(.characters).autocorrectionDisabled()
+            }
+        }
+    }
+
+    private func board(_ g: LoadedGroup) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(g.name).font(.story(20, .bold))
+                    Text(loc("Code \(g.code) · tap to share")).font(.game(12, .semibold)).foregroundStyle(Color.inkSoft)
+                }
+                Spacer()
+                ShareLink(item: loc("Join my Meowtrek group with code \(g.code)")) {
+                    Image(systemName: "square.and.arrow.up").font(.system(size: 15, weight: .bold))
+                }
+            }
+            if g.goal > 0 {
+                let frac = min(1, Double(g.total) / Double(g.goal))
+                VStack(alignment: .leading, spacing: 4) {
+                    ProgressBar(value: frac, color: .grape, height: 12)
+                    Text(loc("\(g.total.formatted()) of \(g.goal.formatted()) steps together")).font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                }
+            }
+            ForEach(Array(g.members.enumerated()), id: \.element.id) { i, m in
+                let mine = m.name == state.petName
+                HStack(spacing: 10) {
+                    Text("\(i + 1)").font(.story(15, .bold)).foregroundStyle(Color.grapeDark).frame(width: 18)
+                    CatView(outfit: Catalog.item(m.fur).map { [.fur: $0] } ?? [:], size: 30, animated: false).frame(width: 32, height: 38)
+                    Text(m.name).font(.game(14, .bold))
+                    Spacer()
+                    Text(m.steps.formatted()).font(.game(13, .bold)).foregroundStyle(Color.inkSoft).monospacedDigit()
+                }
+                .padding(.horizontal, 10).padding(.vertical, 7)
+                .background(mine ? RoundedRectangle(cornerRadius: 12).fill(Color.grape.opacity(0.12)) : nil)
+                if i < g.members.count - 1 { InkRule().padding(.horizontal, 8) }
+            }
+            HStack(spacing: 10) {
+                Button { Task { busy = true; await state.syncGroup(); busy = false } } label: {
+                    Label(busy ? loc("Syncing…") : loc("Sync my steps"), systemImage: "arrow.clockwise")
+                }
+                .buttonStyle(.chunky(.grass, text: .white)).disabled(busy)
+                Button(role: .destructive) { Task { await state.leaveGroup() } } label: { Label("Leave", systemImage: "xmark") }
+                    .buttonStyle(.chunky(.paper))
+            }
+            .padding(.top, 2)
+        }
+        .card()
+    }
+
+    private func groupForm<F: View>(title: String, confirm: String, action: @escaping () async -> Void, @ViewBuilder fields: () -> F) -> some View {
+        NavigationStack {
+            Form { Section { fields() } }
+                .navigationTitle(title)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) { Button(loc("Cancel")) { showCreate = false; showJoin = false } }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(confirm) { Task { await action(); showCreate = false; showJoin = false } }.disabled(busy)
+                    }
+                }
+        }
+        .presentationDetents([.height(240)])
     }
 }

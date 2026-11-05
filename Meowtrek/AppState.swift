@@ -54,6 +54,7 @@ final class AppState {
     var petName = ""
     var companionName = ""
     var companionFur = "fur_snow"
+    var group: LoadedGroup?
     var goal = 8000
     var owned: Set<String> = []
     var equipped: [Slot: String] = [:]
