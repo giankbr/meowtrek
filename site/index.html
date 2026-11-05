@@ -17,22 +17,21 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="wrap nav">
-  <a class="brand" href="./"><img src="assets/icon.png" alt="" width="40" height="40"><span>Meow<b>trek</b></span></a>
-  <nav aria-label="Sections">
-    <a href="#how">How it works</a>
-    <a href="#features">Features</a>
-    <a href="#plus">Plus</a>
-    <a href="#faq">FAQ</a>
-  </nav>
-  <a class="btn ghost sm" href="https://github.com/giankbr/meowtrek">
-    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-    View on GitHub
-  </a>
+<header class="site-header" id="siteHeader">
+  <div class="wrap nav">
+    <a class="brand" href="./"><img src="assets/icon.png" alt="" width="40" height="40"><span>Meow<b>trek</b></span></a>
+    <nav aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#plus">Plus</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn primary sm" href="#top">Get notified</a>
+  </div>
 </header>
 
 <main>
-  <section class="hero">
+  <section class="hero" id="top">
     <svg class="hills hills-back" viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id="hillFar" x1="0" y1="0" x2="0" y2="1">
@@ -53,17 +52,10 @@
         <span class="pill"><i class="pill-dot"></i>Step tracker · iPhone &amp; Apple Watch</span>
         <h1>Every step, your cat <em>walks too.</em></h1>
         <p class="lede">Meowtrek turns your daily steps into a little life for your cat. Walk to earn coins, dress them up and unlock places on your journey together.</p>
-        <div class="ctas">
-          <span class="btn primary lg" aria-disabled="true">
-            <svg width="20" height="24" viewBox="0 0 20 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.7c0-2.9 2.4-4.3 2.5-4.4-1.4-2-3.5-2.3-4.3-2.3-1.8-.2-3.6 1.1-4.5 1.1-.9 0-2.4-1.1-3.9-1-2 0-3.9 1.2-4.9 3-2.1 3.7-.5 9.1 1.5 12.1 1 1.4 2.2 3.1 3.8 3 1.5-.1 2.1-1 3.9-1s2.3 1 3.9 1c1.6 0 2.6-1.5 3.6-2.9 1.1-1.7 1.6-3.3 1.6-3.4 0 0-3.1-1.2-3.2-4.8zM13.5 4c.8-1 1.4-2.4 1.2-3.8-1.2.1-2.6.8-3.5 1.8-.8.9-1.4 2.3-1.2 3.7 1.3.1 2.7-.7 3.5-1.7z"/></svg>
-            <span class="stack"><small>Coming soon to the</small>App Store</span>
-          </span>
-          <a class="btn ghost lg" href="#how">See how it works</a>
-        </div>
         <form class="waitlist" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
           <input type="email" name="email" required autocomplete="email" placeholder="you@email.com" aria-label="Email address">
-          <button type="submit" class="btn primary">Notify me</button>
-          <p class="waitlist-note">Be first to walk. We’ll email you at launch — no spam.</p>
+          <button type="submit" class="btn primary lg">Notify me at launch</button>
+          <p class="waitlist-note">Be first to walk. We’ll email you the day it’s out — no spam. <a href="#how">See how it works →</a></p>
         </form>
         <ul class="hero-notes">
           <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Free to play</li>
@@ -422,9 +414,17 @@
 </footer>
 <script>
 (function () {
+  // Sticky header: add a shadow once the page is scrolled.
+  var header = document.getElementById('siteHeader');
+  if (header) {
+    var onScroll = function () { header.classList.toggle('scrolled', window.scrollY > 8); };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+  // Per-section reveal on scroll.
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (!('IntersectionObserver' in window)) return;
-  var els = document.querySelectorAll('.stat, .milestones li, .tile, .showcase figure, .plan, .faq details, .privacy-points li, .cta');
+  var els = document.querySelectorAll('.section-head, .split-head, .stat, .milestones li, .tile, .showcase figure, .plan, .faq details, .privacy-statement, .privacy-points li, .cta');
   els.forEach(function (el) { el.classList.add('reveal'); });
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
