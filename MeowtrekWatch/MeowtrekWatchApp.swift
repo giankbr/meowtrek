@@ -101,22 +101,26 @@ struct WatchHome: View {
 
     var body: some View {
         TabView {
-            VStack(spacing: 2) {
+            VStack(spacing: 3) {
                 CatView(outfit: m.outfit, size: 74, mood: CatMood(m.progress >= 1 ? "Proud" : m.mood))
                 Text(m.steps.formatted())
-                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .font(.page(30))
+                    .foregroundStyle(Color.cream)
                     .contentTransition(.numericText())
-                ProgressView(value: m.progress).tint(.grass)
-                Text(m.steps >= m.goal ? "Goal reached!" : "\((m.goal - m.steps).formatted()) to go")
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                WatchCrayonBar(value: m.progress)
+                Text(m.steps >= m.goal ? "Page complete!" : "\((m.goal - m.steps).formatted()) steps to the end of the page")
+                    .font(.page(12, .regular)).italic()
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2).minimumScaleFactor(0.8)
             }
             .padding(.horizontal, 6)
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text(m.petName).font(.system(size: 20, weight: .bold, design: .rounded))
-                Label("\(m.streak) day streak", systemImage: "flame.fill").foregroundStyle(Color.pumpkin)
-                Label(String(format: "%.1f km", m.meters / 1000), systemImage: "map.fill").foregroundStyle(Color.sky)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("\(m.petName)'s notes").font(.page(19)).foregroundStyle(Color.cream)
+                WatchDottedRule()
+                Label("\(m.streak) days in a row", systemImage: "flame.fill").foregroundStyle(Color.pumpkin)
+                Label(String(format: "%.1f km together", m.meters / 1000), systemImage: "map.fill").foregroundStyle(Color.sky)
                 Label("Goal \(m.goal.formatted())", systemImage: "flag.checkered").foregroundStyle(Color.grass)
             }
             .font(.system(size: 15, weight: .semibold, design: .rounded))

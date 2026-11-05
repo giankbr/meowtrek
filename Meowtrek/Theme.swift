@@ -56,8 +56,19 @@ extension View {
 
 extension Font {
     /// Bookish display type for headings and big numbers.
+    /// Built from UIFont so the app-wide `.fontDesign(.rounded)` can't swap it back to the rounded face.
     static func story(_ size: CGFloat, _ weight: Font.Weight = .semibold) -> Font {
-        .system(size: size, weight: weight, design: .serif)
+        let w: UIFont.Weight = switch weight {
+        case .black: .black
+        case .heavy: .heavy
+        case .bold: .bold
+        case .semibold: .semibold
+        case .medium: .medium
+        case .light: .light
+        default: .regular
+        }
+        let base = UIFont.systemFont(ofSize: size, weight: w)
+        return Font(UIFont(descriptor: base.fontDescriptor.withDesign(.serif) ?? base.fontDescriptor, size: size))
     }
 }
 

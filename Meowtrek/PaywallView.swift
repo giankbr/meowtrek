@@ -6,48 +6,55 @@ struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selected: String = "id.gian.meowtrek.plus.yearly"
 
-    private let perks: [(String, Color, String, String)] = [
-        ("bubble.left.and.bubble.right.fill", .grape, loc("Unlimited cat chat"), loc("Talk with your cat coach any time")),
-        ("sparkles", .sun, loc("Weekly AI insights"), loc("Personal walking report and goal tips")),
-        ("wand.and.stars", .bubble, loc("AI daily quests"), loc("Quests tuned to your own rhythm")),
-        ("bitcoinsign.circle.fill", .pumpkin, loc("1.5× coins"), loc("Every claimed step pays more")),
-        ("snowflake", .sky, loc("Free weekly streak freeze"), loc("One freeze every Monday")),
-        ("icloud.fill", .skyDark, loc("Daily iCloud backup"), loc("Restore your cat on any iPhone")),
-        ("crown.fill", .tomato, loc("Plus badge"), loc("Show it on your friend card")),
+    private let perks: [(String, String, String)] = [
+        ("bubble.left.and.bubble.right", loc("Chats without a daily limit"), loc("Talk walks, moods and snacks with your cat whenever you like")),
+        ("sparkles", loc("A weekly letter about your walks"), loc("What went well, what to try, and a goal that fits")),
+        ("wand.and.stars", loc("Errands written just for you"), loc("Daily quests shaped around your own rhythm")),
+        ("circle.circle", loc("1.5× coins"), loc("Every step you collect is worth a little more")),
+        ("snowflake", loc("A streak freeze every Monday"), loc("For rainy weeks and lazy Sundays")),
+        ("icloud", loc("A daily copy in your iCloud"), loc("Your cat moves with you to a new iPhone")),
+        ("crown", loc("The Plus crown"), loc("Shown on your friend card")),
     ]
 
     var body: some View {
         let store = state.store
         ScrollView {
-            VStack(spacing: 18) {
-                VStack(spacing: 6) {
+            VStack(spacing: 22) {
+                VStack(spacing: 10) {
+                    Text("YOU'RE INVITED").font(.story(12, .bold)).kerning(3).foregroundStyle(Color.grassDark)
                     ZStack {
-                        Circle().fill(Color.sun.opacity(0.25)).frame(width: 170)
-                        CatView(outfit: state.outfit.merging([.hat: Catalog.item("crown")!]) { _, b in b }, size: 130, mood: .happy)
+                        Circle().fill(Color.sun.opacity(0.22)).frame(width: 150).blur(radius: 6)
+                        CatView(outfit: state.outfit.merging([.hat: Catalog.item("crown")!]) { _, b in b }, size: 124, mood: .happy)
                     }
-                    Text("Meowtrek Plus").font(.system(size: 30, weight: .bold, design: .rounded))
-                    Text("More love for \(state.petName), more reasons to walk.")
-                        .font(.game(15, .semibold)).foregroundStyle(Color.inkSoft).multilineTextAlignment(.center)
-                }
-
-                VStack(spacing: 12) {
-                    ForEach(perks, id: \.2) { icon, tint, title, detail in
-                        HStack(spacing: 12) {
-                            GameIcon(symbol: icon, tint: tint, size: 40)
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text(title).font(.game(15, .bold))
-                                Text(detail).font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                    Text("Meowtrek Plus").font(.story(32, .bold))
+                    Text("\(state.petName) would love you to join the Plus club. Here's what's inside the envelope:")
+                        .font(.story(15, .regular)).italic().foregroundStyle(Color.inkSoft).multilineTextAlignment(.center)
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(perks, id: \.1) { icon, title, detail in
+                            HStack(alignment: .top, spacing: 12) {
+                                Image(systemName: icon).font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(Color.grassDark).frame(width: 22).padding(.top, 2)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(title).font(.story(16, .bold))
+                                    Text(detail).font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                                }
+                                Spacer(minLength: 0)
                             }
-                            Spacer()
                         }
                     }
+                    .padding(.top, 6)
+                    Text("With love, \(state.petName)").font(.story(15, .semibold)).italic()
+                        .frame(maxWidth: .infinity, alignment: .trailing).padding(.top, 4)
                 }
-                .card()
+                .invitation()
+                .overlay(alignment: .bottom) { WaxSeal(symbol: "crown.fill", size: 50).offset(y: 22) }
+                .padding(.top, 34)
+                .padding(.bottom, 8)
 
                 if store.isPlus {
                     VStack(spacing: 6) {
-                        Label("You're a Plus member", systemImage: "checkmark.seal.fill")
-                            .font(.game(17, .bold)).foregroundStyle(Color.grassDark)
+                        Stamp(text: loc("Member"), color: .grassDark, size: 72)
+                        Text("You're in the Plus club").font(.story(18, .bold))
                         if let r = store.plusRenewal {
                             Text("Renews \(r.formatted(date: .abbreviated, time: .omitted))")
                                 .font(.game(13, .medium)).foregroundStyle(Color.inkSoft)
@@ -57,12 +64,12 @@ struct PaywallView: View {
                 } else if store.plusProducts.isEmpty {
                     VStack(spacing: 6) {
                         ProgressView()
-                        Text(store.loaded ? "Plans aren't available right now. Try again later." : "Loading plans…")
+                        Text(store.loaded ? "The plans didn't arrive. Try again a little later." : "Fetching the plans…")
                             .font(.game(13, .medium)).foregroundStyle(Color.inkSoft)
                     }
                     .frame(maxWidth: .infinity).card()
                 } else {
-                    VStack(spacing: 10) {
+                    VStack(spacing: 12) {
                         ForEach(store.plusProducts.reversed(), id: \.id) { p in planRow(p) }
                     }
                     Button {
@@ -70,15 +77,15 @@ struct PaywallView: View {
                         Task {
                             if await store.buy(p), store.isPlus {
                                 Telemetry.track("plus_purchased")
-                                state.show(loc("Welcome to Plus!"), art: "crown")
+                                state.show(loc("Welcome to the Plus club!"), art: "crown")
                                 state.celebrate(.confetti)
                                 dismiss()
                             }
                         }
                     } label: {
-                        Text(trialText ?? "Continue").font(.game(18, .bold)).frame(maxWidth: .infinity)
+                        Text(trialText ?? loc("Accept the invitation")).font(.story(18, .bold)).frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.chunky(.grass, text: .white, radius: 20, padV: 15))
+                    .buttonStyle(.chunky(.grass, text: .white, radius: 14, padV: 15))
                     .disabled(store.purchasing)
                 }
 
@@ -96,12 +103,13 @@ struct PaywallView: View {
             .padding(20)
         }
         .foregroundStyle(Color.ink)
-        .background(Color.cream)
+        .paperBackground()
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Image(systemName: "xmark").font(.system(size: 14, weight: .bold)).foregroundStyle(Color.inkSoft)
                     .frame(width: 32, height: 32).background(Circle().fill(Color.paper))
             }
+            .accessibilityLabel(Text("Close"))
             .padding(16)
         }
         .task { if !store.loaded { await store.load() } }
@@ -136,24 +144,30 @@ struct PaywallView: View {
         }()
         return Button { withAnimation(.snappy) { selected = p.id } } label: {
             HStack(spacing: 12) {
-                Image(systemName: on ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 22)).foregroundStyle(on ? Color.grass : Color.inkSoft.opacity(0.5))
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text(yearly ? "Yearly" : "Monthly").font(.game(16, .bold))
-                        if let saving { Tag(text: loc("Save \(saving)%"), color: .tomato) }
-                    }
-                    if yearly {
-                        Text("\(p.displayPrice) / year").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
-                    }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(yearly ? loc("A whole year") : loc("Month by month")).font(.story(17, .bold))
+                    Text(yearly ? loc("\(p.displayPrice) once a year") : loc("Cancel whenever you like"))
+                        .font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                 }
                 Spacer()
-                Text(yearly ? (p.price / 12).formatted(p.priceFormatStyle) + "/mo" : p.displayPrice + "/mo")
-                    .font(.game(15, .bold))
+                VStack(alignment: .trailing, spacing: 0) {
+                    Text(yearly ? (p.price / 12).formatted(p.priceFormatStyle) : p.displayPrice)
+                        .font(.story(19, .bold)).monospacedDigit()
+                    Text("a month").font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+                }
             }
-            .padding(14)
-            .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color.paper))
-            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(on ? Color.grass : .black.opacity(0.06), lineWidth: on ? 2 : 1))
+            .padding(.horizontal, 20).padding(.vertical, 14)
+            .background(TicketShape(notch: 9).fill(on ? Color.grassLight.opacity(0.6) : Color.paper))
+            .overlay(TicketShape(notch: 9).stroke(on ? Color.grass : Color.ink.opacity(0.15),
+                                                  style: StrokeStyle(lineWidth: on ? 2 : 1, dash: on ? [] : [4, 3])))
+            .overlay(alignment: .topTrailing) {
+                if let saving {
+                    PriceTag(text: loc("Save \(saving)%"), color: Color.bubble.opacity(0.5), angle: 8).offset(x: 6, y: -14)
+                }
+            }
+            .overlay(alignment: .topLeading) {
+                if on { Stamp(text: loc("Picked"), color: .grassDark, size: 40, angle: -16).offset(x: -10, y: -16) }
+            }
         }
         .buttonStyle(SquishStyle())
     }

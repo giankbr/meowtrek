@@ -346,34 +346,34 @@ struct DailyRewardCard: View {
 
     var body: some View {
         let shown = state.loginShownDay
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("Daily rewards").font(.game(17, .bold))
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                StoryHeading(text: loc("Stamp card"), size: 18, color: .tomato)
                 Spacer()
-                Text(state.loginClaimedToday ? loc("Come back tomorrow") : loc("Day \(shown) of 7"))
-                    .font(.game(12, .semibold)).foregroundStyle(Color.inkSoft)
+                Text(state.loginClaimedToday ? loc("Next stamp tomorrow") : loc("Day \(shown) of 7"))
+                    .font(.story(12, .regular)).italic().foregroundStyle(Color.inkSoft)
             }
             HStack(spacing: 6) {
                 ForEach(1...7, id: \.self) { day in
                     let r = AppState.dailyRewards[day - 1]
                     let done = day < shown || (day == shown && state.loginClaimedToday)
                     let today = day == shown && !state.loginClaimedToday
-                    VStack(spacing: 3) {
+                    VStack(spacing: 4) {
                         ZStack {
-                            ArtView(id: r.art, size: day == 7 ? 28 : 22, line: 1.5).opacity(done ? 0.35 : 1)
-                            if done { Image(systemName: "checkmark").font(.system(size: 13, weight: .black)).foregroundStyle(Color.grassDark) }
+                            SketchSquare(on: today)
+                            ArtView(id: r.art, size: day == 7 ? 26 : 21, line: 1.5).opacity(done ? 0.3 : 1)
+                            if done {
+                                Stamp(text: "\(day)", color: .tomato, size: 30, angle: Double(day * 7 % 20) - 10)
+                            }
                         }
-                        .frame(maxWidth: .infinity).frame(height: 40)
-                        .background(RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(today ? Color.sun.opacity(0.35) : day == 7 ? Color.grape.opacity(0.14) : Color.cream))
-                        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(today ? Color.sun : .clear, lineWidth: 2))
-                        Text(r.label).font(.game(10, .bold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.7)
+                        .frame(maxWidth: .infinity).frame(height: 42)
+                        Text(r.label).font(.game(10, .semibold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.7)
                     }
                 }
             }
             if !state.loginClaimedToday {
                 Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { state.claimLogin() } } label: {
-                    Text(loc("Claim day \(shown)")).frame(maxWidth: .infinity)
+                    Text(loc("Stamp day \(shown)")).frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.chunky(.sun, radius: 14, padV: 10))
             }
@@ -398,15 +398,15 @@ struct ExpeditionCard: View {
                             CatView(outfit: state.outfit, size: 26, animated: false).offset(x: 8, y: 6)
                         }
                     VStack(alignment: .leading, spacing: 5) {
-                        Text(done ? loc("\(state.petName) is back from \(def.name)") : loc("\(state.petName) is exploring \(def.name)"))
-                            .font(.game(15, .bold)).lineLimit(2)
+                        Text(done ? loc("\(state.petName) is home from \(def.name)") : loc("\(state.petName) is off exploring \(def.name)"))
+                            .font(.story(16, .bold)).lineLimit(2)
                         ProgressBar(value: Double(state.expeditionSteps) / Double(def.steps), color: Color(hexString: def.tint), height: 8)
                         Text("\(shortSteps(min(state.expeditionSteps, def.steps))) / \(shortSteps(def.steps)) steps")
                             .font(.game(11, .semibold)).foregroundStyle(Color.inkSoft)
                     }
                     Spacer(minLength: 4)
                     if done {
-                        Button("Open") { withAnimation(.spring) { state.finishExpedition() } }
+                        Button("Unpack") { withAnimation(.spring) { state.finishExpedition() } }
                             .buttonStyle(.chunky(.sun, padH: 12, padV: 8))
                     }
                 }
@@ -415,8 +415,8 @@ struct ExpeditionCard: View {
                     HStack(spacing: 12) {
                         GameIcon(symbol: "map.fill", tint: .grassDark, size: 48)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Send \(state.petName) on an expedition").font(.game(15, .bold))
-                            Text("Your steps move the adventure. Rare items inside.").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                            Text("Pack \(state.petName)'s bag for a trip").font(.story(16, .bold))
+                            Text("Your steps carry them there. Something rare waits at the end.").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                         }
                         Spacer(minLength: 4)
                         Image(systemName: "chevron.right").foregroundStyle(Color.inkSoft)
@@ -426,6 +426,9 @@ struct ExpeditionCard: View {
             }
         }
         .card(padding: 14)
+        .overlay(alignment: .topTrailing) {
+            if state.expeditionDef != nil { PaperLabel(text: loc("Expedition"), color: .sky, angle: 4, size: 10).offset(x: -10, y: -8) }
+        }
         .sheet(isPresented: $picking) { ExpeditionPicker() }
     }
 }
@@ -437,17 +440,21 @@ struct ExpeditionPicker: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 12) {
+                    StorySection(loc("Where to?"), subtitle: loc("Pick a place. Your everyday steps get \(state.petName) there."), color: .sky)
                     ForEach(state.content.expeditions) { def in
                         Button {
                             state.startExpedition(def)
                             dismiss()
                         } label: {
                             HStack(spacing: 12) {
-                                GameIcon(symbol: def.icon, tint: Color(hexString: def.tint), size: 50)
+                                ZStack {
+                                    InkRing(color: Color(hexString: def.tint), seed: def.steps % 50).frame(width: 60, height: 60)
+                                    GameIcon(symbol: def.icon, tint: Color(hexString: def.tint), size: 48)
+                                }
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(def.name).font(.game(17, .bold))
-                                    Text("\(def.steps.formatted()) steps").font(.game(12, .semibold)).foregroundStyle(Color.inkSoft)
+                                    Text(def.name).font(.story(18, .bold))
+                                    Text("\(def.steps.formatted()) steps away").font(.game(12, .semibold)).foregroundStyle(Color.inkSoft)
                                     HStack(spacing: 4) {
                                         ArtView(id: "coin", size: 14, line: 1.2)
                                         Text("\(def.coins)").font(.game(12, .bold))
@@ -468,30 +475,39 @@ struct ExpeditionPicker: View {
                         .buttonStyle(SquishStyle())
                     }
                     if !state.postcards.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Postcards").font(.game(18, .bold))
-                            ForEach(state.postcards.prefix(10)) { p in
-                                if let def = state.content.expeditions.first(where: { $0.id == p.id }) {
-                                    HStack(alignment: .top, spacing: 10) {
-                                        GameIcon(symbol: def.icon, tint: Color(hexString: def.tint), size: 34)
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(def.name).font(.game(14, .bold))
-                                            Text(def.postcard).font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
-                                            Text(p.date.formatted(date: .abbreviated, time: .omitted)).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
-                                        }
+                        StorySection(loc("Postcards"), subtitle: loc("Sent home from every trip"), color: .tomato).padding(.top, 8)
+                        ForEach(state.postcards.prefix(10)) { p in
+                            if let def = state.content.expeditions.first(where: { $0.id == p.id }) {
+                                HStack(alignment: .top, spacing: 12) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(def.postcard).font(.story(14, .regular)).italic()
+                                            .fixedSize(horizontal: false, vertical: true)
+                                        Text(loc("love, \(state.petName)")).font(.story(13, .semibold)).foregroundStyle(Color.inkSoft)
                                     }
+                                    Spacer(minLength: 0)
+                                    Rectangle().fill(Color.inkSoft.opacity(0.25)).frame(width: 1).padding(.vertical, 2)
+                                    VStack(spacing: 6) {
+                                        PostageStamp(color: Color(hexString: def.tint)) {
+                                            Image(systemName: def.icon).font(.system(size: 18, weight: .semibold))
+                                                .foregroundStyle(Color(hexString: def.tint).darker(0.2))
+                                                .frame(width: 34, height: 34)
+                                        }
+                                        .rotationEffect(.degrees(4))
+                                        Text(def.name).font(.game(11, .bold)).lineLimit(1)
+                                        Text(p.date.formatted(date: .abbreviated, time: .omitted)).font(.game(10, .medium)).foregroundStyle(Color.inkSoft)
+                                    }
+                                    .frame(width: 84)
                                 }
+                                .card(padding: 14)
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .card()
                     }
                 }
                 .padding(16)
                 .frame(maxWidth: .infinity)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream.ignoresSafeArea())
+            .paperBackground()
             .navigationTitle("Expeditions")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { Button("Close") { dismiss() } }
@@ -510,17 +526,18 @@ struct TrailPassCard: View {
         Button { open = true } label: {
             HStack(spacing: 12) {
                 ZStack {
-                    Circle().fill(Color.grape.opacity(0.16))
-                    Text("\(state.passTier)").font(.game(20, .bold)).foregroundStyle(Color.grapeDark)
+                    PaperShape(radius: 100, wobble: 1.2, seed: 13).fill(Color.grape.opacity(0.16))
+                    InkRing(color: .grapeDark, seed: 13)
+                    Text("\(state.passTier)").font(.story(21, .bold)).foregroundStyle(Color.grapeDark)
                 }
                 .frame(width: 48, height: 48)
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(spacing: 6) {
-                        Text("Trail Pass").font(.game(16, .bold))
+                        Text("Trail Pass").font(.story(17, .bold))
                         Text(loc("Tier \(state.passTier)/\(AppState.passTiers)")).font(.game(11, .semibold)).foregroundStyle(Color.inkSoft)
                     }
                     ProgressBar(value: state.passProgress, color: .grape, height: 8)
-                    Text(loc("Ends \(state.seasonEnd.formatted(.relative(presentation: .named)))")).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+                    Text(loc("This page closes \(state.seasonEnd.formatted(.relative(presentation: .named)))")).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
                 }
                 Spacer(minLength: 4)
                 if state.passClaimable > 0 {
@@ -547,12 +564,14 @@ struct TrailPassView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(state.seasonStart.formatted(.dateTime.month(.wide)) + " · " + loc("Trail Pass")).font(.game(24, .bold))
-                        Text(loc("Every \(AppState.passStepsPerTier.formatted()) steps this month unlocks a tier.")).font(.game(13, .medium)).foregroundStyle(Color.inkSoft)
+                        StoryHeading(text: state.seasonStart.formatted(.dateTime.month(.wide)) + " · " + loc("Trail Pass"), size: 24, color: .grape)
+                        Text(loc("Every \(AppState.passStepsPerTier.formatted()) steps this month turns a page and unlocks a tier.")).font(.story(13, .regular)).italic().foregroundStyle(Color.inkSoft)
+                            .padding(.top, 6)
                         ProgressBar(value: state.passProgress, color: .grape, height: 12)
                         Text(loc("Tier \(state.passTier) · \(state.seasonSteps.formatted()) steps")).font(.game(12, .semibold)).foregroundStyle(Color.inkSoft)
                     }
                     .card()
+                    .taped(.topTrailing, angle: 5, color: .grape, x: -30)
 
                     HStack {
                         Label("Free", systemImage: "leaf.fill").foregroundStyle(Color.grassDark)
@@ -567,7 +586,7 @@ struct TrailPassView: View {
                 .padding(16)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream.ignoresSafeArea())
+            .paperBackground()
             .navigationTitle("Trail Pass")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -585,9 +604,9 @@ struct TrailPassView: View {
         let reached = tier <= state.passTier
         return HStack(spacing: 10) {
             cell(tier, plus: false)
-            Text("\(tier)").font(.game(14, .bold))
+            Text("\(tier)").font(.story(14, .bold))
                 .frame(width: 30, height: 30)
-                .background(Circle().fill(reached ? Color.grape : Color.black.opacity(0.06)))
+                .background(PaperShape(radius: 100, wobble: 1, seed: tier).fill(reached ? Color.grape : Color.black.opacity(0.05)))
                 .foregroundStyle(reached ? .white : Color.inkSoft)
             cell(tier, plus: true)
         }
@@ -606,18 +625,19 @@ struct TrailPassView: View {
                 Text(r.label).font(.game(13, .bold)).lineLimit(1).minimumScaleFactor(0.7)
                 Spacer(minLength: 0)
                 if claimed {
-                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.grass)
+                    Stamp(text: loc("Got"), color: .grassDark, size: 30, angle: Double(tier * 11 % 24) - 12)
                 } else if locked {
                     Image(systemName: "lock.fill").foregroundStyle(Color.sunDark)
                 } else if can {
-                    Text("Claim").font(.game(11, .bold)).padding(.horizontal, 8).padding(.vertical, 4)
+                    Text("Claim").font(.game(11, .bold)).lineLimit(1).fixedSize().padding(.horizontal, 8).padding(.vertical, 4)
                         .background(Capsule().fill(Color.sun))
                 }
             }
             .padding(10)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(plus ? Color.sun.opacity(can ? 0.22 : 0.1) : (can ? Color.grassLight : Color.paper)))
+            .frame(minHeight: 48)
+            .background(PaperShape(radius: 12, wobble: 0.9, seed: tier * (plus ? 3 : 2))
+                .fill(plus ? Color.sun.opacity(can ? 0.24 : 0.12) : (can ? Color.grassLight : Color.paper)))
         }
         .buttonStyle(SquishStyle())
         .opacity(tier > state.passTier + 2 ? 0.55 : 1)
@@ -637,8 +657,8 @@ struct SetsSection: View {
                     HStack(spacing: 10) {
                         GameIcon(symbol: set.icon, tint: Color(hexString: set.tint), size: 38)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(set.name).font(.game(16, .bold))
-                            Text(loc("Title: \(state.petName) \(set.title)")).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+                            Text(set.name).font(.story(17, .bold))
+                            Text(loc("Earns the title “\(state.petName) \(set.title)”")).font(.story(12, .regular)).italic().foregroundStyle(Color.inkSoft)
                         }
                         Spacer()
                         if claimed {
@@ -657,10 +677,9 @@ struct SetsSection: View {
                         ForEach(set.items, id: \.self) { id in
                             if let it = Catalog.item(id) {
                                 ItemArt(item: it, size: 34)
+                                    .opacity(state.owned.contains(id) ? 1 : 0.35)
                                     .frame(maxWidth: .infinity).frame(height: 48)
-                                    .background(RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .fill(state.owned.contains(id) ? Color.grassLight : Color.cream))
-                                    .opacity(state.owned.contains(id) ? 1 : 0.4)
+                                    .background(SketchSquare(on: state.owned.contains(id)))
                             }
                         }
                     }
@@ -673,6 +692,9 @@ struct SetsSection: View {
                     }
                 }
                 .card(padding: 12)
+                .overlay(alignment: .topTrailing) {
+                    if claimed { Stamp(text: loc("Complete"), color: .grassDark, size: 52, angle: 14).offset(x: 6, y: -10).allowsHitTesting(false) }
+                }
             }
         }
     }
@@ -686,7 +708,7 @@ struct DuelsSection: View {
     var body: some View {
         if !state.duels.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Duels").font(.game(20, .black))
+                StorySection(loc("Step duels"), subtitle: loc("Friendly races, settled in steps"), color: .tomato)
                 ForEach(state.duels) { d in DuelRow(duel: d) }
             }
         }
@@ -704,14 +726,20 @@ private struct DuelRow: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: "flag.2.crossed.fill").foregroundStyle(Color.tomato)
-                Text(loc("You vs \(duel.friendName)")).font(.game(15, .bold))
+                Text(loc("You vs \(duel.friendName)")).font(.story(16, .bold))
                 Spacer()
                 Text(range).font(.game(11, .semibold)).foregroundStyle(Color.inkSoft)
             }
             bar(loc("You"), mine, top, .grass)
             bar(duel.friendName, theirs ?? 0, top, .grape)
             if duel.claimed {
-                Label("Settled", systemImage: "checkmark.seal.fill").font(.game(12, .bold)).foregroundStyle(Color.grassDark)
+                HStack {
+                    Text(mine > (theirs ?? 0) ? loc("We won this one.") : loc("A good race either way."))
+                        .font(.story(13, .regular)).italic().foregroundStyle(Color.inkSoft)
+                    Spacer()
+                    Stamp(text: loc("Settled"), color: .grassDark, size: 46, angle: -12)
+                }
+                .padding(.top, -4)
             } else if state.duelReady(duel) {
                 Button((theirs ?? 0) < mine ? loc("Claim win") : loc("Claim reward")) { withAnimation(.spring) { state.claimDuel(duel) } }
                     .buttonStyle(.chunky(.sun, radius: 14, padH: 12, padV: 7))
@@ -751,9 +779,10 @@ struct ChallengeSheet: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "flag.2.crossed.fill").font(.system(size: 34)).foregroundStyle(Color.tomato)
-            Text(loc("Challenge \(friend.name)")).font(.game(22, .bold))
-            Text("Most steps wins 120 coins. Everyone who takes part gets something.")
-                .font(.game(13, .medium)).foregroundStyle(Color.inkSoft).multilineTextAlignment(.center)
+            StoryHeading(text: loc("Challenge \(friend.name)"), size: 24, color: .tomato)
+            Text("Whoever walks more takes 120 coins. Nobody goes home empty-pawed.")
+                .font(.story(14, .regular)).italic().foregroundStyle(Color.inkSoft).multilineTextAlignment(.center)
+                .padding(.top, 4)
             if let created {
                 ShareLink(item: state.duelInviteURL(created), message: Text(loc("Duel me on Meowtrek! Tap to accept."))) {
                     Label("Send challenge", systemImage: "paperplane.fill").frame(maxWidth: .infinity)
@@ -768,7 +797,7 @@ struct ChallengeSheet: View {
         }
         .foregroundStyle(Color.ink)
         .padding(24)
-        .presentationDetents([.height(360)])
-        .presentationBackground(Color.cream)
+        .presentationDetents([.height(370)])
+        .presentationBackground { ZStack { Color.cream; PaperGrain() } }
     }
 }

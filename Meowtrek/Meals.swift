@@ -105,30 +105,42 @@ struct MealView: View {
                 VStack(spacing: 16) {
                     if let photo {
                         Image(uiImage: photo).resizable().scaledToFill()
-                            .frame(height: 260).frame(maxWidth: .infinity)
-                            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                            .frame(height: 250).frame(maxWidth: .infinity)
+                            .clipped()
+                            .padding(10).padding(.bottom, 26)
+                            .background(Color.white)
+                            .overlay(alignment: .bottom) {
+                                Text(Date.now.formatted(.dateTime.weekday(.wide).hour().minute()))
+                                    .font(.story(13, .regular)).italic().foregroundStyle(Color.inkSoft).padding(.bottom, 8)
+                            }
+                            .shadow(color: .black.opacity(0.12), radius: 6, y: 3)
+                            .rotationEffect(.degrees(-1.5))
+                            .taped(.top, angle: -6, color: .pumpkin)
+                            .padding(.horizontal, 6).padding(.top, 8)
                     } else {
                         VStack(spacing: 10) {
                             CatView(outfit: state.outfit, size: 110, mood: .happy)
-                            Text("What are you eating?").font(.game(20, .bold))
-                            Text("Snap your meal and \(state.petName) will react. No calorie counting, promise.")
-                                .font(.game(14, .medium)).foregroundStyle(Color.inkSoft).multilineTextAlignment(.center)
+                            StoryHeading(text: loc("What's on your plate?"), size: 22, color: .pumpkin)
+                            Text("Snap it and \(state.petName) will have a sniff. No calorie counting, promise.")
+                                .font(.story(14, .regular)).italic().foregroundStyle(Color.inkSoft).multilineTextAlignment(.center)
+                                .padding(.top, 6)
                         }
                         .padding(.vertical, 20)
                     }
 
                     if loading {
-                        HStack(spacing: 10) { ProgressView(); Text("\(state.petName) is sniffing…").font(.game(14, .semibold)) }
+                        HStack(spacing: 10) { ProgressView(); Text("\(state.petName) is having a sniff…").font(.story(14, .regular)).italic() }
                     }
                     if let reply {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack(alignment: .top, spacing: 10) {
                                 CatView(outfit: state.outfit, size: 50, mood: .happy, animated: false).frame(width: 52, height: 62)
-                                Text(reply.reaction).font(.game(15, .medium))
+                                Text(reply.reaction).font(.story(16, .regular))
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                             if reply.isFood {
                                 HStack(spacing: 4) {
-                                    Text("Balance").font(.game(13, .semibold)).foregroundStyle(Color.inkSoft)
+                                    Text("How balanced").font(.story(13, .regular)).italic().foregroundStyle(Color.inkSoft)
                                     ForEach(1...5, id: \.self) { i in
                                         Image(systemName: i <= reply.balance ? "heart.fill" : "heart")
                                             .foregroundStyle(i <= reply.balance ? Color.tomato : Color.inkSoft.opacity(0.4))
@@ -138,7 +150,11 @@ struct MealView: View {
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .card()
+                        .padding(14)
+                        .background(RuledLines(spacing: 26))
+                        .background(PaperShape(radius: 12, wobble: 1.2, seed: 61).fill(Color.paper))
+                        .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
+                        .taped(.topTrailing, angle: 8, color: .grass, x: -30)
                     }
                     if let error { Text(error).font(.game(13, .medium)).foregroundStyle(Color.tomato) }
 
@@ -156,15 +172,21 @@ struct MealView: View {
 
                     if !state.meals.meals.isEmpty {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("Meal diary").font(.game(18, .bold))
-                            ForEach(state.meals.meals.prefix(10)) { m in
+                            StorySection(loc("Snack scrapbook"), subtitle: loc("Everything we've sniffed lately"), color: .pumpkin)
+                                .padding(.bottom, 4)
+                            ForEach(Array(state.meals.meals.prefix(10).enumerated()), id: \.element.id) { i, m in
+                                if i > 0 { InkRule() }
                                 HStack(spacing: 12) {
                                     if let img = state.meals.image(m) {
-                                        Image(uiImage: img).resizable().scaledToFill().frame(width: 52, height: 52)
-                                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                        Image(uiImage: img).resizable().scaledToFill().frame(width: 48, height: 48)
+                                            .clipped()
+                                            .padding(4).padding(.bottom, 6)
+                                            .background(Color.white)
+                                            .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+                                            .rotationEffect(.degrees(i.isMultiple(of: 2) ? -4 : 3))
                                     }
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(m.reaction).font(.game(13, .medium)).lineLimit(2)
+                                        Text(m.reaction).font(.story(14, .regular)).lineLimit(2)
                                         Text(m.date.formatted(.dateTime.weekday().hour().minute())).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
                                     }
                                     Spacer()
@@ -179,7 +201,7 @@ struct MealView: View {
                 .padding(16)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream)
+            .paperBackground()
             .navigationTitle("Meals")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { Button("Done") { dismiss() } }

@@ -47,7 +47,7 @@ struct MeowtrekWidgetView: View {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
                     petButton(size: 70)
-                    Text(s.stepsToday.formatted()).font(.system(size: 24, weight: .bold, design: .rounded)).minimumScaleFactor(0.7)
+                    Text(s.stepsToday.formatted()).font(.page(26)).minimumScaleFactor(0.7)
                     bar
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -64,12 +64,12 @@ struct MeowtrekWidgetView: View {
                     petButton(size: 76)
                     VStack(alignment: .leading, spacing: 3) {
                         Text("\(s.petName) · \(L(s.mood))").font(.caption.weight(.semibold)).foregroundStyle(Color.inkSoft)
-                        Text(s.stepsToday.formatted()).font(.system(size: 30, weight: .bold, design: .rounded))
-                        Text("of \(s.goal.formatted()) steps").font(.caption).foregroundStyle(Color.inkSoft)
+                        Text(s.stepsToday.formatted()).font(.page(32))
+                        Text("of \(s.goal.formatted()) steps").font(.page(12, .regular)).italic().foregroundStyle(Color.inkSoft)
                         bar
                     }
                 }
-                Text("Today").font(.system(size: 15, weight: .bold, design: .rounded))
+                Text("\(s.petName)'s errands").font(.page(16))
                 ForEach(s.questsToday.prefix(3)) { q in questRow(q) }
                 Spacer(minLength: 0)
                 HStack(spacing: 6) {
@@ -86,7 +86,7 @@ struct MeowtrekWidgetView: View {
                     Label("\(s.streak)", systemImage: "flame.fill").font(.caption.weight(.bold)).foregroundStyle(Color.pumpkin)
                 }
                 Spacer(minLength: 0)
-                Text(s.stepsToday.formatted()).font(.system(size: 24, weight: .bold, design: .rounded))
+                Text(s.stepsToday.formatted()).font(.page(26))
                 bar
             }
         }
@@ -105,25 +105,19 @@ struct MeowtrekWidgetView: View {
     }
 
     private var bar: some View {
-        GeometryReader { g in
-            ZStack(alignment: .leading) {
-                Capsule().fill(Color.leafLight.opacity(0.6))
-                Capsule().fill(Color.leaf).frame(width: g.size.width * s.progress)
-            }
-        }
-        .frame(height: 7)
+        CrayonBar(value: s.progress)
     }
 
     private func action<I: AppIntent>(_ intent: I, art: String, title: String, tint: Color, enabled: Bool = true) -> some View {
         Button(intent: intent) {
             HStack(spacing: 6) {
                 ArtView(id: art, size: 20, line: 1.4)
-                Text(title).font(.system(size: 13, weight: .bold, design: .rounded)).lineLimit(1).minimumScaleFactor(0.7)
+                Text(title).font(.page(13)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.7)
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 9).padding(.vertical, 6)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 11, style: .continuous).fill(tint.opacity(enabled ? 0.18 : 0.07)))
+            .background(PencilBox(tint: tint, enabled: enabled))
             .foregroundStyle(enabled ? Color.ink : Color.inkSoft)
         }
         .buttonStyle(.plain)
@@ -148,25 +142,19 @@ struct MeowtrekWidgetView: View {
             Image(systemName: q.icon).font(.system(size: 12, weight: .bold)).foregroundStyle(Color(hexString: q.tint))
                 .frame(width: 26, height: 26).background(Circle().fill(Color(hexString: q.tint).opacity(0.16)))
             VStack(alignment: .leading, spacing: 2) {
-                Text(q.title).font(.system(size: 13, weight: .semibold, design: .rounded)).lineLimit(1)
-                GeometryReader { g in
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(Color.leafLight.opacity(0.6))
-                        Capsule().fill(Color(hexString: q.tint)).frame(width: g.size.width * min(1, Double(q.value) / Double(max(1, q.target))))
-                    }
-                }
-                .frame(height: 5)
+                Text(q.title).font(.page(13, .semibold)).lineLimit(1).strikethrough(q.claimed, color: Color.inkSoft)
+                CrayonBar(value: Double(q.value) / Double(max(1, q.target)), color: Color(hexString: q.tint), height: 5)
             }
             if q.claimed {
-                Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.leaf)
+                InkStamp(text: loc("Done"))
             } else {
                 Button(intent: ClaimQuestIntent(questID: q.id)) {
                     HStack(spacing: 3) {
                         ArtView(id: "coin", size: 14, line: 1.1)
-                        Text(q.done ? "Claim" : "\(q.reward)").font(.system(size: 12, weight: .bold, design: .rounded))
+                        Text(q.done ? loc("Collect") : "\(q.reward)").font(.page(12))
                     }
                     .padding(.horizontal, 8).padding(.vertical, 4)
-                    .background(Capsule().fill(q.done ? Color.honey : Color.honey.opacity(0.2)))
+                    .background(PencilBox(tint: .honey, enabled: q.done))
                 }
                 .buttonStyle(.plain)
                 .disabled(!q.done)
@@ -181,11 +169,11 @@ struct MeowtrekWidget: Widget {
             MeowtrekWidgetView(entry: entry)
                 .foregroundStyle(Color.ink)
                 .fontDesign(.rounded)
-                .containerBackground(for: .widget) { Color.cream }
+                .containerBackground(for: .widget) { WidgetPaperBackground() }
                 .widgetURL(URL(string: "meowtrek://home"))
         }
         .configurationDisplayName("Meowtrek")
-        .description("Today's steps with your cat. Tap to log water, claim coins, feed and pet your cat.")
+        .description("Today's page with your cat. Tap to sip water, collect coins, share a snack or give a pat.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .accessoryCircular, .accessoryRectangular])
     }
 }
@@ -205,16 +193,17 @@ struct TrekLiveActivity: Widget {
                 CatView(outfit: outfit(ctx.attributes), size: 54, mood: .happy, animated: false)
                 VStack(alignment: .leading, spacing: 2) {
                     Label(ctx.attributes.kind, systemImage: ctx.attributes.symbol).font(.caption.weight(.bold)).foregroundStyle(Color.grassDark)
-                    Text(String(format: "%.2f km", ctx.state.meters / 1000)).font(.system(size: 28, weight: .bold, design: .rounded))
+                    Text(String(format: "%.2f km", ctx.state.meters / 1000)).font(.page(28))
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
-                    timer(ctx.state).font(.system(size: 20, weight: .bold, design: .rounded))
+                    timer(ctx.state).font(.page(20))
                     Text("\(pace(ctx.state.pace)) /km").font(.caption.weight(.semibold)).foregroundStyle(Color.inkSoft)
                 }
             }
             .padding(14)
             .foregroundStyle(Color.ink)
+            .background(WidgetPaperBackground())
             .activityBackgroundTint(Color.cream)
         } dynamicIsland: { ctx in
             DynamicIsland {
@@ -226,7 +215,7 @@ struct TrekLiveActivity: Widget {
                     timer(ctx.state).font(.system(size: 17, weight: .bold, design: .rounded))
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text("\(ctx.attributes.petName) is walking with you · \(pace(ctx.state.pace)) /km")
+                    Text("\(ctx.attributes.petName) is right beside you · \(pace(ctx.state.pace)) /km")
                         .font(.caption.weight(.semibold))
                 }
             } compactLeading: {

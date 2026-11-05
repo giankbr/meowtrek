@@ -210,7 +210,7 @@ struct DevicesSection: View {
         row("heart.fill", .tomato, "Apple Health", state.steps.source == .health ? loc("Connected") : loc("Not connected"), connected: state.steps.source == .health) {
             Task { await state.steps.load(); state.refresh() }
         }
-        row("applewatch", .ink, "Apple Watch", loc("Syncs through Apple Health · open Meowtrek on your watch"), connected: state.steps.source == .health, action: nil)
+        row("applewatch", .ink, "Apple Watch", loc("Comes along through Apple Health · open Meowtrek on your wrist"), connected: state.steps.source == .health, action: nil)
         row("figure.walk.motion", .sky, "Fitbit", fitbit ? loc("Connected") : loc("Sign in to sync steps"), connected: fitbit) {
             if fitbit {
                 Fitbit.disconnect(); state.steps.removeExternal("fitbit"); fitbit = false
@@ -233,7 +233,7 @@ struct DevicesSection: View {
                 }
             }
         }
-        Text("Mi Band, Zepp, Huawei, Oura, Withings and others: turn on Apple Health sync in their app and Meowtrek reads it automatically.")
+        Text("Wear a Mi Band, Zepp, Huawei, Oura or Withings? Switch on Apple Health sync in their app and \(state.petName) will find your steps there.")
             .font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
     }
 
@@ -256,7 +256,7 @@ struct DevicesSection: View {
         HStack(spacing: 12) {
             GameIcon(symbol: icon, tint: tint, size: 34)
             VStack(alignment: .leading, spacing: 1) {
-                Text(title).font(.game(15, .bold))
+                Text(title).font(.story(16, .bold))
                 Text(detail).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
             }
             Spacer()
@@ -268,7 +268,7 @@ struct DevicesSection: View {
                     .buttonStyle(.borderless)
                     .tint(connected && title != "Apple Health" ? .tomato : .grassDark)
             } else if connected {
-                Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.grass)
+                Stamp(text: loc("Linked"), color: .grassDark, size: 34, angle: -10)
             }
         }
     }

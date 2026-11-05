@@ -66,6 +66,16 @@
         }
       }
     },
+    "%@ can read back over our last four weeks and write you a little letter about what to try next.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ bisa membaca empat minggu terakhir kita dan menulis surat kecil tentang apa yang bisa dicoba berikutnya."
+          }
+        }
+      }
+    },
     "%@ challenged you to a duel": {
       "localizations": {
         "id": {
@@ -142,6 +152,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ sedang menjelajah %@"
+          }
+        }
+      }
+    },
+    "%@ is having a sniff…": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ sedang mengendus…"
+          }
+        }
+      }
+    },
+    "%@ is home from %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ sudah pulang dari %@"
+          }
+        }
+      }
+    },
+    "%@ is off exploring %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ sedang menjelajahi %@"
+          }
+        }
+      }
+    },
+    "%@ is right beside you · %@ /km": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ada di sampingmu · %@ /km"
           }
         }
       }
@@ -236,12 +286,32 @@
         }
       }
     },
+    "%@ more to level %lld, then a": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ lagi ke level %lld, lalu dapat"
+          }
+        }
+      }
+    },
     "%@ more to reach the goal, about %@ so far.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "%@ lagi menuju target, sejauh ini sekitar %@."
+          }
+        }
+      }
+    },
+    "%@ once a year": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ sekali setahun"
           }
         }
       }
@@ -306,6 +376,16 @@
         }
       }
     },
+    "%@ steps away": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ langkah lagi"
+          }
+        }
+      }
+    },
     "%@ steps before %lld:00": {
       "localizations": {
         "id": {
@@ -332,6 +412,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tinggal %@ langkah hari ini. Mumpung masih terang!"
+          }
+        }
+      }
+    },
+    "%@ steps to the end of the page": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ langkah lagi sampai akhir halaman"
+          }
+        }
+      }
+    },
+    "%@ steps with %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ langkah bersama %@"
           }
         }
       }
@@ -476,6 +576,16 @@
         }
       }
     },
+    "%@ would love you to join the Plus club. Here's what's inside the envelope:": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ingin kamu gabung klub Plus. Ini isi amplopnya:"
+          }
+        }
+      }
+    },
     "%@ · %@": {
       "shouldTranslate": false
     },
@@ -542,12 +652,32 @@
         }
       }
     },
+    "%@'s errands": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tugas %@"
+          }
+        }
+      }
+    },
     "%@'s look": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Gaya %@"
+          }
+        }
+      }
+    },
+    "%@'s notes": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catatan %@"
           }
         }
       }
@@ -587,6 +717,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld hari"
+          }
+        }
+      }
+    },
+    "%lld days in a row": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld hari beruntun"
+          }
+        }
+      }
+    },
+    "%lld days on the road together": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld hari di jalan bersama"
           }
         }
       }
@@ -651,6 +801,16 @@
         }
       }
     },
+    "%lld notes left today": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sisa %lld catatan hari ini"
+          }
+        }
+      }
+    },
     "%lld of %lld collected": {
       "localizations": {
         "id": {
@@ -707,6 +867,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld langkah belum diklaim"
+          }
+        }
+      }
+    },
+    "%lld waiting in the basket": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld menunggu di keranjang"
           }
         }
       }
@@ -810,6 +980,26 @@
         }
       }
     },
+    "+%lld%% · %lld in the cupboard": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+%lld%% · %lld di lemari"
+          }
+        }
+      }
+    },
+    "+%lld%% · none left": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+%lld%% · habis"
+          }
+        }
+      }
+    },
     "+%lld%% · you have %lld": {
       "localizations": {
         "id": {
@@ -896,12 +1086,112 @@
         }
       }
     },
+    "A bit too short to keep. Next time!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terlalu pendek untuk disimpan. Lain kali ya!"
+          }
+        }
+      }
+    },
+    "A cat at the door": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kucing di depan pintu"
+          }
+        }
+      }
+    },
+    "A cat coach, weekly letters, 1.5× coins": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coach kucing, surat mingguan, koin 1,5×"
+          }
+        }
+      }
+    },
+    "A daily copy in your iCloud": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salinan harian di iCloud-mu"
+          }
+        }
+      }
+    },
+    "A good race either way.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lomba yang seru, apa pun hasilnya."
+          }
+        }
+      }
+    },
+    "A letter from %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Surat dari %@"
+          }
+        }
+      }
+    },
+    "A little stall by the trail. Everything here is paid for in steps.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kios kecil di tepi jalur. Semua di sini dibayar pakai langkah."
+          }
+        }
+      }
+    },
+    "A name and a coat": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nama dan bulu"
+          }
+        }
+      }
+    },
     "A short walk makes a happy cat.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Jalan sebentar aja bikin kucing senang."
+          }
+        }
+      }
+    },
+    "A soft meow when you're short of your goal, and before an event wraps up.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meong lembut saat kamu belum capai target, dan sebelum event berakhir."
+          }
+        }
+      }
+    },
+    "A streak freeze every Monday": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembeku beruntun tiap Senin"
           }
         }
       }
@@ -932,6 +1222,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hari biasa, dari minggu ke minggu"
+          }
+        }
+      }
+    },
+    "A weekly letter about your walks": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Surat mingguan tentang jalanmu"
+          }
+        }
+      }
+    },
+    "A whole year": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setahun penuh"
           }
         }
       }
@@ -1066,12 +1376,42 @@
         }
       }
     },
+    "About your cat": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tentang kucingmu"
+          }
+        }
+      }
+    },
+    "Accept the invitation": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terima undangannya"
+          }
+        }
+      }
+    },
     "Add": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Tambah"
+          }
+        }
+      }
+    },
+    "Add a pal": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tambah teman"
           }
         }
       }
@@ -1112,6 +1452,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Semua tugas beres"
+          }
+        }
+      }
+    },
+    "All five found today. The bushes refill tomorrow.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kelimanya sudah ketemu hari ini. Semak terisi lagi besok."
           }
         }
       }
@@ -1166,6 +1516,16 @@
         }
       }
     },
+    "And their coat": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dan warna bulunya"
+          }
+        }
+      }
+    },
     "App icon & wallpapers": {
       "localizations": {
         "id": {
@@ -1206,12 +1566,32 @@
         }
       }
     },
+    "Ask for a letter": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minta surat"
+          }
+        }
+      }
+    },
     "Ask your friend to share their Meowtrek card, then paste the link here.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Minta temanmu bagikan kartu Meowtrek-nya, lalu tempel link-nya di sini."
+          }
+        }
+      }
+    },
+    "Ask your pal to send their Meowtrek card, then paste the link here.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minta temanmu mengirim kartu Meowtrek-nya, lalu tempel link-nya di sini."
           }
         }
       }
@@ -1686,6 +2066,16 @@
         }
       }
     },
+    "Cancel whenever you like": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batalkan kapan saja"
+          }
+        }
+      }
+    },
     "Cancelled.": {
       "localizations": {
         "id": {
@@ -1786,6 +2176,16 @@
         }
       }
     },
+    "Chapter %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bab %lld"
+          }
+        }
+      }
+    },
     "Charcoal": {
       "localizations": {
         "id": {
@@ -1812,6 +2212,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ngobrol sama %@"
+          }
+        }
+      }
+    },
+    "Chats without a daily limit": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngobrol tanpa batas harian"
           }
         }
       }
@@ -1952,6 +2362,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lemari"
+          }
+        }
+      }
+    },
+    "Clothes rack": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gantungan baju"
           }
         }
       }
@@ -2116,6 +2536,36 @@
         }
       }
     },
+    "Come walk with %@ on Meowtrek. Tap to add me.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yuk jalan bareng %@ di Meowtrek. Ketuk untuk menambahkanku."
+          }
+        }
+      }
+    },
+    "Comes along through Apple Health · open Meowtrek on your wrist": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ikut lewat Apple Health · buka Meowtrek di pergelanganmu"
+          }
+        }
+      }
+    },
+    "Complete": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lengkap"
+          }
+        }
+      }
+    },
     "Connect": {
       "localizations": {
         "id": {
@@ -2242,6 +2692,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quest harian"
+          }
+        }
+      }
+    },
+    "Daily quests shaped around your own rhythm": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quest harian yang mengikuti ritmemu"
           }
         }
       }
@@ -2446,6 +2906,16 @@
         }
       }
     },
+    "Each step you take, they take too. Together you'll earn coins, try on hats and fill a little journal of the places you wander.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiap langkahmu, dia ikut melangkah. Bersama kalian kumpulkan koin, coba topi, dan isi jurnal kecil tempat-tempat yang kalian jelajahi."
+          }
+        }
+      }
+    },
     "Early paws": {
       "localizations": {
         "id": {
@@ -2486,6 +2956,16 @@
         }
       }
     },
+    "Earns the title “%@ %@”": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dapat gelar “%@ %@”"
+          }
+        }
+      }
+    },
     "End": {
       "localizations": {
         "id": {
@@ -2502,6 +2982,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Berakhir %@"
+          }
+        }
+      }
+    },
+    "Errands written just for you": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tugas yang ditulis khusus untukmu"
           }
         }
       }
@@ -2526,6 +3016,16 @@
         }
       }
     },
+    "Every %@ steps this month turns a page and unlocks a tier.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiap %@ langkah bulan ini membalik halaman dan membuka satu tier."
+          }
+        }
+      }
+    },
     "Every %@ steps this month unlocks a tier.": {
       "localizations": {
         "id": {
@@ -2546,12 +3046,52 @@
         }
       }
     },
+    "Every landmark is a stop on our walk": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiap landmark adalah persinggahan jalan kita"
+          }
+        }
+      }
+    },
+    "Every step you collect is worth a little more": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setiap langkah yang kamu ambil bernilai sedikit lebih"
+          }
+        }
+      }
+    },
     "Every step you take, your cat walks too. Earn coins, dress them up and explore together.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Setiap langkahmu, kucingmu ikut jalan. Kumpulkan koin, dandani dia, dan jelajah bareng."
+          }
+        }
+      }
+    },
+    "Everything": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semua"
+          }
+        }
+      }
+    },
+    "Everything we've sniffed lately": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semua yang kita endus belakangan ini"
           }
         }
       }
@@ -2642,6 +3182,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Beri makan kucingmu"
+          }
+        }
+      }
+    },
+    "Fetching the plans…": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mengambil paket…"
+          }
+        }
+      }
+    },
+    "Fills %lld%% of the bowl": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mengisi %lld%% mangkuk"
           }
         }
       }
@@ -2746,6 +3306,16 @@
         }
       }
     },
+    "For rainy weeks and lazy Sundays": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Untuk minggu hujan dan Minggu malas"
+          }
+        }
+      }
+    },
     "Format": {
       "localizations": {
         "id": {
@@ -2802,6 +3372,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Streak freeze gratis tiap minggu"
+          }
+        }
+      }
+    },
+    "Friendly races, settled in steps": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lomba santai, diputuskan lewat langkah"
           }
         }
       }
@@ -2916,6 +3496,16 @@
         }
       }
     },
+    "Gem tickets": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiket permata"
+          }
+        }
+      }
+    },
     "Gems": {
       "localizations": {
         "id": {
@@ -2932,6 +3522,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Buat insight"
+          }
+        }
+      }
+    },
+    "Gentle nudges": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pengingat lembut"
           }
         }
       }
@@ -2962,6 +3562,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Oranye"
+          }
+        }
+      }
+    },
+    "Go for a stroll. Post tends to arrive while you walk.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jalan-jalan dulu. Surat biasanya datang saat kamu berjalan."
           }
         }
       }
@@ -3116,6 +3726,16 @@
         }
       }
     },
+    "Got": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dapat"
+          }
+        }
+      }
+    },
     "Gourd Night": {
       "localizations": {
         "id": {
@@ -3226,6 +3846,16 @@
         }
       }
     },
+    "Hide yours": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sembunyikan milikmu"
+          }
+        }
+      }
+    },
     "High-tops": {
       "localizations": {
         "id": {
@@ -3326,6 +3956,36 @@
         }
       }
     },
+    "How balanced": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seberapa seimbang"
+          }
+        }
+      }
+    },
+    "How far shall we walk each day?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seberapa jauh kita jalan tiap hari?"
+          }
+        }
+      }
+    },
+    "How far we'll go": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seberapa jauh kita pergi"
+          }
+        }
+      }
+    },
     "Hungry": {
       "localizations": {
         "id": {
@@ -3376,6 +4036,16 @@
         }
       }
     },
+    "Icon & wallpapers": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ikon & wallpaper"
+          }
+        }
+      }
+    },
     "In %@ we walked": {
       "localizations": {
         "id": {
@@ -3392,6 +4062,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kamera Instan"
+          }
+        }
+      }
+    },
+    "Join Meowtrek Plus": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gabung Meowtrek Plus"
+          }
+        }
+      }
+    },
+    "Join Plus: a cat coach to chat with, 1.5× coins and a weekly streak freeze.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gabung Plus: coach kucing untuk ngobrol, koin 1,5× dan pembeku beruntun tiap minggu."
           }
         }
       }
@@ -3422,6 +4112,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Terus bergerak"
+          }
+        }
+      }
+    },
+    "Keep walking": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terus jalan"
+          }
+        }
+      }
+    },
+    "Keeps a streak safe": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menjaga hari beruntun"
+          }
+        }
+      }
+    },
+    "Kilometre by kilometre": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kilometer demi kilometer"
           }
         }
       }
@@ -3516,6 +4236,26 @@
         }
       }
     },
+    "Let Meowtrek use your location in Settings and I'll draw the route as we go.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Izinkan Meowtrek memakai lokasimu di Pengaturan, nanti rutenya kugambar sambil jalan."
+          }
+        }
+      }
+    },
+    "Let's go for a walk": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayo jalan-jalan"
+          }
+        }
+      }
+    },
     "Level": {
       "localizations": {
         "id": {
@@ -3576,12 +4316,32 @@
         }
       }
     },
+    "Linked": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terhubung"
+          }
+        }
+      }
+    },
     "Little errands for today": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Tugas kecil hari ini"
+          }
+        }
+      }
+    },
+    "Little extras, if you'd like to support us": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tambahan kecil, kalau kamu mau mendukung kami"
           }
         }
       }
@@ -3686,6 +4446,16 @@
         }
       }
     },
+    "Mailbox": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kotak surat"
+          }
+        }
+      }
+    },
     "Make it yours": {
       "localizations": {
         "id": {
@@ -3752,6 +4522,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kenalan sama teman jalanmu"
+          }
+        }
+      }
+    },
+    "Member": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anggota"
           }
         }
       }
@@ -3889,6 +4669,16 @@
         }
       }
     },
+    "Month by month": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bulan ke bulan"
+          }
+        }
+      }
+    },
     "Monthly": {
       "localizations": {
         "id": {
@@ -3919,12 +4709,32 @@
         }
       }
     },
+    "More coats wait in the shop, and you can rename them any time.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warna bulu lain ada di toko, dan namanya bisa diganti kapan saja."
+          }
+        }
+      }
+    },
     "More love for %@, more reasons to walk.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Lebih banyak sayang untuk %@, lebih banyak alasan untuk jalan."
+          }
+        }
+      }
+    },
+    "More of the map appears as we walk": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peta bertambah seiring kita berjalan"
           }
         }
       }
@@ -4069,6 +4879,26 @@
         }
       }
     },
+    "Next stamp tomorrow": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stempel berikutnya besok"
+          }
+        }
+      }
+    },
+    "Next stop": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Persinggahan berikutnya"
+          }
+        }
+      }
+    },
     "Night sky": {
       "localizations": {
         "id": {
@@ -4149,6 +4979,26 @@
         }
       }
     },
+    "No pal card on the clipboard": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ada kartu teman di clipboard"
+          }
+        }
+      }
+    },
+    "No pals here yet. Send your card and the first one gets a ribbon spot next to %@.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada teman. Kirim kartumu, yang pertama dapat tempat pita di samping %@."
+          }
+        }
+      }
+    },
     "No step data from Apple Health yet. Allow access in Settings › Health › Data Access & Devices › Meowtrek.": {
       "localizations": {
         "id": {
@@ -4179,12 +5029,32 @@
         }
       }
     },
+    "Not sure where to start? Try one of these.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bingung mulai dari mana? Coba salah satu ini."
+          }
+        }
+      }
+    },
     "Notes from %@": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Catatan dari %@"
+          }
+        }
+      }
+    },
+    "Notes with %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catatan dengan %@"
           }
         }
       }
@@ -4329,6 +5199,16 @@
         }
       }
     },
+    "Open all": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buka semua"
+          }
+        }
+      }
+    },
     "Opened": {
       "localizations": {
         "id": {
@@ -4359,12 +5239,32 @@
         }
       }
     },
+    "Opens the Watch app so you can add the face, complications and all.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Membuka app Watch supaya kamu bisa menambah face lengkap dengan komplikasinya."
+          }
+        }
+      }
+    },
     "Opens the Watch app to add the face with Meowtrek complications.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Membuka app Watch untuk menambahkan wajah jam dengan komplikasi Meowtrek."
+          }
+        }
+      }
+    },
+    "Our trail so far": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jejak kita sejauh ini"
           }
         }
       }
@@ -4429,6 +5329,26 @@
         }
       }
     },
+    "Pack %@'s bag for a trip": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siapkan tas %@ untuk bertualang"
+          }
+        }
+      }
+    },
+    "Page complete!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halaman selesai!"
+          }
+        }
+      }
+    },
     "Painter's Beret": {
       "localizations": {
         "id": {
@@ -4439,12 +5359,32 @@
         }
       }
     },
+    "Pals swap card links. Open theirs to add them or catch up on their steps.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teman saling tukar link kartu. Buka punya mereka untuk menambahkan atau melihat langkah terbaru."
+          }
+        }
+      }
+    },
     "Panda Suit": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Kostum Panda"
+          }
+        }
+      }
+    },
+    "Paper": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kertas"
           }
         }
       }
@@ -4585,6 +5525,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Elus kucingmu"
+          }
+        }
+      }
+    },
+    "Pick a backdrop for %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih latar untuk %@"
+          }
+        }
+      }
+    },
+    "Pick a pace. I'll keep up and draw our route.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih tempo. Aku ikut dan menggambar rute kita."
+          }
+        }
+      }
+    },
+    "Pick a place. Your everyday steps get %@ there.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih tempat. Langkah harianmu yang membawa %@ ke sana."
+          }
+        }
+      }
+    },
+    "Picked": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dipilih"
           }
         }
       }
@@ -4865,6 +5845,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Siap dibuka!"
+          }
+        }
+      }
+    },
+    "Ready-made watch faces": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch face siap pakai"
           }
         }
       }
@@ -5209,6 +6199,16 @@
         }
       }
     },
+    "Save it to our log": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simpan ke catatan kita"
+          }
+        }
+      }
+    },
     "Save to Photos": {
       "localizations": {
         "id": {
@@ -5339,6 +6339,26 @@
         }
       }
     },
+    "Send my card": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kirim kartuku"
+          }
+        }
+      }
+    },
+    "Sent home from every trip": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dikirim pulang dari tiap perjalanan"
+          }
+        }
+      }
+    },
     "Set complete": {
       "localizations": {
         "id": {
@@ -5399,12 +6419,32 @@
         }
       }
     },
+    "Shape": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bentuk"
+          }
+        }
+      }
+    },
     "Share": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Bagikan"
+          }
+        }
+      }
+    },
+    "Share a page": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bagikan halaman"
           }
         }
       }
@@ -5425,6 +6465,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bagikan kartu"
+          }
+        }
+      }
+    },
+    "Share our route": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bagikan rute kita"
           }
         }
       }
@@ -5469,6 +6519,16 @@
         }
       }
     },
+    "Show %@'s name": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilkan nama %@"
+          }
+        }
+      }
+    },
     "Show it on your friend card": {
       "localizations": {
         "id": {
@@ -5509,12 +6569,32 @@
         }
       }
     },
+    "Show the numbers": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilkan angka"
+          }
+        }
+      }
+    },
     "Show title": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Pakai gelar"
+          }
+        }
+      }
+    },
+    "Show yours": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilkan milikmu"
           }
         }
       }
@@ -5535,6 +6615,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dipakai"
+          }
+        }
+      }
+    },
+    "Shown on your friend card": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampil di kartu temanmu"
           }
         }
       }
@@ -5619,12 +6709,62 @@
         }
       }
     },
+    "Snack scrapbook": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Album camilan"
+          }
+        }
+      }
+    },
+    "Snack shelf": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rak camilan"
+          }
+        }
+      }
+    },
+    "Snack time for %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waktu makan %@"
+          }
+        }
+      }
+    },
+    "Snacks found on the trail": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camilan dari jalur"
+          }
+        }
+      }
+    },
     "Snacks from your walk": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Camilan dari jalanmu"
+          }
+        }
+      }
+    },
+    "Snap it and %@ will have a sniff. No calorie counting, promise.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto saja, nanti %@ mengendusnya. Tanpa hitung kalori, janji."
           }
         }
       }
@@ -5719,6 +6859,26 @@
         }
       }
     },
+    "Sold out": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Habis"
+          }
+        }
+      }
+    },
+    "Someone's been waiting for you": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ada yang sudah menunggumu"
+          }
+        }
+      }
+    },
     "Soulmates": {
       "localizations": {
         "id": {
@@ -5765,6 +6925,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tunas"
+          }
+        }
+      }
+    },
+    "Stamp card": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kartu stempel"
+          }
+        }
+      }
+    },
+    "Stamp day %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stempel hari %lld"
           }
         }
       }
@@ -5869,6 +7049,26 @@
         }
       }
     },
+    "Step data": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data langkah"
+          }
+        }
+      }
+    },
+    "Step duels": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duel langkah"
+          }
+        }
+      }
+    },
     "Step source": {
       "localizations": {
         "id": {
@@ -5909,6 +7109,26 @@
         }
       }
     },
+    "Steps come from Apple Health. Start gentle; you can stretch it later.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langkah diambil dari Apple Health. Mulai santai saja, nanti bisa ditambah."
+          }
+        }
+      }
+    },
+    "Steps over the last seven days": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langkah tujuh hari terakhir"
+          }
+        }
+      }
+    },
     "Sticker": {
       "localizations": {
         "id": {
@@ -5925,6 +7145,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Buku stiker"
+          }
+        }
+      }
+    },
+    "Sticker drops %@ on top of your own photo or video.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stiker menaruh %@ di atas foto atau videomu."
           }
         }
       }
@@ -6129,12 +7359,42 @@
         }
       }
     },
+    "Talk walks, moods and snacks with your cat whenever you like": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngobrol soal jalan, mood dan camilan dengan kucingmu kapan saja"
+          }
+        }
+      }
+    },
     "Talk with your cat coach any time": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Ngobrol dengan pelatih kucingmu kapan saja"
+          }
+        }
+      }
+    },
+    "Tap Record before your next walk and I'll sketch the route right here.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ketuk Rekam sebelum jalan berikutnya, nanti rutenya kugambar di sini."
+          }
+        }
+      }
+    },
+    "Tap to put on": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ketuk untuk pakai"
           }
         }
       }
@@ -6179,6 +7439,16 @@
         }
       }
     },
+    "Thank you for keeping the lights on": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terima kasih sudah mendukung kami"
+          }
+        }
+      }
+    },
     "Thanks for supporting us!": {
       "localizations": {
         "id": {
@@ -6209,12 +7479,62 @@
         }
       }
     },
+    "That link didn't work": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Link itu tidak berhasil"
+          }
+        }
+      }
+    },
+    "The Plus crown": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mahkota Plus"
+          }
+        }
+      }
+    },
     "The coach is napping, try again in a moment.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Pelatihnya lagi tidur siang, coba lagi sebentar lagi."
+          }
+        }
+      }
+    },
+    "The mailbox is empty": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kotak surat kosong"
+          }
+        }
+      }
+    },
+    "The plans didn't arrive. Try again a little later.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paketnya belum datang. Coba lagi sebentar lagi."
+          }
+        }
+      }
+    },
+    "The suggestion is your usual day this week, plus a small stretch.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saran ini adalah hari biasamu minggu ini, ditambah sedikit tantangan."
           }
         }
       }
@@ -6239,12 +7559,42 @@
         }
       }
     },
+    "This page closes %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halaman ini ditutup %@"
+          }
+        }
+      }
+    },
     "This week": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Minggu ini"
+          }
+        }
+      }
+    },
+    "This week's letter": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Surat minggu ini"
+          }
+        }
+      }
+    },
+    "This week's ribbons": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pita minggu ini"
           }
         }
       }
@@ -6275,6 +7625,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tahun ini"
+          }
+        }
+      }
+    },
+    "Throw it away": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buang saja"
           }
         }
       }
@@ -6345,6 +7705,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Halaman hari ini"
+          }
+        }
+      }
+    },
+    "Today's page of steps, with your cat.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halaman langkah hari ini, bersama kucingmu."
+          }
+        }
+      }
+    },
+    "Today's page with your cat. Tap to sip water, collect coins, share a snack or give a pat.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halaman hari ini bersama kucingmu. Ketuk untuk minum, ambil koin, beri camilan atau elus."
           }
         }
       }
@@ -6459,6 +7839,16 @@
         }
       }
     },
+    "Trail map": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peta jalur"
+          }
+        }
+      }
+    },
     "Treasure box": {
       "localizations": {
         "id": {
@@ -6475,6 +7865,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Camilan & boost"
+          }
+        }
+      }
+    },
+    "Treats for %@ and freezes for lazy days": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camilan untuk %@ dan pembeku untuk hari malas"
           }
         }
       }
@@ -6499,6 +7899,16 @@
         }
       }
     },
+    "Trek log": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catatan trek"
+          }
+        }
+      }
+    },
     "Treks": {
       "localizations": {
         "id": {
@@ -6519,6 +7929,16 @@
         }
       }
     },
+    "Try it on": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coba pakai"
+          }
+        }
+      }
+    },
     "Trying on %@": {
       "localizations": {
         "id": {
@@ -6535,6 +7955,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tulip"
+          }
+        }
+      }
+    },
+    "Tummy %lld%% full · empties a little every hour": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perut %lld%% kenyang · berkurang sedikit tiap jam"
+          }
+        }
+      }
+    },
+    "Turn the page": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balik halaman"
           }
         }
       }
@@ -6569,12 +8009,32 @@
         }
       }
     },
+    "Units & privacy": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satuan & privasi"
+          }
+        }
+      }
+    },
     "Unlimited cat chat": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Ngobrol dengan kucing tanpa batas"
+          }
+        }
+      }
+    },
+    "Unpack": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bongkar tas"
           }
         }
       }
@@ -6749,12 +8209,32 @@
         }
       }
     },
+    "Walking pals": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teman jalan"
+          }
+        }
+      }
+    },
     "Walking together! Keep going": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Jalan bareng! Ayo terus"
+          }
+        }
+      }
+    },
+    "Walks, runs and hikes we traced together": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jalan, lari, dan hiking yang kita rekam bersama"
           }
         }
       }
@@ -6859,12 +8339,32 @@
         }
       }
     },
+    "We won this one.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kita menang yang ini."
+          }
+        }
+      }
+    },
     "Wear": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Pakai"
+          }
+        }
+      }
+    },
+    "Wear a Mi Band, Zepp, Huawei, Oura or Withings? Switch on Apple Health sync in their app and %@ will find your steps there.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pakai Mi Band, Zepp, Huawei, Oura atau Withings? Nyalakan sinkron Apple Health di app-nya dan %@ akan menemukan langkahmu di sana."
           }
         }
       }
@@ -6929,7 +8429,57 @@
         }
       }
     },
+    "Welcome to the Plus club!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selamat datang di klub Plus!"
+          }
+        }
+      }
+    },
+    "What a lovely %@!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ yang menyenangkan!"
+          }
+        }
+      }
+    },
     "What are you eating?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lagi makan apa?"
+          }
+        }
+      }
+    },
+    "What shall we call them?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mau kita panggil apa?"
+          }
+        }
+      }
+    },
+    "What went well, what to try, and a goal that fits": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yang sudah bagus, yang bisa dicoba, dan target yang pas"
+          }
+        }
+      }
+    },
+    "What's on your plate?": {
       "localizations": {
         "id": {
           "stringUnit": {
@@ -6945,6 +8495,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kapan"
+          }
+        }
+      }
+    },
+    "Where are we off to?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kita mau ke mana?"
+          }
+        }
+      }
+    },
+    "Where to?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mau ke mana?"
+          }
+        }
+      }
+    },
+    "Where your steps come from": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sumber langkahmu"
+          }
+        }
+      }
+    },
+    "Whoever walks more takes 120 coins. Nobody goes home empty-pawed.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yang jalan lebih banyak dapat 120 koin. Tak ada yang pulang dengan tangan kosong."
           }
         }
       }
@@ -6979,12 +8569,62 @@
         }
       }
     },
+    "With love, %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dengan sayang, %@"
+          }
+        }
+      }
+    },
     "With no Health data or access, Meowtrek shows demo steps. Allow access in Settings › Health › Data Access.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Tanpa data atau akses Health, Meowtrek menampilkan langkah demo. Izinkan akses di Pengaturan › Kesehatan › Akses Data."
+          }
+        }
+      }
+    },
+    "Wrap up this trek?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selesaikan trek ini?"
+          }
+        }
+      }
+    },
+    "Write %@ a note…": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tulis catatan untuk %@…"
+          }
+        }
+      }
+    },
+    "Write a new one": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tulis yang baru"
+          }
+        }
+      }
+    },
+    "YOU'RE INVITED": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KAMU DIUNDANG"
           }
         }
       }
@@ -7079,12 +8719,52 @@
         }
       }
     },
+    "You're in the Plus club": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamu anggota klub Plus"
+          }
+        }
+      }
+    },
+    "You've bought the whole rack. Fancy cat!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamu sudah memborong semuanya. Kucing gaya!"
+          }
+        }
+      }
+    },
     "You've used today's free chats.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Jatah ngobrol gratis hari ini sudah habis."
+          }
+        }
+      }
+    },
+    "Your cat coach": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coach kucingmu"
+          }
+        }
+      }
+    },
+    "Your cat moves with you to a new iPhone": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kucingmu ikut pindah ke iPhone baru"
           }
         }
       }
@@ -7105,6 +8785,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Koin, item, gaya, teman, trek, dan quest di iPhone ini akan diganti dengan isi backup."
+          }
+        }
+      }
+    },
+    "Your pal card": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kartu temanmu"
+          }
+        }
+      }
+    },
+    "Your steps carry them there. Something rare waits at the end.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langkahmu yang membawanya ke sana. Ada sesuatu yang langka di ujungnya."
           }
         }
       }
@@ -7149,12 +8849,32 @@
         }
       }
     },
+    "a month": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "per bulan"
+          }
+        }
+      }
+    },
     "active · est.": {
       "localizations": {
         "id": {
           "stringUnit": {
             "state": "translated",
             "value": "aktif · perkiraan"
+          }
+        }
+      }
+    },
+    "all told": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "total"
           }
         }
       }
@@ -7195,6 +8915,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "permen"
+          }
+        }
+      }
+    },
+    "catching our breath": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "lagi ambil napas"
           }
         }
       }
@@ -7329,6 +9059,16 @@
         }
       }
     },
+    "iCloud copy": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salinan iCloud"
+          }
+        }
+      }
+    },
     "iPhone": {
       "localizations": {
         "id": {
@@ -7395,6 +9135,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "lari terjauh"
+          }
+        }
+      }
+    },
+    "love, %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sayang, %@"
           }
         }
       }
@@ -7482,6 +9232,16 @@
         }
       }
     },
+    "quickest": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tercepat"
+          }
+        }
+      }
+    },
     "shells": {
       "localizations": {
         "id": {
@@ -7498,6 +9258,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "kepingan salju"
+          }
+        }
+      }
+    },
+    "so far, together": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sejauh ini, bersama"
           }
         }
       }

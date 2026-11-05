@@ -43,14 +43,14 @@ struct MeowtrekComplicationView: View {
                         .gaugeStyle(.accessoryLinearCapacity)
                 }
         case .accessoryInline:
-            Label("\(s.stepsToday.formatted()) steps · \(s.petName)", systemImage: "pawprint.fill")
+            Label("\(s.stepsToday.formatted()) steps with \(s.petName)", systemImage: "pawprint.fill")
         default:
             HStack(spacing: 6) {
                 CatView(outfit: s.outfit, size: 40, mood: s.progress >= 1 ? .happy : CatMood(s.mood), animated: false)
                     .frame(width: 42, height: 50)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(s.petName).font(.system(size: 13, weight: .semibold, design: .rounded)).widgetAccentable()
-                    Text(s.stepsToday.formatted()).font(.system(size: 20, weight: .bold, design: .rounded))
+                    Text(s.petName).font(.system(size: 13, weight: .semibold, design: .serif)).italic().widgetAccentable()
+                    Text(s.stepsToday.formatted()).font(.system(size: 21, weight: .bold, design: .serif))
                     ProgressView(value: s.progress).tint(.green)
                 }
             }
@@ -68,7 +68,7 @@ struct MeowtrekComplication: Widget {
                 .containerBackground(for: .widget) { Color.clear }
         }
         .configurationDisplayName("Meowtrek")
-        .description("Today's steps with your cat.")
+        .description("Today's page of steps, with your cat.")
         .supportedFamilies([.accessoryCircular, .accessoryCorner, .accessoryRectangular, .accessoryInline])
     }
 }

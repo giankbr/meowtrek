@@ -110,34 +110,40 @@ struct WallpapersView: View {
                     HStack(spacing: 8) {
                         ForEach(WallpaperTarget.allCases) { t in
                             Button(t.title) { withAnimation(.snappy) { target = t } }
-                                .buttonStyle(.chunky(target == t ? .grass : .paper, text: target == t ? .white : .ink, radius: 16, padH: 14, padV: 7))
+                                .buttonStyle(StoryChipStyle(on: target == t))
                         }
                     }
                     preview
+                    Text("Pick a backdrop for \(state.petName)").font(.story(15, .regular)).italic().foregroundStyle(Color.inkSoft)
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
                         ForEach(WallpaperDesign.allCases) { d in
+                            let i = WallpaperDesign.allCases.firstIndex(of: d) ?? 0
                             Button { withAnimation(.snappy) { design = d } } label: {
-                                VStack(spacing: 4) {
+                                VStack(spacing: 5) {
                                     Wallpaper(design: d, target: .watch, outfit: state.outfit, decor: decor)
-                                        .scaleEffect(0.42)
-                                        .frame(width: 205 * 0.42, height: 251 * 0.42)
-                                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.black.opacity(0.08), lineWidth: 1))
-                                        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(design == d ? Color.grass : .clear, lineWidth: 3).padding(-3))
-                                        .overlay(alignment: .topTrailing) {
-                                            if d.plus && !state.isPlus {
-                                                Image(systemName: "crown.fill").font(.system(size: 9, weight: .bold)).foregroundStyle(Color.sunDark)
-                                                    .padding(4).background(Circle().fill(Color.paper)).offset(x: 5, y: -5)
-                                            }
-                                        }
-                                    Text(d.title).font(.game(11, .semibold)).foregroundStyle(design == d ? Color.grassDark : Color.inkSoft)
+                                        .scaleEffect(0.38)
+                                        .frame(width: 205 * 0.38, height: 251 * 0.38)
+                                        .clipShape(Rectangle())
+                                    Text(d.title).font(.story(12, design == d ? .bold : .medium))
+                                        .foregroundStyle(design == d ? Color.grassDark : Color.inkSoft)
+                                        .lineLimit(1).minimumScaleFactor(0.8)
                                 }
+                                .padding(.horizontal, 6).padding(.top, 6).padding(.bottom, 4)
+                                .background(Rectangle().fill(Color.paper).shadow(color: .black.opacity(design == d ? 0.16 : 0.08), radius: design == d ? 6 : 3, y: 2))
+                                .overlay(alignment: .top) { if design == d { Tape(color: .sun, width: 40).rotationEffect(.degrees(i.isMultiple(of: 2) ? -6 : 5)).offset(y: -8) } }
+                                .overlay(alignment: .topTrailing) {
+                                    if d.plus && !state.isPlus {
+                                        Image(systemName: "crown.fill").font(.system(size: 9, weight: .bold)).foregroundStyle(Color.sunDark)
+                                            .padding(4).background(Circle().fill(Color.paper)).offset(x: 5, y: -5)
+                                    }
+                                }
+                                .rotationEffect(.degrees(design == d ? 0 : [-2.5, 1.5, -1, 2, -1.5, 1][i % 6]))
                             }
                             .buttonStyle(SquishStyle())
                         }
                     }
-                    Button { save() } label: { Label("Save to Photos", systemImage: "arrow.down.to.line").frame(maxWidth: .infinity) }
-                        .buttonStyle(.chunky(.grass, text: .white, radius: 18, padV: 14))
+                    Button { save() } label: { Label("Save to Photos", systemImage: "arrow.down.to.line").font(.story(17, .bold)).frame(maxWidth: .infinity) }
+                        .buttonStyle(.chunky(.grass, text: .white, radius: 14, padV: 14))
                     Text(target == .watch
                          ? "On your iPhone open Watch › Face Gallery › Photos, then choose this image."
                          : "Open Photos, pick the image, tap Share › Use as Wallpaper.")
@@ -148,10 +154,10 @@ struct WallpapersView: View {
                 .frame(maxWidth: .infinity)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream.ignoresSafeArea())
-            .navigationTitle("Wallpapers")
+            .paperBackground()
+            .storyNavTitle(loc("Wallpapers"))
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { Button("Done") { dismiss() } }
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() }.font(.story(15, .bold)) } }
             .sheet(isPresented: $paywall) { PaywallView() }
         }
         .presentationBackground(Color.cream)
@@ -167,6 +173,8 @@ struct WallpapersView: View {
             .padding(target == .watch ? 8 : 6)
             .background(RoundedRectangle(cornerRadius: target == .watch ? 40 : 36, style: .continuous).fill(Color(hex: 0x1E1B18)))
             .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
+            .taped(.top, angle: -4, color: .bubble, width: 64)
+            .padding(.top, 12)
             .animation(.snappy, value: design)
     }
 
@@ -188,12 +196,12 @@ struct WatchFacesSection: View {
     var body: some View {
         if !faces.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Watch faces").font(.game(18, .bold))
+                StoryHeading(text: loc("Ready-made watch faces"), size: 20)
                 ForEach(faces, id: \.self) { url in
                     ShareLink(item: url) {
                         HStack {
                             GameIcon(symbol: "applewatch", tint: .grassDark, size: 36)
-                            Text(url.deletingPathExtension().lastPathComponent).font(.game(15, .semibold))
+                            Text(url.deletingPathExtension().lastPathComponent).font(.story(15, .semibold))
                             Spacer()
                             Image(systemName: "plus.circle.fill").foregroundStyle(Color.grass)
                         }
@@ -201,7 +209,7 @@ struct WatchFacesSection: View {
                     }
                     .buttonStyle(SquishStyle())
                 }
-                Text("Opens the Watch app to add the face with Meowtrek complications.")
+                Text("Opens the Watch app so you can add the face, complications and all.")
                     .font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

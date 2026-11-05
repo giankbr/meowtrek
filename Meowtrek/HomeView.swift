@@ -487,11 +487,11 @@ private struct PetScene: View {
                         .sensoryFeedback(.impact(weight: .light), trigger: hop)
                     }
                     .scaleEffect(1 - 0.38 * d, anchor: UnitPoint(x: 0.5, y: 0.5 + 177 / 340))
-                    .offset(y: -78 * d)
+                    .offset(y: -62 * d)
 
                     HeartBurst(trigger: hearts).offset(y: 10 - 70 * d)
 
-                    SpeechBubble(text: movingLine ?? state.bubble).offset(y: -16 - 30 * d)
+                    SpeechBubble(text: movingLine ?? state.bubble).offset(x: 46 * d, y: -16 - 14 * d)
                 }
             }
 
@@ -636,48 +636,53 @@ struct FeedSheet: View {
     @Environment(AppState.self) private var state
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 12) {
-                CatView(outfit: state.outfit, size: 64, mood: CatMood(state.mood))
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Feed \(state.petName)").font(.game(22, .black))
-                    ProgressBar(value: state.fullness / 100, color: state.fullness < 20 ? .tomato : .grass, height: 14)
-                    Text("Fullness \(Int(state.fullness))% · drops 3% an hour").font(.game(12, .bold))
-                        .foregroundStyle(Color.inkSoft)
-                }
-            }
-            forageCard
-            ForEach(state.foods) { c in
-                let have = state.owns(c)
-                HStack(spacing: 12) {
-                    ArtView(id: c.id, size: 44, line: 2.2)
-                    VStack(alignment: .leading) {
-                        Text(c.name).font(.game(16, .black))
-                        Text("+\(c.food)% · you have \(have)").font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 14) {
+                    CatView(outfit: state.outfit, size: 72, mood: CatMood(state.mood))
+                    VStack(alignment: .leading, spacing: 8) {
+                        StoryHeading(text: loc("Snack time for \(state.petName)"), size: 22, color: .pumpkin)
+                        ProgressBar(value: state.fullness / 100, color: state.fullness < 20 ? .tomato : .grass, height: 14)
+                        Text("Tummy \(Int(state.fullness))% full · empties a little every hour").font(.game(12, .medium))
+                            .foregroundStyle(Color.inkSoft)
                     }
-                    Spacer()
-                    if have > 0 {
-                        Button(state.isFull ? loc("Full") : loc("Feed")) { withAnimation { state.feed(c) } }
-                            .buttonStyle(.chunky(.grass, text: .white))
-                            .disabled(state.isFull)
-                    } else {
-                        Button { state.buy(c) } label: {
-                            HStack(spacing: 4) {
-                                ArtView(id: c.currency == .coin ? "coin" : "gem", size: 18, line: 1.4)
-                                Text("\(c.price)")
+                }
+                .padding(.top, 8)
+                forageCard
+                VStack(spacing: 0) {
+                    ForEach(Array(state.foods.enumerated()), id: \.element.id) { i, c in
+                        let have = state.owns(c)
+                        if i > 0 { PencilRule() }
+                        HStack(spacing: 12) {
+                            ArtView(id: c.id, size: 44, line: 2.2)
+                                .frame(width: 54, height: 54).background(SketchSquare())
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(c.name).font(.story(17, .bold))
+                                Text(have > 0 ? loc("+\(c.food)% · \(have) in the cupboard") : loc("+\(c.food)% · none left"))
+                                    .font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                            }
+                            Spacer()
+                            if have > 0 {
+                                Button(state.isFull ? loc("Full") : loc("Feed")) { withAnimation { state.feed(c) } }
+                                    .buttonStyle(.chunky(.grass, text: .white, radius: 12))
+                                    .disabled(state.isFull)
+                            } else {
+                                Button { state.buy(c) } label: {
+                                    PriceTag(art: c.currency == .coin ? "coin" : "gem", text: "\(c.price)", color: Color.sun.opacity(0.35), angle: -5, string: false)
+                                }
+                                .buttonStyle(SquishStyle())
+                                .disabled(state.balance(c.currency) < c.price)
                             }
                         }
-                        .buttonStyle(.chunky(.sun))
-                        .disabled(state.balance(c.currency) < c.price)
+                        .padding(.vertical, 10)
                     }
                 }
-                .card(padding: 10)
+                .card(padding: 12, radius: 10)
             }
-            Spacer(minLength: 0)
+            .foregroundStyle(Color.ink)
+            .padding(20)
         }
-        .foregroundStyle(Color.ink)
-        .padding(20)
-        .background(Color.cream)
+        .paperBackground()
         .presentationBackground(Color.cream)
     }
 
@@ -689,9 +694,9 @@ struct FeedSheet: View {
                 .rotationEffect(.degrees(ready > 0 ? -6 : 0))
                 .animation(ready > 0 ? .easeInOut(duration: 0.3).repeatForever(autoreverses: true) : .default, value: ready)
             VStack(alignment: .leading, spacing: 5) {
-                Text("Snacks from your walk").font(.game(16, .bold))
+                Text("Snacks found on the trail").font(.story(16, .bold))
                 if maxed && ready == 0 {
-                    Text("All 5 found today. More tomorrow!").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                    Text("All five found today. The bushes refill tomorrow.").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                 } else {
                     ProgressBar(value: state.forageNextProgress, color: .sunDark, height: 8)
                     Text(loc("1 snack every \(AppState.forageSteps.formatted()) steps · \(state.forageFound)/\(AppState.forageMax) today"))
@@ -706,6 +711,7 @@ struct FeedSheet: View {
             .disabled(ready == 0)
         }
         .card(padding: 12, color: Color.chestBg)
+        .taped(.top, angle: -3, color: .sky, width: 50)
     }
 }
 
@@ -723,7 +729,7 @@ struct InboxView: View {
                         row(symbol: q.t.icon, tint: q.t.tint, q.t.title, loc("Daily quest"), loc("+\(q.t.reward)")) { state.claim(q) }
                     }
                     if state.forageReady > 0 {
-                        row(art: "basket", loc("Snacks from your walk"), loc("\(state.forageReady) found"), loc("Collect")) { state.collectForage() }
+                        row(art: "basket", loc("Snacks found on the trail"), loc("\(state.forageReady) waiting in the basket"), loc("Collect")) { state.collectForage() }
                     }
                     if !state.loginClaimedToday {
                         row(art: AppState.dailyRewards[state.loginNextDay - 1].art, loc("Daily rewards"), loc("Day \(state.loginNextDay) of 7"), loc("Claim")) { state.claimLogin() }
@@ -757,8 +763,9 @@ struct InboxView: View {
                     if state.inboxCount == 0 {
                         VStack(spacing: 10) {
                             ArtView(id: "chest", size: 80, line: 3)
-                            Text("All caught up!").font(.game(20, .black))
-                            Text("Walk more to earn rewards.").font(.game(14, .bold)).foregroundStyle(Color.inkSoft)
+                            Text("The mailbox is empty").font(.story(21, .bold))
+                            Text("Go for a stroll. Post tends to arrive while you walk.").font(.game(14, .medium))
+                                .foregroundStyle(Color.inkSoft).multilineTextAlignment(.center)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.top, 40)
@@ -768,12 +775,12 @@ struct InboxView: View {
                 .padding(16)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream.ignoresSafeArea())
-            .navigationTitle("Rewards")
+            .paperBackground()
+            .storyNavTitle(loc("Mailbox"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if state.inboxCount > 1 {
-                    Button("Claim all") { withAnimation { state.claimAll() } }.font(.game(15, .black))
+                    Button("Open all") { withAnimation { state.claimAll() } }.font(.story(15, .bold))
                 }
             }
         }
@@ -793,14 +800,26 @@ struct InboxView: View {
         HStack(spacing: 12) {
             if let art { ArtView(id: art, size: 44, line: 2.2) } else { GameIcon(symbol: symbol ?? "star.fill", tint: Color(hexString: tint), size: 44) }
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.game(16, .black))
-                Text(detail).font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                Text(title).font(.story(16, .bold))
+                Text(detail).font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
             }
             Spacer()
             Button { withAnimation { action() } } label: { Text(reward) }
-                .buttonStyle(.chunky(.sun, padH: 10, padV: 7))
+                .buttonStyle(PostageButtonStyle(color: Color(hexString: tint).opacity(0.45)))
         }
-        .card(padding: 12)
+        .padding(.vertical, 4)
+        .card(padding: 12, radius: 6)
+        .overlay(alignment: .leading) {
+            // Airmail stripes along the edge of each envelope.
+            VStack(spacing: 4) {
+                ForEach(0..<6, id: \.self) { i in
+                    Rectangle().fill(i.isMultiple(of: 2) ? Color.tomato.opacity(0.55) : Color.sky.opacity(0.65))
+                        .frame(width: 4, height: 7)
+                }
+            }
+            .padding(.leading, 3)
+            .accessibilityHidden(true)
+        }
     }
 }
 
@@ -897,10 +916,10 @@ struct SettingsView: View {
                 Section {
                     Button { showPaywall = true } label: {
                         HStack {
-                            GameIcon(symbol: "crown.fill", tint: .sun, size: 34)
+                            WaxSeal(symbol: "crown.fill", color: .tomato, size: 36)
                             VStack(alignment: .leading) {
-                                Text(state.isPlus ? "Meowtrek Plus" : "Get Meowtrek Plus").font(.game(16, .bold)).foregroundStyle(Color.ink)
-                                Text(state.isPlus ? "Thanks for supporting us!" : "AI coach, insights, 1.5× coins").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                                Text(state.isPlus ? "Meowtrek Plus" : "Join Meowtrek Plus").font(.story(17, .bold)).foregroundStyle(Color.ink)
+                                Text(state.isPlus ? "Thank you for keeping the lights on" : "A cat coach, weekly letters, 1.5× coins").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
                             }
                         }
                     }
@@ -914,27 +933,33 @@ struct SettingsView: View {
                     LabeledContent("On-device AI", value: Coach.onDeviceAvailable ? "Available" : "Not available")
                     LabeledContent("Cloud AI", value: Coach.cloudAvailable ? "Configured" : "Not configured")
                 } header: {
-                    Text("AI coach")
+                    StorySectionHeader(text: loc("Your cat coach"), symbol: "sparkles")
                 } footer: {
                     Text("Automatic uses Apple Intelligence on supported iPhones and falls back to the cloud coach.")
                 }
                 Section {
                     BackupSection()
                 } header: {
-                    Text("iCloud backup")
+                    StorySectionHeader(text: loc("iCloud copy"), symbol: "icloud")
                 } footer: {
                     Text("Plus backs up your progress and treks to your private iCloud once a day. Meal photos stay on this iPhone.")
                 }
-                Section("Connected devices") {
+                Section {
                     DevicesSection()
+                } header: {
+                    StorySectionHeader(text: loc("Where your steps come from"), symbol: "applewatch")
                 }
-                Section("Pet") {
+                Section {
                     TextField("Name", text: $s.petName)
                     LabeledContent("Level", value: "\(state.level) · \(Int(state.levelProgress * 100))% to next")
                     LabeledContent("Together since", value: state.firstDay.formatted(date: .abbreviated, time: .omitted))
+                } header: {
+                    StorySectionHeader(text: loc("About your cat"), symbol: "pawprint")
                 }
-                Section("Daily goal") {
+                Section {
                     GoalEditor()
+                } header: {
+                    StorySectionHeader(text: loc("Daily goal"), symbol: "flag")
                 }
                 Section {
                     Toggle("Walk reminders", isOn: Binding(get: { state.remindersOn }, set: { on in
@@ -952,23 +977,27 @@ struct SettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Notifications")
+                    StorySectionHeader(text: loc("Gentle nudges"), symbol: "bell")
                 } footer: {
-                    Text("Meowtrek nudges you if you're short of your goal, and before events end.")
+                    Text("A soft meow when you're short of your goal, and before an event wraps up.")
                 }
-                Section("App icon & wallpapers") {
+                Section {
                     AppIconPicker()
                     Button { showWallpapers = true } label: {
                         Label("Wallpapers for Apple Watch & iPhone", systemImage: "photo.on.rectangle.angled")
                     }
+                } header: {
+                    StorySectionHeader(text: loc("Icon & wallpapers"), symbol: "paintbrush")
                 }
-                Section("Units") {
+                Section {
                     Toggle("Share anonymous usage and crash reports", isOn: Binding(get: { Telemetry.enabled }, set: { Telemetry.enabled = $0 }))
                     Picker("Distance", selection: $s.useMiles) {
                         Text("Kilometres").tag(false)
                         Text("Miles").tag(true)
                     }
                     .pickerStyle(.segmented)
+                } header: {
+                    StorySectionHeader(text: loc("Units & privacy"), symbol: "ruler")
                 }
                 Section {
                     LabeledContent("Step source", value: state.steps.source == .health ? "Apple Health" : "Demo data")
@@ -976,7 +1005,7 @@ struct SettingsView: View {
                     LabeledContent("Streak freezes", value: "\(state.streakFreezes)")
                     Button("Reconnect Apple Health") { Task { await state.steps.load(); state.refresh() } }
                 } header: {
-                    Text("Data")
+                    StorySectionHeader(text: loc("Step data"), symbol: "heart.text.square")
                 } footer: {
                     Text("With no Health data or access, Meowtrek shows demo steps. Allow access in Settings › Health › Data Access.")
                 }
@@ -986,10 +1015,10 @@ struct SettingsView: View {
             }
             .fontDesign(.rounded)
             .scrollContentBackground(.hidden)
-            .background(Color.cream)
-            .navigationTitle("Settings")
+            .paperBackground()
+            .storyNavTitle(loc("Settings"))
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { Button("Done") { dismiss() }.font(.game(15, .black)) }
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() }.font(.story(15, .bold)) } }
             .sheet(isPresented: $showPaywall) { PaywallView() }
             .sheet(isPresented: $showWallpapers) { WallpapersView() }
             .confirmationDialog("Reset everything?", isPresented: $confirmReset, titleVisibility: .visible) {
@@ -1050,8 +1079,8 @@ struct GoalEditor: View {
         @Bindable var s = state
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
-                Text(state.goal.formatted()).font(.game(28, .bold)).contentTransition(.numericText(value: Double(state.goal)))
-                Text("steps a day").font(.game(14, .medium)).foregroundStyle(Color.inkSoft)
+                Text(state.goal.formatted()).font(.story(30, .bold)).contentTransition(.numericText(value: Double(state.goal)))
+                Text("steps a day").font(.story(14, .regular)).italic().foregroundStyle(Color.inkSoft)
                 Spacer()
                 HStack(spacing: 6) {
                     RoundIconButton(symbol: "minus", size: 34) { set(state.goal - 250) }.disabled(state.goal <= 1000)
@@ -1068,7 +1097,7 @@ struct GoalEditor: View {
                 }
                 .padding(.vertical, 2)
             }
-            Text("Suggested is your last 7-day average plus a little stretch.")
+            Text("The suggestion is your usual day this week, plus a small stretch.")
                 .font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
         }
         .padding(.vertical, 4)
@@ -1077,8 +1106,7 @@ struct GoalEditor: View {
 
     private func chip(_ title: String, _ g: Int) -> some View {
         Button(title) { set(g) }
-            .buttonStyle(.chunky(state.goal == g ? .grass : .paper, text: state.goal == g ? .white : .ink, radius: 14, padH: 10, padV: 6))
-            .font(.game(12, .bold))
+            .buttonStyle(StoryChipStyle(on: state.goal == g))
             .lineLimit(1)
     }
 

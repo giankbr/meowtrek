@@ -286,26 +286,37 @@ struct TrekRecordView: View {
                     .buttonStyle(.chunky(.paper, radius: 20, padH: 12, padV: 10))
                     Spacer()
                     if rec.phase != .idle {
-                        Label(kind.title, systemImage: kind.symbol).font(.game(14, .bold))
-                            .padding(.horizontal, 12).padding(.vertical, 8)
-                            .background(Capsule().fill(Color.paper))
+                        Label(kind.title, systemImage: kind.symbol).font(.story(14, .bold))
+                            .padding(.horizontal, 12).padding(.vertical, 7)
+                            .background(PaperShape(radius: 8, wobble: 0.8, seed: 4).fill(Color.paper))
+                            .rotationEffect(.degrees(2))
                     }
                 }
                 .padding(16)
                 if rec.denied {
-                    Text("Allow location in Settings to draw your route.")
-                        .font(.game(13, .semibold)).padding(10).background(Capsule().fill(Color.paper)).padding(.top, 70)
+                    Text("Let Meowtrek use your location in Settings and I'll draw the route as we go.")
+                        .font(.story(13, .regular)).italic().multilineTextAlignment(.center)
+                        .padding(10).background(PaperShape(radius: 10, wobble: 1, seed: 8).fill(Color.paper))
+                        .padding(.horizontal, 30).padding(.top, 70)
                 }
             }
 
             VStack(spacing: 14) {
                 if rec.phase == .idle {
+                    HStack(alignment: .bottom, spacing: 10) {
+                        CatView(outfit: state.outfit, size: 58, mood: .happy, hop: hop)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Where are we off to?").font(.story(20, .bold))
+                            Text("Pick a pace. I'll keep up and draw our route.").font(.story(13, .regular)).italic().foregroundStyle(Color.inkSoft)
+                        }
+                        Spacer(minLength: 0)
+                    }
                     HStack(spacing: 10) {
                         ForEach(TrekKind.allCases) { k in
                             Button { withAnimation(.snappy) { kind = k } } label: {
                                 VStack(spacing: 4) {
                                     Image(systemName: k.symbol).font(.system(size: 22, weight: .semibold))
-                                    Text(k.title).font(.game(13, .bold))
+                                    Text(k.title).font(.story(14, .bold))
                                 }
                                 .frame(maxWidth: .infinity)
                             }
@@ -317,10 +328,11 @@ struct TrekRecordView: View {
                         CatView(outfit: state.outfit, size: 70, mood: .happy, hop: hop)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
-                            Text(state.distanceText(rec.meters)).font(.system(size: 44, weight: .bold, design: .rounded)).monospacedDigit()
-                            Text(state.useMiles ? "distance" : "distance").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                            Text(state.distanceText(rec.meters)).font(.story(46, .bold)).monospacedDigit()
+                            Text(rec.phase == .paused ? loc("catching our breath") : loc("so far, together")).font(.story(13, .regular)).italic().foregroundStyle(Color.inkSoft)
                         }
                     }
+                    InkRule()
                     TimelineView(.periodic(from: .now, by: 1)) { _ in
                         HStack {
                             stat(durationText(rec.elapsed), loc("time"))
@@ -349,7 +361,13 @@ struct TrekRecordView: View {
                 }
             }
             .padding(20)
-            .background(Color.cream)
+            .padding(.top, 8)
+            .background {
+                ZStack { Color.cream; PaperGrain() }
+                    .mask(VStack(spacing: 0) { TornEdge(seed: 23).frame(height: 14); Rectangle() })
+                    .padding(.top, -14)
+                    .ignoresSafeArea(edges: .bottom)
+            }
         }
         .foregroundStyle(Color.ink)
         .onChange(of: rec.splits.count) { _, n in
@@ -357,9 +375,9 @@ struct TrekRecordView: View {
             hop += 1
             state.show(loc("\(n) km! \(paceText(rec.splits.last ?? 0)) /km"), art: "coin")
         }
-        .confirmationDialog("Finish this trek?", isPresented: $confirmStop, titleVisibility: .visible) {
-            Button("Finish and save") { stop() }
-            Button("Discard", role: .destructive) { rec.discard(); dismiss() }
+        .confirmationDialog("Wrap up this trek?", isPresented: $confirmStop, titleVisibility: .visible) {
+            Button("Save it to our log") { stop() }
+            Button("Throw it away", role: .destructive) { rec.discard(); dismiss() }
             Button("Keep going", role: .cancel) {}
         }
         .fullScreenCover(item: $finished, onDismiss: { dismiss() }) { TrekSummaryView(trek: $0, fresh: true) }
@@ -367,7 +385,7 @@ struct TrekRecordView: View {
 
     private func stat(_ v: String, _ l: String) -> some View {
         VStack(spacing: 2) {
-            Text(v).font(.game(22, .bold)).monospacedDigit()
+            Text(v).font(.story(23, .bold)).monospacedDigit()
             Text(l).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
         }
         .frame(maxWidth: .infinity)
@@ -375,7 +393,7 @@ struct TrekRecordView: View {
 
     private func stop() {
         guard let t = rec.finish() else {
-            state.show(loc("Too short to save"))
+            state.show(loc("A bit too short to keep. Next time!"))
             dismiss()
             return
         }
@@ -405,23 +423,26 @@ struct TrekSummaryView: View {
                                 .stroke(trek.kind.tint, style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round))
                         }
                         .frame(height: 240)
-                        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        .clipShape(PaperShape(radius: 16, wobble: 1.6, seed: 17))
+                        .padding(6)
+                        .background(PaperShape(radius: 18, wobble: 1.6, seed: 18).fill(Color.paper))
+                        .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
+                        .rotationEffect(.degrees(-0.8))
+                        .taped(.top, angle: -5, color: trek.kind.tint, x: -70)
+                        .taped(.top, angle: 6, color: trek.kind.tint, x: 80)
                     }
                     HStack(spacing: 12) {
                         GameIcon(symbol: trek.kind.symbol, tint: trek.kind.tint, size: 48)
                         VStack(alignment: .leading) {
-                            Text(fresh ? "Nice \(trek.kind.title.lowercased())!" : trek.kind.title).font(.game(24, .bold))
+                            Text(fresh ? loc("What a lovely \(trek.kind.title.lowercased())!") : trek.kind.title).font(.story(25, .bold))
                             Text(trek.start.formatted(date: .abbreviated, time: .shortened)).font(.game(13, .medium)).foregroundStyle(Color.inkSoft)
                         }
                         Spacer()
                         if fresh {
-                            HStack(spacing: 4) {
-                                ArtView(id: "coin", size: 22)
-                                Text("+\(trek.coins)").font(.game(17, .bold))
-                            }
+                            Stamp(text: "+\(trek.coins)", color: .sunDark, size: 58, angle: 12)
                         }
                     }
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
                         metric(state.distanceText(trek.meters), loc("distance"))
                         metric(durationText(trek.moving), loc("time"))
                         metric(paceText(trek.pace), loc("avg pace"))
@@ -432,30 +453,32 @@ struct TrekSummaryView: View {
                     .card()
                     if !trek.splits.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Splits").font(.game(17, .bold))
+                            StoryHeading(text: loc("Kilometre by kilometre"), size: 18, color: trek.kind.tint)
+                                .padding(.bottom, 6)
                             let best = trek.splits.min() ?? 0
                             ForEach(Array(trek.splits.enumerated()), id: \.offset) { i, s in
                                 HStack {
-                                    Text("km \(i + 1)").font(.game(14, .semibold)).frame(width: 52, alignment: .leading)
-                                    GeometryReader { g in
-                                        Capsule().fill(s == best ? trek.kind.tint : trek.kind.tint.opacity(0.35))
-                                            .frame(width: g.size.width * min(1, best / max(1, s)))
-                                    }
-                                    .frame(height: 10)
+                                    Text("km \(i + 1)").font(.story(14, .semibold)).frame(width: 52, alignment: .leading)
+                                    ProgressBar(value: min(1, best / max(1, s)), color: s == best ? trek.kind.tint : trek.kind.tint.opacity(0.45), height: 10)
                                     Text(paceText(s)).font(.game(14, .bold)).monospacedDigit().frame(width: 56, alignment: .trailing)
+                                }
+                                .overlay(alignment: .trailing) {
+                                    if s == best && trek.splits.count > 1 {
+                                        PaperLabel(text: loc("quickest"), color: .sun, angle: 4, size: 10).offset(x: -64, y: -12)
+                                    }
                                 }
                             }
                         }
                         .card()
                     }
-                    Button { share = true } label: { Label("Share route", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity) }
+                    Button { share = true } label: { Label("Share our route", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity) }
                         .buttonStyle(.chunky(trek.kind.tint, text: .white, radius: 20, padV: 14))
                 }
                 .padding(16)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream)
-            .navigationTitle(trek.kind.title)
+            .paperBackground()
+            .navigationTitle(trek.start.formatted(.dateTime.weekday(.wide).day().month()))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { Button("Done") { dismiss() } }
             .sheet(isPresented: $share) { ShareCardsView(kind: .trek, trek: trek) }
@@ -465,7 +488,7 @@ struct TrekSummaryView: View {
 
     private func metric(_ v: String, _ l: String) -> some View {
         VStack(spacing: 2) {
-            Text(v).font(.game(18, .bold)).lineLimit(1).minimumScaleFactor(0.7)
+            Text(v).font(.story(19, .bold)).lineLimit(1).minimumScaleFactor(0.7)
             Text(l).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
         }
     }
@@ -502,12 +525,13 @@ struct TrekRow: View {
                 .stroke(trek.kind.tint, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                 .padding(8)
                 .frame(width: 58, height: 58)
-                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(trek.kind.tint.opacity(0.12)))
+                .background(MapPaper(compass: false).clipShape(PaperShape(radius: 10, wobble: 0.9, seed: trek.route.count % 40)))
+                .overlay(PaperShape(radius: 10, wobble: 0.9, seed: trek.route.count % 40).stroke(Color.choco.opacity(0.15), lineWidth: 1))
                 .overlay(alignment: .bottomTrailing) {
                     Image(systemName: trek.kind.symbol).font(.system(size: 11, weight: .bold)).foregroundStyle(trek.kind.tint).padding(4)
                 }
             VStack(alignment: .leading, spacing: 2) {
-                Text("\(state.distanceText(trek.meters)) \(trek.kind.title.lowercased())").font(.game(16, .bold))
+                Text("\(state.distanceText(trek.meters)) \(trek.kind.title.lowercased())").font(.story(17, .bold))
                 Text("\(durationText(trek.moving)) · \(paceText(trek.pace)) /km · \(trek.start.formatted(.dateTime.day().month()))")
                     .font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
             }

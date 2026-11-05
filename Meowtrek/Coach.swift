@@ -254,8 +254,8 @@ struct CoachView: View {
                         VStack(spacing: 12) {
                             VStack(spacing: 6) {
                                 CatView(outfit: state.outfit, size: 96, mood: thinking ? .normal : .happy)
-                                Text("Chat with \(state.petName)").font(.game(20, .bold))
-                                Text(engineLabel).font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                                StoryHeading(text: loc("Notes with \(state.petName)"), size: 22, color: .grass)
+                                PaperLabel(text: engineLabel, color: .sky, angle: -2, size: 11).padding(.top, 8)
                             }
                             .padding(.vertical, 10)
                             ForEach(messages) { bubble($0).id($0.id) }
@@ -263,9 +263,12 @@ struct CoachView: View {
                                 HStack { typing; Spacer() }.id("typing")
                             }
                             if let error {
-                                Text(error).font(.game(13, .medium)).foregroundStyle(Color.tomato).multilineTextAlignment(.center)
+                                Text(error).font(.story(13, .regular)).italic().foregroundStyle(Color.tomato).multilineTextAlignment(.center)
                             }
                             if messages.isEmpty {
+                                Text("Not sure where to start? Try one of these.")
+                                    .font(.story(13, .regular)).italic().foregroundStyle(Color.inkSoft)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 FlowChips(items: starters) { send($0) }
                             }
                         }
@@ -278,14 +281,14 @@ struct CoachView: View {
                 inputBar
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream)
+            .paperBackground()
             .navigationTitle("Cat coach")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) { Button("Close") { dismiss() } }
                 if !state.isPlus {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Text("\(state.chatsLeft) left today").font(.game(12, .semibold)).foregroundStyle(Color.inkSoft)
+                        Text("\(state.chatsLeft) notes left today").font(.story(12, .regular)).italic().foregroundStyle(Color.inkSoft)
                     }
                 }
             }
@@ -304,11 +307,12 @@ struct CoachView: View {
 
     private var inputBar: some View {
         HStack(spacing: 10) {
-            TextField("Say something to \(state.petName)…", text: $input, axis: .vertical)
+            TextField("Write \(state.petName) a note…", text: $input, axis: .vertical)
                 .lineLimit(1...4)
-                .font(.game(15, .medium))
+                .font(.story(16, .regular))
                 .padding(.horizontal, 14).padding(.vertical, 10)
-                .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.paper))
+                .background(PaperShape(radius: 12, wobble: 1, seed: 71).fill(Color.paper))
+                .overlay(PaperShape(radius: 12, wobble: 1, seed: 71).stroke(Color.ink.opacity(0.08), lineWidth: 1))
                 .submitLabel(.send)
                 .onSubmit { send(input) }
             Button { send(input) } label: { Image(systemName: "arrow.up").font(.system(size: 16, weight: .bold)) }
@@ -316,7 +320,12 @@ struct CoachView: View {
                 .disabled(input.trimmingCharacters(in: .whitespaces).isEmpty || thinking)
         }
         .padding(.horizontal, 14).padding(.vertical, 10)
-        .background(Color.cream)
+        .background {
+            ZStack { Color.cream; PaperGrain() }
+                .mask(VStack(spacing: 0) { TornEdge(seed: 29).frame(height: 10); Rectangle() })
+                .padding(.top, -10)
+                .ignoresSafeArea(edges: .bottom)
+        }
     }
 
     private func bubble(_ m: ChatMessage) -> some View {
@@ -325,11 +334,24 @@ struct CoachView: View {
             if mine { Spacer(minLength: 40) } else {
                 CatView(outfit: state.outfit, size: 30, animated: false).frame(width: 32, height: 38)
             }
+            let seed = abs(m.id.hashValue % 97)
             Text(m.content)
-                .font(.game(15, .medium))
-                .foregroundStyle(mine ? .white : Color.ink)
-                .padding(.horizontal, 14).padding(.vertical, 10)
-                .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(mine ? Color.grass : Color.paper))
+                .font(.story(16, .regular))
+                .foregroundStyle(Color.ink)
+                .padding(.horizontal, 14).padding(.vertical, 11)
+                .background {
+                    if mine {
+                        PaperShape(radius: 4, wobble: 1, seed: seed).fill(Color.grassLight)
+                            .shadow(color: .black.opacity(0.08), radius: 2, x: 1, y: 2)
+                    } else {
+                        ZStack {
+                            PaperShape(radius: 10, wobble: 1.2, seed: seed).fill(Color.paper)
+                            RuledLines(spacing: 22).clipShape(PaperShape(radius: 10, wobble: 1.2, seed: seed))
+                        }
+                        .shadow(color: .black.opacity(0.06), radius: 3, y: 2)
+                    }
+                }
+                .rotationEffect(.degrees(mine ? 1 : -0.6))
             if !mine { Spacer(minLength: 40) }
         }
     }
@@ -342,7 +364,7 @@ struct CoachView: View {
             }
         }
         .padding(.horizontal, 14).padding(.vertical, 12)
-        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color.paper))
+        .background(PaperShape(radius: 10, wobble: 1, seed: 3).fill(Color.paper))
         .padding(.leading, 40)
     }
 
@@ -380,8 +402,13 @@ struct FlowChips: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ForEach(items, id: \.self) { s in
-                Button(s) { tap(s) }
-                    .buttonStyle(.chunky(.paper, radius: 18, padH: 14, padV: 9))
+                Button { tap(s) } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "pencil.line").font(.system(size: 12, weight: .semibold)).foregroundStyle(Color.inkSoft)
+                        Text(s).font(.story(15, .regular))
+                    }
+                }
+                .buttonStyle(.chunky(.paper, radius: 12, padH: 14, padV: 9))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -400,18 +427,22 @@ struct InsightCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                GameIcon(symbol: "sparkles", tint: .grape, size: 36)
-                Text("AI weekly insight").font(.game(17, .bold))
+                GameIcon(symbol: "envelope.open.fill", tint: .grape, size: 36)
+                Text("This week's letter").font(.story(18, .bold))
                 Spacer()
                 if !state.isPlus { Tag(text: loc("Plus"), color: .sun, textColor: .ink) }
             }
             if let insight {
-                Text(insight.headline).font(.game(18, .bold))
-                Text(insight.summary).font(.game(14, .medium)).foregroundStyle(Color.inkSoft)
+                Text(insight.headline).font(.story(19, .bold))
+                Text(insight.summary).font(.story(15, .regular)).foregroundStyle(Color.inkSoft)
+                    .fixedSize(horizontal: false, vertical: true)
+                InkRule()
                 ForEach(insight.tips, id: \.self) { tip in
-                    Label(tip, systemImage: "pawprint.fill").font(.game(13, .medium))
+                    Label(tip, systemImage: "pawprint.fill").font(.story(14, .regular))
                         .labelStyle(TipLabelStyle())
                 }
+                Text(loc("love, \(state.petName)")).font(.story(14, .semibold)).italic().foregroundStyle(Color.inkSoft)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 if insight.suggestedGoal != state.goal {
                     Button("Set goal to \(insight.suggestedGoal.formatted()) steps") {
                         state.goal = insight.suggestedGoal
@@ -421,8 +452,8 @@ struct InsightCard: View {
                     .buttonStyle(.chunky(.grassLight, text: .grassDark))
                 }
             } else {
-                Text("Let \(state.petName) read your last four weeks and suggest what to try next.")
-                    .font(.game(13, .medium)).foregroundStyle(Color.inkSoft)
+                Text("\(state.petName) can read back over our last four weeks and write you a little letter about what to try next.")
+                    .font(.story(14, .regular)).italic().foregroundStyle(Color.inkSoft)
             }
             if let error { Text(error).font(.game(12, .medium)).foregroundStyle(Color.tomato) }
             Button {
@@ -431,7 +462,7 @@ struct InsightCard: View {
             } label: {
                 HStack {
                     if loading { ProgressView().tint(.white) }
-                    Text(insight == nil ? "Generate insight" : "Refresh")
+                    Text(insight == nil ? "Ask for a letter" : "Write a new one")
                 }
                 .frame(maxWidth: .infinity)
             }

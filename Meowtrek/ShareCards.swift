@@ -343,10 +343,10 @@ struct ShareCardsView: View {
                         HStack(spacing: 6) {
                             ForEach(kinds) { k in
                                 Button(k.title) { withAnimation(.snappy) { kind = k } }
-                                    .buttonStyle(.chunky(kind == k ? .grass : .paper, text: kind == k ? .white : .ink, radius: 20, padH: 12, padV: 7))
+                                    .buttonStyle(StoryChipStyle(on: kind == k))
                             }
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 20).padding(.vertical, 3)
                     }
 
                     options
@@ -362,7 +362,7 @@ struct ShareCardsView: View {
                             }
                             .buttonStyle(.chunky(Color(hex: 0x8B4FD9), text: .white, radius: 18, padV: 13))
                         }
-                        Text("Sticker puts your cat on top of your own Instagram photo or video.")
+                        Text("Sticker drops \(state.petName) on top of your own photo or video.")
                             .font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
 
                         HStack(spacing: 10) {
@@ -390,10 +390,10 @@ struct ShareCardsView: View {
                 .frame(maxWidth: .infinity)
             }
             .foregroundStyle(Color.ink)
-            .background(Color.cream.ignoresSafeArea())
-            .navigationTitle("Share")
+            .paperBackground()
+            .storyNavTitle(loc("Share a page"))
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { Button("Done") { dismiss() } }
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() }.font(.story(15, .bold)) } }
             .sheet(item: Binding(get: { image.map(IdentifiedImage.init) }, set: { image = $0?.image })) { item in
                 ActivitySheet(items: [item.image]).presentationDetents([.medium, .large])
             }
@@ -413,15 +413,15 @@ struct ShareCardsView: View {
     private var options: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
-                Text("Format").font(.game(13, .semibold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8).frame(width: 84, alignment: .leading)
+                Text("Shape").font(.story(14, .semibold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8).frame(width: 84, alignment: .leading)
                 ForEach(ShareFormat.allCases) { f in
                     Button(f.title) { withAnimation(.snappy) { style.format = f } }
-                        .buttonStyle(.chunky(style.format == f ? .grass : .paper, text: style.format == f ? .white : .ink, radius: 16, padH: 14, padV: 6))
+                        .buttonStyle(StoryChipStyle(on: style.format == f))
                 }
                 Spacer(minLength: 0)
             }
             HStack(spacing: 6) {
-                Text("Background").font(.game(13, .semibold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8).frame(width: 84, alignment: .leading)
+                Text("Paper").font(.story(14, .semibold)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8).frame(width: 84, alignment: .leading)
                 ForEach(swatches) { t in
                     Button { withAnimation(.snappy) { style.theme = t } } label: {
                         Circle().fill(LinearGradient(colors: t.colors(kind), startPoint: .top, endPoint: .bottom))
@@ -439,12 +439,14 @@ struct ShareCardsView: View {
                 }
                 .accessibilityLabel(Text("Use a photo"))
             }
-            Toggle("Show stats", isOn: $style.showStats.animation(.snappy))
-            Toggle("Show name", isOn: $style.showName.animation(.snappy))
+            PencilRule()
+            Toggle("Show the numbers", isOn: $style.showStats.animation(.snappy))
+            Toggle("Show \(state.petName)'s name", isOn: $style.showName.animation(.snappy))
         }
-        .font(.game(14, .semibold))
+        .font(.story(15, .medium))
         .tint(.grass)
-        .card(padding: 14)
+        .card(padding: 14, radius: 10)
+        .taped(.topLeading, angle: -8, color: .sky, x: 18, width: 48)
         .padding(.horizontal, 20)
     }
 
