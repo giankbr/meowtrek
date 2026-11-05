@@ -93,7 +93,7 @@ p { margin: 0; }
 :focus-visible { outline: 3px solid var(--lilac); outline-offset: 3px; border-radius: 8px; }
 
 /* hero: park scene */
-.hero { position: relative; overflow: hidden; min-height: 820px; padding-top: 48px; background: linear-gradient(180deg, var(--bg) 0%, var(--scene-sand) 55%, var(--scene-dawn) 88%); }
+.hero { position: relative; overflow: hidden; min-height: 760px; padding-top: 48px; padding-bottom: 72px; background: linear-gradient(180deg, var(--scene-sand) 0%, var(--bg) 68%); }
 .hills { position: absolute; left: 0; bottom: 0; width: 100%; pointer-events: none; }
 .hills-back { height: 300px; z-index: 0; }
 .hills-front { height: 160px; z-index: 2; }
