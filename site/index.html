@@ -400,12 +400,16 @@
   if (!('IntersectionObserver' in window)) return;
   var els = document.querySelectorAll('.section-head, .split-head, .stat, .milestones li, .tile, .showcase figure, .plan, .faq details, .privacy-statement, .privacy-points li, .cta');
   els.forEach(function (el) { el.classList.add('reveal'); });
+  var reveal = function (el) { el.classList.add('in'); };
+  // Trigger a little before an element scrolls in, so sections are never caught mid-fade as a blank gap.
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); }
     });
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  }, { rootMargin: '0px 0px 12% 0px', threshold: 0 });
   els.forEach(function (el) { io.observe(el); });
+  // Safety net: never leave content invisible if the observer misbehaves.
+  setTimeout(function () { els.forEach(reveal); }, 2600);
 })();
 </script>
 </body>
