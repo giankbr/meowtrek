@@ -12,6 +12,12 @@ export interface Env {
   GARMIN_CONSUMER_SECRET?: string;
   GARMIN_WEBHOOK_SECRET?: string;
   ADMIN_TOKEN?: string;
+  // APNs (optional): when all are set, subscription-lifecycle pushes are sent.
+  APNS_KEY?: string; // the .p8 private key, PEM contents
+  APNS_KEY_ID?: string;
+  APNS_TEAM_ID?: string;
+  APNS_ENVIRONMENT?: string; // "Production" | "Sandbox"; defaults to APPLE_ENVIRONMENT
+  APNS_TOPIC?: string; // defaults to APPLE_BUNDLE_ID
 }
 
 export type Plan = "free" | "plus";

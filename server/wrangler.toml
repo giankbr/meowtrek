@@ -9,6 +9,11 @@ APPLE_BUNDLE_ID = "id.gian.meowtrek"
 APPLE_ENVIRONMENT = "Sandbox"
 # APPLE_APP_ID = "1234567890"      # required when APPLE_ENVIRONMENT = "Production"
 ALLOW_UNVERIFIED_PLUS = "false"     # dev only; see README
+# APNs (optional, for subscription-lifecycle pushes). APNS_KEY is a secret:
+#   wrangler secret put APNS_KEY   # paste the .p8 contents
+# APNS_KEY_ID = "ABCD123456"
+# APNS_TEAM_ID = "TEAMID1234"
+# APNS_ENVIRONMENT = "Sandbox"      # or "Production"; defaults to APPLE_ENVIRONMENT
 
 [[kv_namespaces]]
 binding = "KV"

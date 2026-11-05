@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { today, type AppEnv, type Env } from "./env";
 import { isActivePlus, verifyNotification } from "./plus";
+import { notifyLifecycle } from "./push";
 
 // App Store Server Notifications V2: Apple POSTs subscription lifecycle events here so we have
 // server-side truth about renewals, refunds and cancellations without waiting for the app to open.
@@ -40,6 +41,8 @@ appstore.post("/notifications", async (c) => {
     if (txn.appAccountToken) keys.push(`sub:acct:${txn.appAccountToken.toLowerCase()}`);
     if (txn.originalTransactionId) keys.push(`sub:tx:${txn.originalTransactionId}`);
     await Promise.all(keys.map((k) => c.env.KV.put(k, record, { expirationTtl: SUB_TTL })));
+
+    await notifyLifecycle(c.env, c.var.deps.fetch, type, note.subtype, txn.appAccountToken);
   }
 
   return c.json({ ok: true }); // Apple expects a 2xx or it will retry.
