@@ -360,6 +360,8 @@ private struct PetScene: View {
     @State private var hop = 0
     @State private var hearts = 0
     @State private var bubbleShown = true
+    @State private var renaming = false
+    @State private var draftName = ""
     /// Plus members can lock the sky; "auto" follows the time of day.
     @AppStorage("scenePhase") private var scenePhase = "auto"
 
@@ -526,25 +528,37 @@ private struct PetScene: View {
 
             topBar.frame(maxHeight: .infinity, alignment: .top)
 
-            VStack(alignment: .leading, spacing: 1) {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(state.titleText.map { "\(state.petName) \(L($0))" } ?? state.petName).font(.story(18, .bold)).lineLimit(1)
-                    Text("Lv \(state.level)").font(.game(11, .semibold))
-                        .padding(.horizontal, 6).padding(.vertical, 1)
-                        .background(Capsule().fill(Color.sun.opacity(0.7)))
+            Button { draftName = state.petName; renaming = true } label: {
+                VStack(alignment: .leading, spacing: 1) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text(state.titleText.map { "\(state.petName) \(L($0))" } ?? state.petName).font(.story(18, .bold)).lineLimit(1)
+                        Text("Lv \(state.level)").font(.game(11, .semibold))
+                            .padding(.horizontal, 6).padding(.vertical, 1)
+                            .background(Capsule().fill(Color.sun.opacity(0.7)))
+                        Image(systemName: "pencil").font(.system(size: 10, weight: .bold)).foregroundStyle(Color.inkSoft)
+                    }
+                    Text("\(L(state.mood)) · day \(state.daysTogether) of our trek")
+                        .font(.game(12, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1)
                 }
-                Text("\(L(state.mood)) · day \(state.daysTogether) of our trek")
-                    .font(.game(12, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1)
+                .fixedSize()
+                .padding(.horizontal, 14).padding(.top, 12).padding(.bottom, 9)
+                .background(PaperShape(radius: 4, seed: 19).fill(Color.paper))
+                .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
+                .taped(.top, angle: 4, color: .bubble, width: 46)
+                .rotationEffect(.degrees(-2.5))
+                .foregroundStyle(Color.ink)
             }
-            .fixedSize()
-            .padding(.horizontal, 14).padding(.top, 12).padding(.bottom, 9)
-            .background(PaperShape(radius: 4, seed: 19).fill(Color.paper))
-            .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
-            .taped(.top, angle: 4, color: .bubble, width: 46)
-            .rotationEffect(.degrees(-2.5))
-            .foregroundStyle(Color.ink)
+            .buttonStyle(SquishStyle())
             .padding(.leading, 18).padding(.top, 104)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .alert(loc("Name your cat"), isPresented: $renaming) {
+                TextField(loc("Name"), text: $draftName)
+                Button(loc("Cancel"), role: .cancel) {}
+                Button(loc("Save")) {
+                    let n = draftName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !n.isEmpty { state.petName = String(n.prefix(20)); state.save() }
+                }
+            }
 
             VStack(spacing: 10) {
                 SceneButton(symbol: "tshirt.fill", tint: .grape) { showCloset = true }
