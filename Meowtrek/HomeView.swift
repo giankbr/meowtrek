@@ -480,9 +480,12 @@ private struct PetScene: View {
                 bird(-80, -150, 7)
             }
 
-            oval(50, 50, 100, 100).sticker(farHill.lighter(0.07), farHill, 3)
+            // A pale, hazy ridge far back for atmospheric depth.
+            oval(50, 50, 100, 100).fill(farHill.lighter(0.16))
+                .frame(width: 560, height: 200).offset(x: 10, y: 150)
+            oval(50, 50, 100, 100).sticker(farHill.lighter(0.12), farHill.darker(0.05), 3)
                 .frame(width: 360, height: 220).offset(x: -150, y: 120)
-            oval(50, 50, 100, 100).sticker(farHill.lighter(0.07), farHill, 3)
+            oval(50, 50, 100, 100).sticker(farHill.lighter(0.12), farHill.darker(0.05), 3)
                 .frame(width: 380, height: 240).offset(x: 170, y: 110)
 
             ArtView(id: "deco_tree", size: 110, line: 3).modifier(Drift(x: -140, y: 50, pace: pace, speed: 18))
