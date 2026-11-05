@@ -585,9 +585,17 @@ enum Art {
         // MARK: Scene props
         case "deco_tree":
             return AnyView(ZStack {
-                rrect(43, 56, 14, 40, 5).sticker(.choco, w)
-                oval(50, 38, 76, 66).sticker(.grass, w)
-                oval(34, 26, 20, 12).fill(Color.grassLight)
+                rrect(43, 58, 14, 40, 5).sticker(.choco, w)
+                Capsule().fill(Color.choco.darker(0.12)).frame(width: 5, height: 30).offset(x: 1, y: 18) // trunk shade
+                // Layered canopy: darker clumps behind, a lit main blob, highlights on top.
+                oval(32, 44, 40, 38).fill(Color.grassDark)
+                oval(68, 44, 40, 38).fill(Color.grassDark)
+                oval(50, 52, 48, 34).fill(Color.grassDark)
+                oval(50, 32, 62, 56).sticker(.grass, w)
+                oval(40, 40, 40, 34).fill(Color.grass)
+                oval(37, 28, 26, 20).fill(Color.grassLight)
+                oval(60, 30, 14, 11).fill(Color.grassLight.opacity(0.7))
+                oval(58, 48, 16, 12).fill(Color.grassDark.opacity(0.4))
             })
         case "deco_pine":
             return AnyView(ZStack {
