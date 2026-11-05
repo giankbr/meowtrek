@@ -278,12 +278,10 @@ private struct VectorCat: View {
         if suit == nil {
             // Tabby stripes on the undressed body, matching the head and tail markings.
             canvas(8) { p, q in
-                p.move(to: q(60, 150)); p.addQuadCurve(to: q(74, 153), control: q(67, 149))
-                p.move(to: q(140, 150)); p.addQuadCurve(to: q(126, 153), control: q(133, 149))
-                p.move(to: q(56, 168)); p.addQuadCurve(to: q(71, 171), control: q(63, 167))
-                p.move(to: q(144, 168)); p.addQuadCurve(to: q(129, 171), control: q(137, 167))
-                p.move(to: q(55, 188)); p.addQuadCurve(to: q(69, 191), control: q(62, 187))
-                p.move(to: q(145, 188)); p.addQuadCurve(to: q(131, 191), control: q(138, 187))
+                p.move(to: q(62, 144)); p.addQuadCurve(to: q(78, 148), control: q(70, 143))
+                p.move(to: q(138, 144)); p.addQuadCurve(to: q(122, 148), control: q(130, 143))
+                p.move(to: q(58, 158)); p.addQuadCurve(to: q(75, 162), control: q(66, 157))
+                p.move(to: q(142, 158)); p.addQuadCurve(to: q(125, 162), control: q(134, 157))
             }
             .line(5, fur.darker(0.16))
         }

@@ -102,6 +102,9 @@ final class AppState {
         apply(Self.loadSnapshot() ?? Self.fresh())
         store.creditGems = { [weak self] n, tx in self?.creditGems(n, tx) ?? false }
         store.accountToken = UUID(uuidString: profileID)
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-bare") { equipped = equipped.filter { $0.key == .fur } }
+        #endif
     }
 
     var isPlus: Bool { store.isPlus }
