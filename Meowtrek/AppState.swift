@@ -114,10 +114,12 @@ final class AppState {
     }
 
     static let freeChatsPerDay = 5
+    /// Fair-use ceiling for Plus: effectively unlimited for a person, but caps runaway cost.
+    static let plusChatsPerDay = 50
 
     var chatsLeft: Int {
-        if isPlus { return .max }
-        return max(0, Self.freeChatsPerDay - (chatDay == dayKey ? chatCount : 0))
+        let cap = isPlus ? Self.plusChatsPerDay : Self.freeChatsPerDay
+        return max(0, cap - (chatDay == dayKey ? chatCount : 0))
     }
 
     func countChat() {

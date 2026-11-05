@@ -243,6 +243,7 @@ struct CoachView: View {
     @State private var thinking = false
     @State private var error: String?
     @State private var showPaywall = false
+    @State private var capHit = false
 
     private let starters = [loc("How am I doing this week?"), loc("Plan an evening walk for me"), loc("I'm feeling lazy today"), loc("Motivate me!")]
 
@@ -293,6 +294,11 @@ struct CoachView: View {
                 }
             }
             .sheet(isPresented: $showPaywall) { PaywallView() }
+            .alert(loc("Let's pick this up tomorrow"), isPresented: $capHit) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("We've chatted a lot today! I need a little catnap. Come find me again tomorrow.")
+            }
         }
         .presentationBackground(Color.cream)
     }
@@ -371,7 +377,7 @@ struct CoachView: View {
     private func send(_ text: String) {
         let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !t.isEmpty, !thinking else { return }
-        guard state.chatsLeft > 0 else { showPaywall = true; return }
+        guard state.chatsLeft > 0 else { if state.isPlus { capHit = true } else { showPaywall = true }; return }
         guard let engine = Coach.engine(state) else { error = CoachError.unavailable.localizedDescription; return }
         error = nil
         input = ""
