@@ -436,6 +436,7 @@ private struct VectorCat: View {
             p.addQuadCurve(to: q(94, 121), control: q(94, 125))
         }
         .inked(Color(hex: 0xE58593), 2.2, shade: false)
+        Circle().fill(.white.opacity(0.65)).frame(width: 3.2).position(x: 97, y: 121.5) // nose shine
         mouth
         ForEach([false, true], id: \.self) { right in
             let m: @Sendable (CGFloat) -> CGFloat = { right ? 200 - $0 : $0 }
@@ -468,11 +469,12 @@ private struct VectorCat: View {
         default:
             let big = mood == .hungry
             ZStack {
-                Wobble(base: Ellipse(), seed: side + 50).fill(ink).frame(width: big ? 19 : 14, height: big ? 23 : 19)
-                Circle().fill(.white).frame(width: big ? 7.5 : 5).offset(x: -2.5, y: big ? -5 : -4.5)
-                if big { Circle().fill(.white).frame(width: 3.5).offset(x: 3.5, y: 5) }
+                Wobble(base: Ellipse(), seed: side + 50).fill(ink).frame(width: big ? 21 : 16.5, height: big ? 25 : 22)
+                // Two catchlights read as a glossy, wet eye.
+                Circle().fill(.white).frame(width: big ? 8 : 6.5).offset(x: -3, y: big ? -5.5 : -5)
+                Circle().fill(.white).frame(width: big ? 3.5 : 3).offset(x: 3, y: big ? 5 : 4.5)
                 Capsule().fill(ink).frame(width: 2.2, height: 6)
-                    .rotationEffect(.degrees(side * 55)).offset(x: side * (big ? 10.5 : 8.5), y: big ? -9 : -7.5)
+                    .rotationEffect(.degrees(side * 55)).offset(x: side * (big ? 11 : 9), y: big ? -9.5 : -8)
             }
             .rotationEffect(.degrees(side * 6))
             .scaleEffect(x: 1, y: blink ? 0.08 : 1)
