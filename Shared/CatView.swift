@@ -179,9 +179,8 @@ fileprivate extension Shape {
         let style = StrokeStyle(lineWidth: w * 0.6, lineCap: .round, lineJoin: .round)
         return ZStack {
             if shade {
-                fill(LinearGradient(colors: [color.lighter(0.11), color, color.darker(0.15)],
+                fill(LinearGradient(colors: [color.lighter(0.13), color, color.darker(0.15)],
                                     startPoint: .top, endPoint: .bottom))
-                fill(color.lighter(0.17)).offset(x: -3, y: -6).blur(radius: 2).clipShape(self).opacity(0.55)
             } else {
                 fill(color)
             }
