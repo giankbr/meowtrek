@@ -170,6 +170,23 @@ extension AppState {
         let m = cal.component(.month, from: .now)
         return Catalog.item(Self.plusDropIDs[(m - 1) % Self.plusDropIDs.count])
     }
+    // MARK: Companion (Plus) — a second cat that keeps your cat company at home.
+    var hasCompanion: Bool { isPlus && !companionName.isEmpty }
+    var companionOutfit: [Slot: Item] { Catalog.item(companionFur).map { [.fur: $0] } ?? [:] }
+    static let companionFurs = ["fur_snow", "fur_smoke", "fur_cocoa", "fur_peach", "fur_charcoal", "fur_honey", "fur_caramel"]
+    func adoptCompanion(name: String, fur: String) {
+        guard isPlus else { return }
+        let n = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !n.isEmpty else { return }
+        companionName = n
+        companionFur = fur
+        Telemetry.track("companion_adopted")
+        show(loc("\(n) joined \(petName)!"))
+        celebrate(.confetti)
+        save()
+    }
+    func releaseCompanion() { companionName = ""; save() }
+
     private var dropKey: String { "drop:\(seasonID)" }
     var dropClaimed: Bool { claimedForever.contains(dropKey) }
     func claimDrop() {

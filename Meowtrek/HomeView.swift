@@ -481,6 +481,11 @@ private struct PetScene: View {
                 ZStack {
                     ZStack {
                         Ellipse().fill(Color.ink.opacity(0.18)).frame(width: 110, height: 18).offset(y: 168)
+                        if state.hasCompanion {
+                            Ellipse().fill(Color.ink.opacity(0.14)).frame(width: 72, height: 12).offset(x: -82, y: 172)
+                            CatView(outfit: state.companionOutfit, size: 96, mood: .happy, pace: pace)
+                                .offset(x: -82, y: 118)
+                        }
                         Button {
                             hop += 1
                             hearts += 1
@@ -913,6 +918,7 @@ struct SettingsView: View {
     @State private var confirmReset = false
     @State private var showPaywall = false
     @State private var showWallpapers = false
+    @State private var showAdopt = false
     @AppStorage("scenePhase") private var scenePhase = "auto"
     @AppStorage("adaptiveGoal") private var adaptiveGoal = false
 
@@ -962,8 +968,28 @@ struct SettingsView: View {
                     TextField("Name", text: $s.petName)
                     LabeledContent("Level", value: "\(state.level) · \(Int(state.levelProgress * 100))% to next")
                     LabeledContent("Together since", value: state.firstDay.formatted(date: .abbreviated, time: .omitted))
+                    if state.hasCompanion {
+                        HStack {
+                            Text("Companion")
+                            Spacer()
+                            Text(state.companionName).foregroundStyle(Color.inkSoft)
+                            Button(role: .destructive) { state.releaseCompanion() } label: { Image(systemName: "xmark.circle.fill").foregroundStyle(Color.inkSoft) }
+                                .buttonStyle(.plain)
+                        }
+                    } else {
+                        Button { if state.isPlus { showAdopt = true } else { showPaywall = true } } label: {
+                            HStack {
+                                Text("Adopt a friend").foregroundStyle(Color.ink)
+                                Spacer()
+                                if !state.isPlus { Tag(text: loc("Plus"), color: .sun, textColor: .ink) }
+                                else { Image(systemName: "plus.circle.fill").foregroundStyle(Color.grass) }
+                            }
+                        }
+                    }
                 } header: {
                     StorySectionHeader(text: loc("About your cat"), symbol: "pawprint")
+                } footer: {
+                    Text("Plus lets a second cat move in and keep \(state.petName) company at home.")
                 }
                 Section {
                     if state.isPlus {
@@ -1063,6 +1089,7 @@ struct SettingsView: View {
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() }.font(.story(15, .bold)) } }
             .sheet(isPresented: $showPaywall) { PaywallView() }
             .sheet(isPresented: $showWallpapers) { WallpapersView() }
+            .sheet(isPresented: $showAdopt) { AdoptCompanionView().presentationDetents([.medium, .large]) }
             .confirmationDialog("Reset everything?", isPresented: $confirmReset, titleVisibility: .visible) {
                 Button("Reset", role: .destructive) { state.resetAll(); dismiss() }
             } message: {
@@ -1191,6 +1218,54 @@ private struct TrailWalk<C: View>: View {
             }
         } else {
             content(0)
+        }
+    }
+}
+
+/// Name and pick the fur for a Plus companion cat.
+struct AdoptCompanionView: View {
+    @Environment(AppState.self) private var state
+    @Environment(\.dismiss) private var dismiss
+    @State private var name = ""
+    @State private var fur = AppState.companionFurs.first ?? "fur_snow"
+
+    private let cols = [GridItem(.adaptive(minimum: 72), spacing: 12)]
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 18) {
+                    CatView(outfit: Catalog.item(fur).map { [.fur: $0] } ?? [:], size: 130, mood: .happy)
+                        .frame(height: 150)
+                    TextField(loc("Name your new friend"), text: $name)
+                        .font(.story(18, .bold)).multilineTextAlignment(.center)
+                        .padding(.vertical, 12)
+                        .background(RoundedRectangle(cornerRadius: 14).fill(Color.cream))
+                    LazyVGrid(columns: cols, spacing: 12) {
+                        ForEach(AppState.companionFurs, id: \.self) { f in
+                            Button { fur = f } label: {
+                                ArtView(id: f, size: 52)
+                                    .padding(8)
+                                    .background(RoundedRectangle(cornerRadius: 14).fill(fur == f ? Color.grass.opacity(0.22) : Color.cream))
+                                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.grass, lineWidth: fur == f ? 2 : 0))
+                            }
+                            .buttonStyle(SquishStyle())
+                        }
+                    }
+                    Button {
+                        state.adoptCompanion(name: name, fur: fur)
+                        dismiss()
+                    } label: { Text("Welcome them home").frame(maxWidth: .infinity) }
+                        .buttonStyle(.chunky(.grass, text: .white, radius: 16, padV: 14))
+                        .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+                .padding(20)
+            }
+            .foregroundStyle(Color.ink)
+            .paperBackground()
+            .navigationTitle(loc("Adopt a friend"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarLeading) { Button(loc("Close")) { dismiss() } } }
         }
     }
 }

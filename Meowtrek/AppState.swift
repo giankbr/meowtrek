@@ -52,6 +52,8 @@ final class AppState {
     var coins = 0
     var gems = 0
     var petName = ""
+    var companionName = ""
+    var companionFur = "fur_snow"
     var goal = 8000
     var owned: Set<String> = []
     var equipped: [Slot: String] = [:]
@@ -721,6 +723,8 @@ final class AppState {
         var title: String?
         var forageDay: String?
         var forageClaimed: Int?
+        var companionName: String?
+        var companionFur: String?
     }
 
     private static let storeKey = "meowtrek.v2"
@@ -737,7 +741,8 @@ final class AppState {
             firstDay: demo ? Calendar.current.date(byAdding: .day, value: -19, to: .now)! : .now, fullnessAt: .now,
             looks: [], friends: [], onboarded: demo, remindersOn: false, useMiles: false,
             creditedTx: nil, freezeWeek: nil, aiQuestsDay: nil, chatDay: nil, aiEngine: nil, aiQuests: nil, chatCount: nil,
-            waterDay: nil, water: nil, expedition: nil, postcards: nil, loginDay: nil, loginLast: nil, duels: nil, title: nil, forageDay: nil, forageClaimed: nil)
+            waterDay: nil, water: nil, expedition: nil, postcards: nil, loginDay: nil, loginLast: nil, duels: nil, title: nil, forageDay: nil, forageClaimed: nil,
+            companionName: nil, companionFur: nil)
     }
 
     private static func loadSnapshot() -> Snapshot? {
@@ -762,6 +767,7 @@ final class AppState {
         expedition = s.expedition; postcards = s.postcards ?? []; loginDay = s.loginDay ?? 0
         loginLast = s.loginLast ?? ""; duels = s.duels ?? []; title = s.title
         forageDay = s.forageDay ?? ""; forageClaimed = s.forageClaimed ?? 0
+        companionName = s.companionName ?? ""; companionFur = s.companionFur ?? "fur_snow"
     }
 
     func backupData() -> Data { (try? JSONEncoder().encode(snapshot())) ?? Data() }
@@ -786,7 +792,8 @@ final class AppState {
             creditedTx: Array(creditedTx), freezeWeek: freezeWeek, aiQuestsDay: aiQuestsDay, chatDay: chatDay,
             aiEngine: aiEngine, aiQuests: aiQuests, chatCount: chatCount, waterDay: waterDay, water: water,
             expedition: expedition, postcards: postcards, loginDay: loginDay, loginLast: loginLast, duels: duels, title: title,
-            forageDay: forageDay, forageClaimed: forageClaimed)
+            forageDay: forageDay, forageClaimed: forageClaimed,
+            companionName: companionName, companionFur: companionFur)
     }
 
     func save() {
