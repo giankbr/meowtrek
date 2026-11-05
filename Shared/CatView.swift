@@ -275,6 +275,18 @@ private struct VectorCat: View {
             p.addCurve(to: q(100, 136), control1: q(54, 168), control2: q(72, 136))
         }
         .inked(suitColor, line)
+        if suit == nil {
+            // Tabby stripes on the undressed body, matching the head and tail markings.
+            canvas(8) { p, q in
+                p.move(to: q(60, 150)); p.addQuadCurve(to: q(74, 153), control: q(67, 149))
+                p.move(to: q(140, 150)); p.addQuadCurve(to: q(126, 153), control: q(133, 149))
+                p.move(to: q(56, 168)); p.addQuadCurve(to: q(71, 171), control: q(63, 167))
+                p.move(to: q(144, 168)); p.addQuadCurve(to: q(129, 171), control: q(137, 167))
+                p.move(to: q(55, 188)); p.addQuadCurve(to: q(69, 191), control: q(62, 187))
+                p.move(to: q(145, 188)); p.addQuadCurve(to: q(131, 191), control: q(138, 187))
+            }
+            .line(5, fur.darker(0.16))
+        }
         if suit?.suit == .cloak {
             ZStack {
                 poly([(30, 0), (50, 40), (70, 0)]).sticker(.sun, line * 0.8)
