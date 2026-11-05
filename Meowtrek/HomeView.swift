@@ -359,6 +359,7 @@ private struct PetScene: View {
     @State private var drift = false
     @State private var hop = 0
     @State private var hearts = 0
+    @State private var bubbleShown = true
     /// Plus members can lock the sky; "auto" follows the time of day.
     @AppStorage("scenePhase") private var scenePhase = "auto"
 
@@ -515,7 +516,11 @@ private struct PetScene: View {
 
                     HeartBurst(trigger: hearts).offset(y: 10 - 70 * d)
 
-                    SpeechBubble(text: movingLine ?? state.bubble).offset(x: 46 * d, y: -16 - 14 * d)
+                    if movingLine != nil || bubbleShown {
+                        SpeechBubble(text: movingLine ?? state.bubble)
+                            .offset(x: 46 * d, y: -16 - 14 * d)
+                            .transition(.scale(scale: 0.85, anchor: .bottom).combined(with: .opacity))
+                    }
                 }
             }
 
@@ -561,6 +566,12 @@ private struct PetScene: View {
         .onChange(of: state.coins) { old, new in if new > old { hop += 1 } }
         .onAppear {
             withAnimation(.easeInOut(duration: 14).repeatForever(autoreverses: true)) { drift = true }
+        }
+        .task(id: "\(hop)|\(state.bubble)") {
+            // Show the speech bubble briefly on open, on a tap, or on a new line, then let it fade.
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) { bubbleShown = true }
+            try? await Task.sleep(for: .seconds(4))
+            withAnimation(.easeOut(duration: 0.4)) { bubbleShown = false }
         }
     }
 
