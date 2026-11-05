@@ -593,9 +593,8 @@ enum Art {
                 oval(50, 52, 48, 34).fill(Color.grassDark)
                 oval(50, 32, 62, 56).sticker(.grass, w)
                 oval(40, 40, 40, 34).fill(Color.grass)
-                oval(37, 28, 26, 20).fill(Color.grassLight)
-                oval(60, 30, 14, 11).fill(Color.grassLight.opacity(0.7))
-                oval(58, 48, 16, 12).fill(Color.grassDark.opacity(0.4))
+                oval(38, 26, 22, 15).fill(Color.grassLight.opacity(0.55))
+                oval(62, 50, 18, 13).fill(Color.grassDark.opacity(0.35))
             })
         case "deco_pine":
             return AnyView(ZStack {

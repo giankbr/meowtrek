@@ -486,9 +486,8 @@ private struct PetScene: View {
             .frame(height: 170)
             .frame(maxHeight: .infinity, alignment: .bottom)
 
-            ArtView(id: decor[0], size: 62, line: 3).modifier(Drift(x: 130, y: 140, pace: pace, speed: 34))
-            ArtView(id: decor[1 % decor.count], size: 54, line: 3).modifier(Drift(x: -150, y: 150, pace: pace, speed: 34))
-            ArtView(id: decor[2 % decor.count], size: 42, line: 3).modifier(Drift(x: 160, y: 85, pace: pace, speed: 26))
+            ArtView(id: decor[0], size: 60, line: 3).modifier(Drift(x: 136, y: 150, pace: pace, speed: 34))
+            ArtView(id: decor[1 % decor.count], size: 52, line: 3).modifier(Drift(x: -150, y: 152, pace: pace, speed: 34))
 
             TrailWalk(pace: pace) { d in
                 ZStack {
