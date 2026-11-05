@@ -195,20 +195,17 @@ struct HomeView: View {
         .taped(.top, angle: -3)
     }
 
-    /// Today's quests on a ruled diary page, with the treasure box at the foot.
+    /// Today's quests as a tidy checklist, with the treasure box at the foot.
     private var diary: some View {
         VStack(spacing: 0) {
             ForEach(Array(state.quests.enumerated()), id: \.element.id) { i, q in
-                QuestRow(q: q).padding(.vertical, 12)
-                Rectangle().fill(Color.sky.opacity(0.35)).frame(height: 1)
+                if i > 0 { Rectangle().fill(Color.ink.opacity(0.08)).frame(height: 1).padding(.leading, 46) }
+                QuestRow(q: q).padding(.vertical, 13)
             }
-            chestRow.padding(.top, 12)
+            Rectangle().fill(Color.ink.opacity(0.08)).frame(height: 1).padding(.leading, 46)
+            chestRow.padding(.vertical, 13)
         }
-        .padding(.leading, 6)
-        .card(padding: 14)
-        .overlay(alignment: .leading) {
-            Rectangle().fill(Color.tomato.opacity(0.3)).frame(width: 1.2).padding(.vertical, 8).padding(.leading, 56)
-        }
+        .card(padding: 16)
         .taped(.topTrailing, angle: 6, color: .bubble, x: -24, width: 48)
     }
 
@@ -286,19 +283,16 @@ struct QuestRow: View {
         let tint = Color(hexString: q.t.tint)
         HStack(spacing: 12) {
             ZStack {
-                PaperShape(radius: 5, wobble: 0.8, seed: q.id.count)
-                    .fill(done && !claimed ? Color.sun.opacity(0.35) : Color.clear)
-                PaperShape(radius: 5, wobble: 0.8, seed: q.id.count)
-                    .stroke(Color.ink.opacity(missed ? 0.25 : 0.55), lineWidth: 1.5)
-                if claimed || done {
-                    Image(systemName: "checkmark").font(.system(size: 17, weight: .heavy))
-                        .foregroundStyle(claimed ? Color.grassDark : Color.sunDark)
-                        .rotationEffect(.degrees(-8)).offset(x: 2, y: -2)
+                Circle().stroke(Color.ink.opacity(missed ? 0.18 : 0.28), lineWidth: 2)
+                if done || claimed {
+                    Circle().fill(claimed ? Color.grass : Color.sun)
+                    Image(systemName: "checkmark").font(.system(size: 14, weight: .heavy))
+                        .foregroundStyle(.white)
                         .transition(.scale(scale: 0.5).combined(with: .opacity))
                 }
             }
-            .frame(width: 26, height: 26)
-            .frame(width: 40)
+            .frame(width: 28, height: 28)
+            .frame(width: 34)
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
                     Image(systemName: q.t.icon).font(.system(size: 12, weight: .bold)).foregroundStyle(tint)
@@ -323,8 +317,14 @@ struct QuestRow: View {
             }
             Spacer(minLength: 4)
             if claimed {
-                Stamp(text: "+\(q.t.reward)", color: .tomato, size: 42)
-                    .transition(.scale(scale: 1.4).combined(with: .opacity))
+                HStack(spacing: 4) {
+                    ArtView(id: "coin", size: 15, line: 1.2)
+                    Text("+\(q.t.reward)").font(.game(13, .bold))
+                }
+                .foregroundStyle(Color.grassDark)
+                .padding(.horizontal, 11).padding(.vertical, 6)
+                .background(Capsule().fill(Color.grassLight))
+                .transition(.scale(scale: 1.3).combined(with: .opacity))
             } else if done {
                 Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { state.claim(q) } } label: {
                     HStack(spacing: 4) {
