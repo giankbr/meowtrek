@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { appstore } from "./appstore";
 import { makeAnthropic } from "./claude";
 import { coach } from "./coach";
 import type { AppEnv, Deps } from "./env";
@@ -14,6 +15,7 @@ export function createApp(deps: Partial<Deps> = {}) {
     await next();
   });
   app.get("/v1/health", (c) => c.json({ ok: true }));
+  app.route("/v1/appstore", appstore);
   app.route("/v1/coach", coach);
   app.route("/v1/garmin", garmin);
   app.route("/v1/groups", groups);
