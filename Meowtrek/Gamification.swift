@@ -163,6 +163,26 @@ extension AppState {
     var seasonStart: Date { cal.dateInterval(of: .month, for: .now)!.start }
     var seasonEnd: Date { cal.dateInterval(of: .month, for: .now)!.end }
 
+    // MARK: Monthly Plus drop — a premium item gifted free to Plus each month.
+    static let plusDropIDs = ["crown", "halo", "pixel_shades", "medal", "pearls",
+                              "suit_lamb", "star_pouch", "roller_skates", "fur_lilac", "fur_mint", "fur_sky"]
+    var monthlyDrop: Item? {
+        let m = cal.component(.month, from: .now)
+        return Catalog.item(Self.plusDropIDs[(m - 1) % Self.plusDropIDs.count])
+    }
+    private var dropKey: String { "drop:\(seasonID)" }
+    var dropClaimed: Bool { claimedForever.contains(dropKey) }
+    func claimDrop() {
+        guard isPlus, let d = monthlyDrop, !dropClaimed else { return }
+        owned.insert(d.id)
+        equipped[d.slot] = d.id
+        claimedForever.insert(dropKey)
+        Telemetry.track("plus_drop_claimed")
+        show(loc("\(d.name) — this month's Plus gift!"), art: d.id)
+        celebrate(.confetti)
+        save()
+    }
+
     var seasonSteps: Int {
         var total = 0, d = seasonStart
         while d <= startOfToday {

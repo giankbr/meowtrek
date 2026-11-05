@@ -8,10 +8,12 @@ struct ClosetView: View {
     @State private var showLooks = false
     @State private var hop = 0
     @State private var showShare = false
+    @State private var showPaywall = false
 
     var body: some View {
         VStack(spacing: 0) {
             header
+            if let d = state.monthlyDrop, !state.dropClaimed { dropCard(d) }
             stage
             picker
         }
@@ -24,6 +26,7 @@ struct ClosetView: View {
         .onChange(of: slot) { withAnimation(.snappy) { trying = nil } }
         .sheet(isPresented: $showLooks) { LooksView().presentationDetents([.medium, .large]) }
         .sheet(isPresented: $showShare) { ShareCardsView(kind: .outfit) }
+        .sheet(isPresented: $showPaywall) { PaywallView() }
         .sensoryFeedback(.selection, trigger: state.equipped)
         .onChange(of: state.equipped) { hop += 1 }
     }
@@ -41,6 +44,36 @@ struct ClosetView: View {
         }
         .padding(.horizontal, 16)
         .padding(.top, 8).padding(.bottom, 12)
+    }
+
+    private func dropCard(_ d: Item) -> some View {
+        Button {
+            if state.isPlus { withAnimation(.spring) { state.claimDrop() } } else { showPaywall = true }
+        } label: {
+            HStack(spacing: 12) {
+                ArtView(id: d.id, size: 42)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("This month's Plus gift").font(.game(11, .black)).tracking(0.5).textCase(.uppercase).foregroundStyle(Color.grapeDark)
+                    Text(d.name).font(.story(17, .bold)).lineLimit(1)
+                }
+                Spacer(minLength: 6)
+                if state.isPlus {
+                    Text("Claim").font(.game(14, .bold)).foregroundStyle(.white)
+                        .padding(.horizontal, 16).padding(.vertical, 9)
+                        .background(Capsule().fill(Color.grass))
+                } else {
+                    HStack(spacing: 5) { Image(systemName: "lock.fill").font(.system(size: 11, weight: .bold)); Text("Plus").font(.game(14, .bold)) }
+                        .foregroundStyle(Color.ink)
+                        .padding(.horizontal, 14).padding(.vertical, 9)
+                        .background(Capsule().fill(Color.sun))
+                }
+            }
+            .padding(.horizontal, 14).padding(.vertical, 12)
+            .background(PaperShape(radius: 18, wobble: 1, seed: 7).fill(Color.grape.opacity(0.1)))
+            .overlay(PaperShape(radius: 18, wobble: 1, seed: 7).stroke(Color.grape.opacity(0.3), lineWidth: 1.4))
+        }
+        .buttonStyle(SquishStyle())
+        .padding(.horizontal, 16).padding(.bottom, 10)
     }
 
     private var stage: some View {
