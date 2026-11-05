@@ -21,6 +21,7 @@ struct StatsView: View {
     @State private var month = Self.monthStart(.now)
     @State private var selectedDay: Date?
     @State private var pickedX: Double?
+    @State private var showReview = false
 
     private static var cal: Calendar {
         var c = Calendar.current
@@ -35,6 +36,7 @@ struct StatsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 ScreenHeader(title: loc("Walk journal")) { streakTag }
+                reviewCard
                 journal
                 stickerCalendar
                 notes
@@ -47,6 +49,26 @@ struct StatsView: View {
         .foregroundStyle(Color.ink)
         .paperBackground()
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $showReview) { YearReviewView() }
+    }
+
+    private var reviewCard: some View {
+        let year = cal.component(.year, from: today)
+        return Button { showReview = true } label: {
+            HStack(spacing: 12) {
+                CatView(outfit: state.outfit, size: 46, mood: .happy, animated: false).frame(width: 46, height: 52)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Your \(String(year)) in review").font(.story(18, .bold))
+                    Text("A year of walks with \(state.petName)").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
+                }
+                Spacer(minLength: 6)
+                Image(systemName: "chevron.right").font(.game(15, .bold)).foregroundStyle(Color.inkSoft)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 12)
+            .background(PaperShape(radius: 18, wobble: 1, seed: 19).fill(Color.sun.opacity(0.18)))
+            .overlay(PaperShape(radius: 18, wobble: 1, seed: 19).stroke(Color.sun.opacity(0.5), lineWidth: 1.4))
+        }
+        .buttonStyle(SquishStyle())
     }
 
     private var streakTag: some View {
@@ -525,5 +547,113 @@ struct StatsView: View {
             }
         }
         .padding(.horizontal, 4)
+    }
+}
+
+// MARK: - Year in review
+
+/// A cozy end-of-year recap of the walking year, with a shareable card.
+struct YearReviewView: View {
+    @Environment(AppState.self) private var state
+    @Environment(\.dismiss) private var dismiss
+    @State private var shareImage: Image?
+
+    private var cal: Calendar { Calendar.current }
+    private var year: Int { cal.component(.year, from: .now) }
+
+    private struct Recap {
+        var total = 0, bestDay = 0, goalDays = 0, activeDays = 0
+        var bestDate: Date?
+        var meters: Double { Double(total) * 0.72 }
+    }
+
+    private var recap: Recap {
+        var r = Recap()
+        let todayStart = cal.startOfDay(for: .now)
+        for (day, steps) in state.steps.daily where cal.component(.year, from: day) == year && day <= todayStart {
+            r.total += steps
+            if steps > r.bestDay { r.bestDay = steps; r.bestDate = day }
+            if steps >= state.goal { r.goalDays += 1 }
+            if steps > 0 { r.activeDays += 1 }
+        }
+        return r
+    }
+
+    var body: some View {
+        let r = recap
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    card(r)
+                    if let shareImage {
+                        ShareLink(item: shareImage,
+                                  preview: SharePreview("My \(String(year)) with \(state.petName)", image: shareImage)) {
+                            Label("Share my year", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.chunky(.grass, text: .white, radius: 16, padV: 13))
+                    }
+                }
+                .padding(16)
+            }
+            .foregroundStyle(Color.ink)
+            .paperBackground()
+            .navigationTitle(loc("Year in review"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarLeading) { Button(loc("Close")) { dismiss() } } }
+            .task { renderShare(r) }
+        }
+    }
+
+    /// The recap card — also what we render to an image for sharing.
+    private func card(_ r: Recap) -> some View {
+        VStack(spacing: 14) {
+            VStack(spacing: 4) {
+                CatView(outfit: state.outfit, size: 86, mood: .happy, animated: false).frame(width: 86, height: 100)
+                Text("Our \(String(year))").font(.story(26, .bold))
+                Text("\(state.petName) & you").font(.game(13, .semibold)).foregroundStyle(Color.inkSoft)
+            }
+            VStack(spacing: 0) {
+                Text(r.total.formatted()).font(.story(44, .heavy)).contentTransition(.numericText())
+                Text("steps this year").font(.game(13, .semibold)).foregroundStyle(Color.inkSoft)
+            }
+            let cols = [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)]
+            LazyVGrid(columns: cols, spacing: 10) {
+                tile("figure.walk", .grassDark, state.distanceText(r.meters), loc("walked"))
+                tile("star.fill", .sunDark, r.bestDay.formatted(), loc("biggest day"))
+                tile("flag.checkered", .skyDark, "\(r.goalDays)", loc("goal days"))
+                tile("calendar", .grape, "\(r.activeDays)", loc("active days"))
+                tile("flame.fill", .pumpkin, "\(state.longestStreak)", loc("longest streak"))
+                tile("tshirt.fill", .bubble, "\(state.owned.count)", loc("items collected"))
+            }
+            Text("\(state.daysTogether) days on the trail together 🐾")
+                .font(.game(12, .bold)).foregroundStyle(Color.inkSoft)
+                .padding(.top, 2)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity)
+        .background(PaperShape(radius: 24, wobble: 1.4, seed: 23).fill(Color.paper))
+        .overlay(PaperShape(radius: 24, wobble: 1.4, seed: 23).stroke(Color.choco.opacity(0.14), lineWidth: 1.2))
+    }
+
+    private func tile(_ symbol: String, _ tint: Color, _ value: String, _ label: String) -> some View {
+        HStack(spacing: 10) {
+            GameIcon(symbol: symbol, tint: tint, size: 34)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(value).font(.story(17, .bold)).lineLimit(1).minimumScaleFactor(0.7)
+                Text(label).font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+            }
+            Spacer(minLength: 2)
+        }
+        .padding(.horizontal, 10).padding(.vertical, 9)
+        .background(RoundedRectangle(cornerRadius: 14).fill(Color.cream))
+    }
+
+    @MainActor private func renderShare(_ r: Recap) {
+        let renderer = ImageRenderer(content:
+            card(r).padding(18).background(Color.cream).frame(width: 360)
+                .environment(state)
+        )
+        renderer.scale = 3
+        if let ui = renderer.uiImage { shareImage = Image(uiImage: ui) }
     }
 }
