@@ -20,6 +20,8 @@ final class Store {
 
     /// Credits gems once per transaction id; returns false when it was already credited.
     @ObservationIgnored var creditGems: (Int, String) -> Bool = { _, _ in false }
+    /// Tags purchases so App Store Server Notifications can be matched back to this install.
+    @ObservationIgnored var accountToken: UUID?
     @ObservationIgnored private var updates: Task<Void, Never>?
 
     init() {
@@ -62,7 +64,8 @@ final class Store {
     func buy(_ product: Product) async -> Bool {
         purchasing = true
         defer { purchasing = false }
-        guard let result = try? await product.purchase() else { return false }
+        let options: Set<Product.PurchaseOption> = accountToken.map { [.appAccountToken($0)] } ?? []
+        guard let result = try? await product.purchase(options: options) else { return false }
         if case .success(let verification) = result {
             await handle(verification)
             return true

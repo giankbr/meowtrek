@@ -101,6 +101,7 @@ final class AppState {
     init() {
         apply(Self.loadSnapshot() ?? Self.fresh())
         store.creditGems = { [weak self] n, tx in self?.creditGems(n, tx) ?? false }
+        store.accountToken = UUID(uuidString: profileID)
     }
 
     var isPlus: Bool { store.isPlus }
