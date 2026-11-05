@@ -54,6 +54,12 @@ final class Store {
             jws = result.jwsRepresentation
             renewal = t.expirationDate
         }
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-plus") {
+            plus = true
+            renewal = renewal ?? Calendar.current.date(byAdding: .month, value: 1, to: .now)
+        }
+        #endif
         isPlus = plus
         plusJWS = jws
         plusRenewal = renewal
