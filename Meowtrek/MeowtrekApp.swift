@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct MeowtrekApp: App {
     @State private var state = AppState()
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
@@ -21,6 +22,7 @@ struct MeowtrekApp: App {
                     case .active where state.onboarded:
                         Telemetry.shared.start()
                         state.motion.start()
+                        if AppConfig.apiBase != nil { PushService.configure(state) }
                         Task {
                             await state.steps.load()
                             await Devices.refreshAll(state)
