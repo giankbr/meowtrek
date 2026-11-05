@@ -8,7 +8,8 @@
 <meta property="og:title" content="Meowtrek — every step, your cat walks too">
 <meta property="og:description" content="A cozy step tracker for iPhone and Apple Watch with a cat companion.">
 <meta property="og:image" content="assets/icon.png">
-<meta name="theme-color" content="#F7F4EC">
+<meta name="theme-color" content="#BFE4F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14182B" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,36 +27,81 @@
       <a href="#plus">Plus</a>
       <a href="#faq">FAQ</a>
     </nav>
-    <a class="btn primary sm" href="#top">Get notified</a>
+    <a class="btn primary sm" href="#top" data-join>Join waitlist</a>
   </div>
 </header>
 
 <main>
   <section class="hero" id="top">
+    <div class="sky" aria-hidden="true">
+      <span class="sun"></span>
+      <span class="moon"></span>
+      <span class="stars"></span>
+      <svg class="cloud c1" viewBox="0 0 120 56"><path d="M24 50h76a18 18 0 0 0 0-36 26 26 0 0 0-49-4A20 20 0 0 0 24 50z"/></svg>
+      <svg class="cloud c2" viewBox="0 0 120 56"><path d="M24 50h76a18 18 0 0 0 0-36 26 26 0 0 0-49-4A20 20 0 0 0 24 50z"/></svg>
+      <svg class="cloud c3" viewBox="0 0 120 56"><path d="M24 50h76a18 18 0 0 0 0-36 26 26 0 0 0-49-4A20 20 0 0 0 24 50z"/></svg>
+    </div>
+
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <span class="pill"><i class="pill-dot"></i>Step tracker · iPhone &amp; Apple Watch</span>
-        <h1>Every step, your cat <em>walks too.</em></h1>
-        <p class="lede">Meowtrek turns your daily steps into a little life for your cat. Walk to earn coins, dress them up and unlock places on your journey together.</p>
-        <form class="waitlist" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-          <input type="email" name="email" required autocomplete="email" placeholder="you@email.com" aria-label="Email address">
-          <button type="submit" class="btn primary lg">Notify me at launch</button>
-          <p class="waitlist-note">Be first to walk. We’ll email you the day it’s out — no spam. <a href="#how">See how it works →</a></p>
+        <span class="pill"><i class="pill-dot"></i>Coming soon · iPhone &amp; Apple Watch</span>
+        <h1>Every step, your cat <em>walks&nbsp;too.</em></h1>
+        <p class="lede">A cozy step tracker where a little cat walks with you. Your steps become coins, outfits and new places to explore together.</p>
+        <form class="waitlist" id="heroForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <div class="field">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-10 6L2 7"/></svg>
+            <input type="email" name="email" required autocomplete="email" placeholder="you@email.com" aria-label="Email address">
+            <button type="submit" class="btn primary">Join the waitlist<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          </div>
+          <p class="waitlist-note">One email on launch day. No spam, ever.</p>
+          <p class="waitlist-done" role="status" hidden><img src="assets/icon.png" alt="" width="32" height="32"><span><b>You’re on the list!</b>Your cat will meet you at the door on launch day.</span></p>
         </form>
         <ul class="hero-notes">
           <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Free to play</li>
-          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Plus from $4.99/month</li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>No account needed</li>
           <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Works with Apple Health</li>
         </ul>
       </div>
 
       <div class="stage">
-        <span class="sun" aria-hidden="true"></span>
         <div class="phone">
           <img class="shot" src="assets/screens/home.jpg" width="552" height="1200" alt="Meowtrek home screen: Gohan the cat in a park, 7,240 steps, goal reached, with a daily event and the step bar filled.">
         </div>
         <div class="sticker coins" aria-hidden="true"><i class="coin-big"></i><span><b>+724</b>coins today</span></div>
         <div class="sticker streak" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg><span><b>20-day streak</b>+1 gem earned</span></div>
+      </div>
+    </div>
+
+    <div class="meadow" aria-hidden="true">
+      <svg class="hill far" viewBox="0 0 1440 220" preserveAspectRatio="none"><path d="M0 120 C 220 40, 420 150, 700 90 S 1180 20, 1440 80 V220 H0 Z"/></svg>
+      <svg class="hill mid" viewBox="0 0 1440 200" preserveAspectRatio="none"><path d="M0 110 C 300 60, 560 140, 860 96 S 1260 60, 1440 104 V200 H0 Z"/></svg>
+      <svg class="hill near" viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0 46 C 360 10, 760 70, 1080 34 S 1360 22, 1440 30 V120 H0 Z"/></svg>
+      <div class="trail"></div>
+      <div class="walker">
+        <span class="bubble"><b id="stepCount">7,240</b> steps</span>
+        <svg class="cat" viewBox="0 0 132 104">
+          <path class="tail" d="M30 62 C 12 60, 8 40, 18 30" fill="none" stroke="#E08A3C" stroke-width="9" stroke-linecap="round"/>
+          <g class="legs" fill="#F4A259" stroke="#C9742B" stroke-width="2.5">
+            <rect class="leg l1" x="36" y="68" width="12" height="24" rx="6"/>
+            <rect class="leg l2" x="50" y="68" width="12" height="24" rx="6"/>
+            <rect class="leg l3" x="70" y="68" width="12" height="24" rx="6"/>
+            <rect class="leg l4" x="84" y="68" width="12" height="24" rx="6"/>
+          </g>
+          <ellipse cx="64" cy="64" rx="36" ry="20" fill="#F4A259" stroke="#C9742B" stroke-width="3"/>
+          <path d="M56 46 v10 M66 45 v11 M76 46 v10" stroke="#D9802F" stroke-width="3" stroke-linecap="round"/>
+          <g class="head">
+            <path d="M86 20 L 90 2 L 102 14 Z M 112 14 L 124 2 L 126 22 Z" fill="#F4A259" stroke="#C9742B" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M90 14 L 92 7 L 98 13 Z M116 13 L 122 7 L 122 16 Z" fill="#F6A9B4"/>
+            <circle cx="106" cy="36" r="24" fill="#F4A259" stroke="#C9742B" stroke-width="3"/>
+            <path d="M100 18 v6 M106 17 v7 M112 18 v6" stroke="#D9802F" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="108" cy="46" rx="15" ry="11" fill="#FFF3E2"/>
+            <path d="M96 34 q4 -4 8 0 M112 34 q4 -4 8 0" fill="none" stroke="#3B2A22" stroke-width="2.6" stroke-linecap="round"/>
+            <ellipse cx="94" cy="42" rx="4" ry="2.6" fill="#F6A9B4"/><ellipse cx="122" cy="42" rx="4" ry="2.6" fill="#F6A9B4"/>
+            <path d="M104 44 l4 3 l4 -3 Z" fill="#E77B8A"/>
+            <path d="M104 49 q4 4 8 0" fill="none" stroke="#3B2A22" stroke-width="2" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <span class="shadow"></span>
       </div>
     </div>
   </section>
@@ -258,6 +304,7 @@
             <li>Apple Watch app and widgets</li>
             <li>5 cat chats a day, 1 meal photo a day</li>
           </ul>
+          <a class="btn ghost" href="#top" data-join>Join the waitlist</a>
         </div>
         <div class="plan plus">
           <div class="plan-head">
@@ -274,6 +321,7 @@
             <li>Daily backup to your private iCloud</li>
             <li>More meal reactions and a Plus badge</li>
           </ul>
+          <a class="btn" href="#top" data-join>Get Plus at launch</a>
           <p class="fine">Yearly starts with a 1-week free trial. Cancel any time in Settings. Unlimited chat is subject to fair use.</p>
         </div>
       </div>
@@ -325,8 +373,13 @@
           <h2>Your cat is waiting by the door.</h2>
           <p>Meowtrek is coming soon to iPhone and Apple Watch. Free to play, no account needed. Drop your email and we’ll tell you the moment it’s out.</p>
           <form class="waitlist dark" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-            <input type="email" name="email" required autocomplete="email" placeholder="you@email.com" aria-label="Email address">
-            <button type="submit" class="btn primary lg">Notify me at launch</button>
+            <div class="field">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-10 6L2 7"/></svg>
+              <input type="email" name="email" required autocomplete="email" placeholder="you@email.com" aria-label="Email address">
+              <button type="submit" class="btn primary">Join the waitlist<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            </div>
+            <p class="waitlist-note">One email on launch day. No spam, ever.</p>
+            <p class="waitlist-done" role="status" hidden><img src="assets/icon.png" alt="" width="32" height="32"><span><b>You’re on the list!</b>See you on the trail.</span></p>
           </form>
         </div>
         <img class="cta-cat" src="assets/icon.png" alt="" width="240" height="240">
@@ -388,6 +441,11 @@
     </div>
   </div>
 </footer>
+<div class="dock" id="dock" aria-hidden="true">
+  <img src="assets/icon.png" alt="" width="40" height="40">
+  <span><b>Coming soon</b>Free · iPhone &amp; Watch</span>
+  <a class="btn" href="#top" data-join tabindex="-1">Join waitlist</a>
+</div>
 <script>
 (function () {
   // Sticky header: add a shadow once the page is scrolled.
@@ -396,6 +454,51 @@
     var onScroll = function () { header.classList.toggle('scrolled', window.scrollY > 8); };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+  }
+  // Step counter in the hero bubble ticks up like a live pedometer.
+  var counter = document.getElementById('stepCount');
+  if (counter) {
+    var n = 7240;
+    setInterval(function () { n += 1 + Math.floor(Math.random() * 3); counter.textContent = n.toLocaleString('en-US'); }, 900);
+  }
+  // "Join waitlist" buttons scroll up and focus the hero email field.
+  document.querySelectorAll('[data-join]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var input = document.querySelector('#heroForm input');
+      if (!input || document.getElementById('heroForm').classList.contains('sent')) return;
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(function () { input.focus({ preventScroll: true }); }, 450);
+    });
+  });
+  // Submit without leaving the page, then show a thank-you.
+  document.querySelectorAll('form.waitlist').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = form.querySelector('button');
+      btn.disabled = true;
+      var done = function () {
+        document.querySelectorAll('form.waitlist').forEach(function (f) { f.classList.add('sent'); f.querySelector('.waitlist-done').hidden = false; });
+      };
+      fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
+        .then(function (r) { if (!r.ok) throw r; done(); })
+        .catch(function () { btn.disabled = false; form.submit(); });
+    });
+  });
+  // Mobile dock: show once the hero form is off screen, hide near the final CTA.
+  var dock = document.getElementById('dock');
+  var heroForm = document.getElementById('heroForm');
+  var cta = document.querySelector('.cta');
+  if (dock && heroForm && 'IntersectionObserver' in window) {
+    var heroGone = false, ctaIn = false;
+    var sync = function () {
+      var on = heroGone && !ctaIn && !heroForm.classList.contains('sent');
+      dock.classList.toggle('show', on);
+      dock.setAttribute('aria-hidden', on ? 'false' : 'true');
+      dock.querySelector('a').tabIndex = on ? 0 : -1;
+    };
+    new IntersectionObserver(function (es) { heroGone = !es[0].isIntersecting && es[0].boundingClientRect.top < 0; sync(); }).observe(heroForm);
+    if (cta) new IntersectionObserver(function (es) { ctaIn = es[0].isIntersecting; sync(); }).observe(cta);
   }
   // Per-section reveal on scroll.
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
