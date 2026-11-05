@@ -14,7 +14,7 @@ coach.use("*", async (c, next) => {
   if (!Device.safeParse(device).success) return c.json({ error: "device_required" }, 401);
   if (!c.env.ANTHROPIC_API_KEY) return c.json({ error: "ai_not_configured" }, 503);
   c.set("device", device!);
-  const plan = await resolvePlan(c.env, c.req.header("X-Meowtrek-Transaction"));
+  const plan = await resolvePlan(c.env, c.req.header("X-Meowtrek-Transaction"), device);
   c.set("plan", plan);
   c.header("X-Plan", plan);
   await next();

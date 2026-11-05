@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { resolvePlan } from "../src/plus";
 import { fakeJws, makeEnv, setup } from "./helpers";
 
 const future = Date.now() + 30 * 86_400_000;
@@ -54,5 +55,17 @@ describe("app store server notifications", () => {
   it("rejects a request with no payload", async () => {
     const res = await setup(env()).call("/v1/appstore/notifications", { json: {} });
     expect(res.status).toBe(400);
+  });
+
+  it("lets the webhook record drive plan gating", async () => {
+    const e = env();
+    const token = "TOK-ABC"; // client sends an uppercase UUID; we match case-insensitively
+    // active record → plus even without a client JWS
+    await e.KV.put("sub:acct:tok-abc", JSON.stringify({ active: true, expiresDate: future }));
+    expect(await resolvePlan(e, undefined, token)).toBe("plus");
+    // a refund/revoke record → free even if the client still holds an "active" JWS
+    await e.KV.put("sub:acct:tok-abc", JSON.stringify({ active: false, expiresDate: future }));
+    const liveJws = fakeJws({ bundleId: "id.gian.meowtrek", productId: "id.gian.meowtrek.plus.monthly", expiresDate: future });
+    expect(await resolvePlan(e, liveJws, token)).toBe("free");
   });
 });

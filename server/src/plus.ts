@@ -81,7 +81,16 @@ export function isActivePlus(p: TxnPayload | null, bundleId: string, now = Date.
   return !!p && p.bundleId === bundleId && PLUS_PRODUCTS.has(p.productId ?? "") && !p.revocationDate && (p.expiresDate ?? 0) > now;
 }
 
-export async function resolvePlan(env: Env, jws: string | undefined): Promise<Plan> {
+export async function resolvePlan(env: Env, jws: string | undefined, device?: string): Promise<Plan> {
+  // App Store Server Notifications give us fresher truth than a cached client JWS: honour a recorded
+  // refund/revoke/expiry immediately, and trust an active (Apple-verified) record even without a JWS.
+  if (device) {
+    const rec = await env.KV.get<{ active?: boolean; expiresDate?: number | null }>(`sub:acct:${device.toLowerCase()}`, "json");
+    if (rec) {
+      if (!rec.active) return "free";
+      if ((rec.expiresDate ?? 0) > Date.now()) return "plus";
+    }
+  }
   if (!jws || jws.length > 20_000 || jws.split(".").length !== 3) return "free";
   const key = `plus:${await sha256Hex(jws)}`;
   const cached = await env.KV.get(key);

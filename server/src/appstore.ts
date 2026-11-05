@@ -37,7 +37,7 @@ appstore.post("/notifications", async (c) => {
       updatedAt: Date.now(),
     });
     const keys: string[] = [];
-    if (txn.appAccountToken) keys.push(`sub:acct:${txn.appAccountToken}`);
+    if (txn.appAccountToken) keys.push(`sub:acct:${txn.appAccountToken.toLowerCase()}`);
     if (txn.originalTransactionId) keys.push(`sub:tx:${txn.originalTransactionId}`);
     await Promise.all(keys.map((k) => c.env.KV.put(k, record, { expirationTtl: SUB_TTL })));
   }
@@ -47,5 +47,5 @@ appstore.post("/notifications", async (c) => {
 
 // Look up the latest known subscription state for an install (by its appAccountToken).
 export async function plusRecord(env: Env, accountToken: string) {
-  return env.KV.get(`sub:acct:${accountToken}`, "json");
+  return env.KV.get(`sub:acct:${accountToken.toLowerCase()}`, "json");
 }
