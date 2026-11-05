@@ -41,14 +41,17 @@ struct CatView: View {
     var body: some View {
         Group {
             if pace > 0 && animated {
-                TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
+                TimelineView(.animation(minimumInterval: pace > 1.5 ? 1 / 30 : 1 / 24)) { ctx in
                     let t = ctx.date.timeIntervalSinceReferenceDate * (pace > 1.5 ? 10 : 6.5)
                     CatCanvas(outfit: outfit, mood: mood, blink: blink, stride: sin(t))
+                        .drawingGroup()
                         .offset(y: -abs(cos(t)) * (pace > 1.5 ? 6 : 3))
                         .rotationEffect(.degrees(pace > 1.5 ? 4 : 1.5), anchor: .bottom)
                 }
             } else {
-                CatCanvas(outfit: outfit, mood: mood, blink: blink, stride: 0)
+                // Flatten the many vector layers into one Metal-rasterised image so the bob/blink
+                // animations composite a single texture instead of dozens of gradient layers.
+                CatCanvas(outfit: outfit, mood: mood, blink: blink, stride: 0).drawingGroup()
             }
         }
             .frame(width: 200, height: 250)
@@ -211,8 +214,7 @@ private struct VectorCat: View {
 
     var body: some View {
         ZStack {
-            Ellipse().fill(Color.black.opacity(0.11)).frame(width: 118, height: 20)
-                .blur(radius: 5).position(x: 100, y: 241)
+            Ellipse().fill(Color.black.opacity(0.09)).frame(width: 116, height: 18).position(x: 100, y: 241)
             if let bag = outfit[.bag], Self.backBags.contains(bag.id) {
                 ArtView(id: bag.id, size: 176, line: line).position(x: 100, y: 176)
             }
