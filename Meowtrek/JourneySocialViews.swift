@@ -34,6 +34,11 @@ struct JourneyView: View {
                 .card()
                 .taped(.topLeading, angle: -8, color: .grape, x: 18)
 
+                StorySection(loc("Right now"), subtitle: loc("What we're walking toward"), color: .grape)
+                    .padding(.top, 6)
+                ExpeditionCard()
+                TrailPassCard()
+
                 StorySection(title: loc("Trek log"), subtitle: loc("Walks, runs and hikes we traced together"), color: .grass) {
                     Button { recording = true } label: { Label("Record", systemImage: "location.north.circle.fill") }
                         .buttonStyle(.chunky(.grass, text: .white, radius: 18, padH: 12, padV: 7))

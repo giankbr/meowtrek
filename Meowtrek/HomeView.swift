@@ -50,9 +50,10 @@ struct HomeView: View {
                     }
                     .padding(.top, 6)
                     diary.appearIn(0)
+                    StorySection(loc("More for today"), subtitle: loc("Treats, water and this season's event"), color: .pumpkin)
+                        .padding(.top, 10)
+                        .appearIn(1)
                     DailyRewardCard().appearIn(1)
-                    ExpeditionCard().appearIn(1)
-                    TrailPassCard().appearIn(2)
                     if let a = state.activeEvent { eventCard(a).appearIn(2) }
                     waterCard.appearIn(3)
                     Button { showMeal = true } label: {
