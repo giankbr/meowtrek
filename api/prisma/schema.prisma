@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Group challenges ---
+model Group {
+  code      String        @id @db.VarChar(6)
+  name      String        @db.VarChar(60)
+  goal      Int           @default(0)
+  createdAt DateTime      @default(now())
+  members   GroupMember[]
+}
+
+model GroupMember {
+  id        Int      @id @default(autoincrement())
+  group     Group    @relation(fields: [groupCode], references: [code], onDelete: Cascade)
+  groupCode String   @db.VarChar(6)
+  device    String   @db.VarChar(64)
+  name      String   @db.VarChar(24)
+  fur       String   @db.VarChar(24)
+  steps     Int
+  week      String   @db.VarChar(10)
+  updatedAt DateTime @updatedAt
+
+  @@unique([groupCode, device])
+  @@index([groupCode])
+}
+
+// --- Subscriptions (from App Store Server Notifications) ---
+model Subscription {
+  originalTransactionId String   @id @db.VarChar(64)
+  appAccountToken       String?  @unique @db.VarChar(64)
+  active                Boolean
+  productId             String?  @db.VarChar(80)
+  type                  String?  @db.VarChar(40)
+  subtype               String?  @db.VarChar(40)
+  expiresDate           BigInt?
+  updatedAt             DateTime @updatedAt
+}
+
+// Short-lived cache of verified Plus JWS so we don't re-verify every request.
+model PlanCache {
+  key   String @id @db.VarChar(64)
+  until BigInt
+}
+
+// --- Push ---
+model PushToken {
+  device    String   @id @db.VarChar(64)
+  token     String   @db.VarChar(200)
+  updatedAt DateTime @updatedAt
+}
+
+// --- AI rate limits ---
+model RateLimit {
+  id    String @id @db.VarChar(120) // kind:device:date
+  day   String @db.VarChar(10)
+  count Int    @default(0)
+
+  @@index([day])
+}
+
+// --- Telemetry ---
+model TelemetryCounter {
+  id    String @id @db.VarChar(120) // ev:date:name / ver:date:ver / asn:date:type
+  date  String @db.VarChar(10)
+  name  String @db.VarChar(100)
+  count Int    @default(0)
+
+  @@index([date])
+}
+
+model Diagnostic {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  appVersion String   @db.VarChar(20)
+  osVersion  String   @db.VarChar(40)
+  model      String   @db.VarChar(40)
+  kinds      String   @db.VarChar(255)
+  payload    String   @db.MediumText
+}
+
+// --- Garmin ---
+model GarminUser {
+  userId       String         @id @db.VarChar(80)
+  accessToken  String         @db.Text
+  refreshToken String         @db.Text
+  expiresAt    BigInt
+  devices      GarminDevice[]
+  steps        GarminSteps[]
+}
+
+model GarminDevice {
+  device String     @id @db.VarChar(64)
+  user   GarminUser @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId String     @db.VarChar(80)
+
+  @@index([userId])
+}
+
+model GarminState {
+  state       String   @id @db.VarChar(64)
+  device      String   @db.VarChar(64)
+  verifier    String   @db.VarChar(200)
+  redirectUri String   @db.Text
+  createdAt   DateTime @default(now())
+}
+
+model GarminSteps {
+  user   GarminUser @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId String     @db.VarChar(80)
+  date   String     @db.VarChar(10)
+  steps  Int
+
+  @@id([userId, date])
+}
