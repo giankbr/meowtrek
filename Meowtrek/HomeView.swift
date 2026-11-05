@@ -21,6 +21,8 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 PetScene(showCloset: $showCloset, showSettings: $showSettings,
                          showInbox: $showInbox, showFeed: $showFeed, showCoach: $showCoach)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
                     .overlay(alignment: .bottom) {
                         TornEdge().fill(Color.cream)
                             .shadow(color: .black.opacity(0.08), radius: 1.5, y: -1)
@@ -457,11 +459,11 @@ private struct PetScene: View {
             if !night { bird(-120, -150, 9) }
             // A pale, hazy ridge far back for atmospheric depth.
             oval(50, 50, 100, 100).fill(farHill.lighter(0.16))
-                .frame(width: 560, height: 200).offset(x: 10, y: 150)
+                .frame(width: 320, height: 180).offset(x: 10, y: 150)
             oval(50, 50, 100, 100).sticker(farHill.lighter(0.12), farHill.darker(0.05), 3)
-                .frame(width: 360, height: 220).offset(x: -150, y: 120)
+                .frame(width: 300, height: 210).offset(x: -120, y: 122)
             oval(50, 50, 100, 100).sticker(farHill.lighter(0.12), farHill.darker(0.05), 3)
-                .frame(width: 380, height: 240).offset(x: 170, y: 110)
+                .frame(width: 320, height: 230).offset(x: 140, y: 112)
 
             ArtView(id: "deco_tree", size: 110, line: 3).modifier(Drift(x: -140, y: 50, pace: pace, speed: 18))
             ArtView(id: "deco_lamp", size: 80, line: 3).modifier(Drift(x: 150, y: 50, pace: pace, speed: 18))
