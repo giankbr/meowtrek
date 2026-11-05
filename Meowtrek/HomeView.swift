@@ -357,6 +357,8 @@ private struct PetScene: View {
     @State private var drift = false
     @State private var hop = 0
     @State private var hearts = 0
+    /// Plus members can lock the sky; "auto" follows the time of day.
+    @AppStorage("scenePhase") private var scenePhase = "auto"
 
     private enum Phase { case morning, day, sunset, night }
 
@@ -371,12 +373,14 @@ private struct PetScene: View {
     }
 
     private var phase: Phase {
-        switch UserDefaults.standard.string(forKey: "phase") {
-        case "morning": return .morning
-        case "day": return .day
-        case "sunset": return .sunset
-        case "night": return .night
-        default: break
+        if state.isPlus {
+            switch scenePhase {
+            case "morning": return .morning
+            case "day": return .day
+            case "sunset": return .sunset
+            case "night": return .night
+            default: break
+            }
         }
         return switch state.hour {
         case 5..<10: .morning
@@ -909,6 +913,10 @@ struct SettingsView: View {
     @State private var confirmReset = false
     @State private var showPaywall = false
     @State private var showWallpapers = false
+    @AppStorage("scenePhase") private var scenePhase = "auto"
+    @AppStorage("adaptiveGoal") private var adaptiveGoal = false
+
+    private static let skies: [(String, String)] = [("auto", "Follow the day"), ("morning", "Morning"), ("day", "Daytime"), ("sunset", "Sunset"), ("night", "Night")]
 
     var body: some View {
         @Bindable var s = state
@@ -958,9 +966,42 @@ struct SettingsView: View {
                     StorySectionHeader(text: loc("About your cat"), symbol: "pawprint")
                 }
                 Section {
+                    if state.isPlus {
+                        Picker("Home sky", selection: $scenePhase) {
+                            ForEach(Self.skies, id: \.0) { Text(L($0.1)).tag($0.0) }
+                        }
+                    } else {
+                        Button { showPaywall = true } label: {
+                            HStack {
+                                Text("Pick your sky").foregroundStyle(Color.ink)
+                                Spacer()
+                                Tag(text: loc("Plus"), color: .sun, textColor: .ink)
+                            }
+                        }
+                    }
+                } header: {
+                    StorySectionHeader(text: loc("Home scene"), symbol: "sun.max")
+                } footer: {
+                    Text("Plus lets you lock your home scene to any time of day. Free follows the real time.")
+                }
+                Section {
                     GoalEditor()
+                    if state.isPlus {
+                        Toggle("Adaptive goal", isOn: $adaptiveGoal)
+                            .onChange(of: adaptiveGoal) { state.applyAdaptiveGoal(force: true) }
+                    } else {
+                        Button { showPaywall = true } label: {
+                            HStack {
+                                Text("Adaptive goal").foregroundStyle(Color.ink)
+                                Spacer()
+                                Tag(text: loc("Plus"), color: .sun, textColor: .ink)
+                            }
+                        }
+                    }
                 } header: {
                     StorySectionHeader(text: loc("Daily goal"), symbol: "flag")
+                } footer: {
+                    Text("Adaptive goal retunes your target each week to match your recent pace.")
                 }
                 Section {
                     Toggle("Walk reminders", isOn: Binding(get: { state.remindersOn }, set: { on in

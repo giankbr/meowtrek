@@ -221,9 +221,28 @@ final class AppState {
 
     func refresh() {
         rollDay()
+        applyAdaptiveGoal()
         checkLevel()
         pushWidget()
         Notifier.reschedule(self)
+    }
+
+    // MARK: Adaptive goal (Plus) — once a week, retune the daily goal to last week's pace.
+    var adaptiveGoalOn: Bool {
+        get { UserDefaults.standard.bool(forKey: "adaptiveGoal") }
+        set { UserDefaults.standard.set(newValue, forKey: "adaptiveGoal"); if newValue { applyAdaptiveGoal(force: true) } }
+    }
+
+    func applyAdaptiveGoal(force: Bool = false) {
+        guard adaptiveGoalOn, isPlus else { return }
+        let c = cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: .now)
+        let wk = "\(c.yearForWeekOfYear ?? 0)-W\(c.weekOfYear ?? 0)"
+        guard force || UserDefaults.standard.string(forKey: "adaptiveWeek") != wk else { return }
+        let avg = (1...7).map { steps.steps(on: cal.date(byAdding: .day, value: -$0, to: .now)!) }.reduce(0, +) / 7
+        let g = min(Self.goalMax, max(Self.goalMin, Int((Double(avg) * 1.05 / 250).rounded()) * 250))
+        if g != goal { goal = g }
+        UserDefaults.standard.set(wk, forKey: "adaptiveWeek")
+        save()
     }
 
     func rollDay() {
