@@ -34,8 +34,18 @@
 <main>
   <section class="hero">
     <svg class="hills hills-back" viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 160 C 240 90, 420 150, 640 110 S 1040 40, 1440 100 V300 H0 Z" fill="var(--hill-far)"/>
-      <path d="M0 230 C 300 170, 560 240, 820 185 S 1240 130, 1440 170 V300 H0 Z" fill="var(--hill-mid)"/>
+      <defs>
+        <linearGradient id="hillFar" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="color-mix(in srgb, #fff 12%, var(--hill-far))"/>
+          <stop offset="1" stop-color="var(--hill-far)"/>
+        </linearGradient>
+        <linearGradient id="hillMid" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="color-mix(in srgb, #fff 11%, var(--hill-mid))"/>
+          <stop offset="1" stop-color="var(--hill-mid)"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 160 C 240 90, 420 150, 640 110 S 1040 40, 1440 100 V300 H0 Z" fill="url(#hillFar)"/>
+      <path d="M0 230 C 300 170, 560 240, 820 185 S 1240 130, 1440 170 V300 H0 Z" fill="url(#hillMid)"/>
     </svg>
 
     <div class="wrap hero-grid">
@@ -68,7 +78,13 @@
     </div>
 
     <svg class="hills hills-front" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 110 C 260 70, 520 125, 760 85 S 1180 25, 1440 60 V160 H0 Z" fill="var(--hill-near)"/>
+      <defs>
+        <linearGradient id="hillNear" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="color-mix(in srgb, #fff 13%, var(--hill-near))"/>
+          <stop offset="1" stop-color="var(--hill-near)"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 110 C 260 70, 520 125, 760 85 S 1180 25, 1440 60 V160 H0 Z" fill="url(#hillNear)"/>
       <path d="M60 128 C 300 92, 520 136, 760 104 S 980 70, 1010 62" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 18" vector-effect="non-scaling-stroke"/>
     </svg>
   </section>
