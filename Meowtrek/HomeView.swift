@@ -419,26 +419,6 @@ private struct PetScene: View {
         .frame(width: s * 2, height: s * 0.6).offset(x: x, y: y)
     }
 
-    private func tuft(_ x: CGFloat, _ y: CGFloat, _ color: Color) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 5, y: 15)); p.addQuadCurve(to: CGPoint(x: 1, y: 1), control: CGPoint(x: 2, y: 8))
-            p.move(to: CGPoint(x: 9, y: 15)); p.addLine(to: CGPoint(x: 9, y: -1))
-            p.move(to: CGPoint(x: 13, y: 15)); p.addQuadCurve(to: CGPoint(x: 17, y: 1), control: CGPoint(x: 16, y: 8))
-        }
-        .stroke(color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-        .frame(width: 18, height: 16).offset(x: x, y: y)
-    }
-
-    private func bloom(_ x: CGFloat, _ y: CGFloat, _ color: Color) -> some View {
-        ZStack {
-            ForEach(0..<5, id: \.self) { i in
-                Capsule().fill(color).frame(width: 4, height: 7).offset(y: -4).rotationEffect(.degrees(Double(i) * 72))
-            }
-            Circle().fill(Color.sun).frame(width: 4)
-        }
-        .frame(width: 14, height: 14).offset(x: x, y: y)
-    }
-
     var body: some View {
         let night = phase == .night
         let hill = night ? Color(hex: 0x3F7A4A) : Color.grass
@@ -474,12 +454,7 @@ private struct PetScene: View {
                 .offset(x: drift ? -60 : -140, y: -150)
             ArtView(id: "deco_cloud", size: 64, line: 3).opacity(night ? 0.3 : 0.9)
                 .offset(x: drift ? 120 : 40, y: -70)
-            if !night {
-                ArtView(id: "deco_cloud", size: 46, line: 3).opacity(0.8).offset(x: drift ? -140 : -80, y: -112)
-                bird(-120, -118, 9)
-                bird(-80, -150, 7)
-            }
-
+            if !night { bird(-120, -150, 9) }
             // A pale, hazy ridge far back for atmospheric depth.
             oval(50, 50, 100, 100).fill(farHill.lighter(0.16))
                 .frame(width: 560, height: 200).offset(x: 10, y: 150)
@@ -500,19 +475,6 @@ private struct PetScene: View {
             .sticker(hill.lighter(0.08), hill.darker(0.04), 3)
             .frame(height: 170)
             .frame(maxHeight: .infinity, alignment: .bottom)
-
-            let grass = hill.darker(0.14)
-            tuft(-158, 70, grass)
-            tuft(150, 56, grass)
-            tuft(-150, 110, grass)
-            tuft(160, 104, grass)
-            tuft(-112, 150, grass)
-            tuft(122, 150, grass)
-            if !night {
-                bloom(-130, 84, .tomato)
-                bloom(170, 92, .grape)
-                bloom(-92, 150, .sky)
-            }
 
             UPath { p, pt in
                 p.move(to: pt(42, 18)); p.addQuadCurve(to: pt(58, 18), control: pt(50, 14))
