@@ -149,7 +149,11 @@ p { margin: 0; }
 .split-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 48px; margin-bottom: 56px; }
 .split-head .section-head { flex: 1 1 680px; max-width: 680px; }
 .split-head > p { max-width: 400px; color: var(--muted); font-size: 1.125rem; line-height: 1.55; }
-@media (max-width: 860px) { .split-head { flex-direction: column; align-items: flex-start; gap: 16px; } }
+@media (max-width: 860px) {
+  .split-head { display: block; margin-bottom: 40px; }
+  .split-head .section-head { max-width: none; }
+  .split-head > p { margin-top: 12px; }
+}
 
 /* how it works: milestones on a dotted trail */
 .milestones { list-style: none; margin: 0; padding: 0; position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
