@@ -167,9 +167,13 @@ struct ShopView: View {
             Text(c.food > 0 ? loc("Fills \(c.food)% of the bowl") : loc("Keeps a streak safe"))
                 .font(.game(11, .medium)).foregroundStyle(Color.inkSoft).lineLimit(1).minimumScaleFactor(0.8)
             Button { withAnimation { state.buy(c) } } label: {
-                PriceTag(art: c.currency == .coin ? "coin" : "gem", text: "\(c.price)", color: afford ? Color.sun.opacity(0.35) : Color.paper, angle: -4, string: false)
+                HStack(spacing: 4) {
+                    ArtView(id: c.currency == .coin ? "coin" : "gem", size: 15, line: 1.2)
+                    Text("\(c.price)").font(.game(14, .bold)).monospacedDigit()
+                }
+                .frame(maxWidth: .infinity)
             }
-            .buttonStyle(SquishStyle())
+            .buttonStyle(.chunky(afford ? (c.currency == .gem ? .sky : .sun) : .paper, text: .ink, radius: 10, padV: 7))
             .disabled(!afford)
             .opacity(afford ? 1 : 0.55)
             .padding(.top, 2)
@@ -225,9 +229,16 @@ struct StallItemCell: View {
                     Stamp(text: wearing ? loc("On") : loc("Yours"), color: wearing ? .grassDark : .tomato, size: 36, angle: 14)
                         .offset(x: 8, y: -10)
                 } else if item.event == nil {
-                    PriceTag(art: item.currency == .coin ? "coin" : "gem", text: "\(item.price)",
-                             color: item.currency == .gem ? Color.sky.opacity(0.3) : Color.sun.opacity(0.35), angle: 10)
-                        .offset(x: 10, y: -12)
+                    HStack(spacing: 3) {
+                        ArtView(id: item.currency == .coin ? "coin" : "gem", size: 12, line: 1.1)
+                        Text("\(item.price)").font(.game(12, .bold)).monospacedDigit()
+                    }
+                    .foregroundStyle(Color.ink)
+                    .padding(.horizontal, 7).padding(.vertical, 3)
+                    .background(Capsule().fill(item.currency == .gem ? Color.sky : Color.sun))
+                    .overlay(Capsule().stroke(Color.ink.opacity(0.15), lineWidth: 1))
+                    .shadow(color: .black.opacity(0.1), radius: 1.5, y: 1)
+                    .offset(x: -4, y: 6)
                 }
             }
         }
