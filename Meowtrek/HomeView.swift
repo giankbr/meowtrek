@@ -57,21 +57,11 @@ struct HomeView: View {
                         .appearIn(1)
                     DailyRewardCard().appearIn(1)
                     if let a = state.activeEvent { eventCard(a).appearIn(2) }
-                    waterCard.appearIn(3)
-                    Button { showMeal = true } label: {
-                        HStack(spacing: 12) {
-                            GameIcon(symbol: "camera.fill", tint: .pumpkin, size: 44)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Snap your meal").font(.story(17, .bold))
-                                Text("\(state.petName) reacts · no calorie counting").font(.game(12, .medium)).foregroundStyle(Color.inkSoft)
-                            }
-                            Spacer()
-                            if !state.isPlus { Tag(text: loc("Plus"), color: .sun, textColor: .ink) }
-                        }
-                        .card()
+                    HStack(alignment: .top, spacing: 12) {
+                        waterCard
+                        mealCard
                     }
-                    .buttonStyle(SquishStyle())
-                    .appearIn(4)
+                    .appearIn(3)
                 }
                 .foregroundStyle(Color.ink)
                 .padding(16)
@@ -95,30 +85,30 @@ struct HomeView: View {
         .sheet(isPresented: $devWallpapers) { WallpapersView() }
     }
 
+    // Compact water card, half-width so it can pair with the meal card.
     private var waterCard: some View {
         let n = state.waterToday, goal = state.waterGoal
-        return HStack(spacing: 12) {
-            ArtView(id: "water", size: 44)
-                .scaleEffect(waterPulse ? 1.12 : 1, anchor: .bottom)
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Water").font(.story(17, .bold))
-                HStack(spacing: 4) {
-                    ForEach(0..<goal, id: \.self) { i in
-                        Capsule().fill(i < n ? Color.sky : Color.sky.opacity(0.18))
-                            .frame(width: 10, height: 16)
-                            .scaleEffect(waterPulse && i == min(n, goal) - 1 ? 1.3 : 1)
-                    }
-                }
-                Text(n >= goal ? loc("Goal reached · \(n) glasses") : loc("\(n) of \(goal) glasses"))
-                    .font(.game(12, .medium)).foregroundStyle(n >= goal ? Color.skyDark : Color.inkSoft)
-                    .lineLimit(1).fixedSize()
-                    .contentTransition(.numericText(value: Double(n)))
-            }
-            Spacer(minLength: 8)
+        return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                RoundIconButton(symbol: "minus") { withAnimation(.snappy) { state.removeWater() } }
+                ArtView(id: "water", size: 30).scaleEffect(waterPulse ? 1.12 : 1, anchor: .bottom)
+                Text("Water").font(.story(16, .bold))
+                Spacer(minLength: 0)
+            }
+            HStack(spacing: 3) {
+                ForEach(0..<goal, id: \.self) { i in
+                    Capsule().fill(i < n ? Color.sky : Color.sky.opacity(0.18))
+                        .frame(height: 15)
+                        .scaleEffect(waterPulse && i == min(n, goal) - 1 ? 1.3 : 1)
+                }
+            }
+            HStack(spacing: 6) {
+                Text(n >= goal ? loc("Full!") : loc("\(n)/\(goal)"))
+                    .font(.game(12, .bold)).foregroundStyle(n >= goal ? Color.skyDark : Color.inkSoft)
+                    .contentTransition(.numericText(value: Double(n)))
+                Spacer(minLength: 0)
+                RoundIconButton(symbol: "minus", size: 30) { withAnimation(.snappy) { state.removeWater() } }
                     .disabled(n == 0)
-                RoundIconButton(symbol: "plus", fill: .sky, tint: .white) {
+                RoundIconButton(symbol: "plus", fill: .sky, tint: .white, size: 30) {
                     withAnimation(.snappy) { state.addWater() }
                     withAnimation(.spring(response: 0.18, dampingFraction: 0.5)) { waterPulse = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
@@ -128,7 +118,29 @@ struct HomeView: View {
             }
             .sensoryFeedback(.impact(weight: .light), trigger: n)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .card()
+    }
+
+    // Compact meal card, pairs with the water card.
+    private var mealCard: some View {
+        Button { showMeal = true } label: {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    GameIcon(symbol: "camera.fill", tint: .pumpkin, size: 34)
+                    Spacer(minLength: 0)
+                    if !state.isPlus { Tag(text: loc("Plus"), color: .sun, textColor: .ink) }
+                }
+                Text("Snap your meal").font(.story(16, .bold))
+                Text("\(state.petName) reacts · no calorie counting")
+                    .font(.game(11, .medium)).foregroundStyle(Color.inkSoft)
+                    .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .card()
+        }
+        .buttonStyle(SquishStyle())
     }
 
     private func personalize() {
